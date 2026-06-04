@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <meta name="theme-color" content="#4CAF50">
-    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black">
     <meta name="apple-mobile-web-app-title" content="Golf Analyzer">
     <title>Golf Swing Analyzer</title>
@@ -299,6 +299,20 @@
         const API_URL = 'https://golf-swing-api-tm4l.onrender.com';
         let authToken = null;
         
+        // Force CORS mode for all fetches
+        const originalFetch = window.fetch;
+        window.fetch = function(url, options = {}) {
+            options.mode = 'cors';
+            if (!options.headers) options.headers = {};
+            return originalFetch(url, options);
+        };
+        
+        // Make functions available globally
+        window.register = register;
+        window.login = login;
+        window.logout = logout;
+        window.analyze = analyze;
+        
         // Check if user is logged in
         function checkAuth() {
             const token = localStorage.getItem('authToken');
@@ -306,6 +320,7 @@
                 authToken = token;
                 document.getElementById('loginSection').style.display = 'none';
                 document.getElementById('appSection').style.display = 'block';
+                loadPros();
             } else {
                 document.getElementById('loginSection').style.display = 'block';
                 document.getElementById('appSection').style.display = 'none';
@@ -314,6 +329,7 @@
         
         // Register function
         async function register() {
+            console.log('Register function called');
             const email = document.getElementById('email').value;
             const password = document.getElementById('password').value;
             
@@ -332,6 +348,7 @@
                 });
                 
                 const data = await response.json();
+                console.log('Register response:', data);
                 
                 if (data.success) {
                     authToken = data.token;
@@ -343,12 +360,14 @@
                     showStatus(data.error || 'Registration failed', 'error');
                 }
             } catch (error) {
+                console.error('Register error:', error);
                 showStatus('Network error. Please try again.', 'error');
             }
         }
         
         // Login function
         async function login() {
+            console.log('Login function called');
             const email = document.getElementById('email').value;
             const password = document.getElementById('password').value;
             
@@ -367,6 +386,7 @@
                 });
                 
                 const data = await response.json();
+                console.log('Login response:', data);
                 
                 if (data.success) {
                     authToken = data.token;
@@ -378,6 +398,7 @@
                     showStatus(data.error || 'Login failed', 'error');
                 }
             } catch (error) {
+                console.error('Login error:', error);
                 showStatus('Network error. Please try again.', 'error');
             }
         }
@@ -406,46 +427,50 @@
         const videoInput = document.getElementById('videoInput');
         let selectedFile = null;
         
-        uploadArea.addEventListener('click', () => {
-            videoInput.click();
-        });
-        
-        uploadArea.addEventListener('dragover', (e) => {
-            e.preventDefault();
-            uploadArea.classList.add('drag-over');
-        });
-        
-        uploadArea.addEventListener('dragleave', () => {
-            uploadArea.classList.remove('drag-over');
-        });
-        
-        uploadArea.addEventListener('drop', (e) => {
-            e.preventDefault();
-            uploadArea.classList.remove('drag-over');
-            const file = e.dataTransfer.files[0];
-            if (file && file.type.startsWith('video/')) {
-                handleFile(file);
-            }
-        });
-        
-        videoInput.addEventListener('change', (e) => {
-            if (e.target.files[0]) {
-                handleFile(e.target.files[0]);
-            }
-        });
+        if (uploadArea) {
+            uploadArea.addEventListener('click', () => {
+                videoInput.click();
+            });
+            
+            uploadArea.addEventListener('dragover', (e) => {
+                e.preventDefault();
+                uploadArea.classList.add('drag-over');
+            });
+            
+            uploadArea.addEventListener('dragleave', () => {
+                uploadArea.classList.remove('drag-over');
+            });
+            
+            uploadArea.addEventListener('drop', (e) => {
+                e.preventDefault();
+                uploadArea.classList.remove('drag-over');
+                const file = e.dataTransfer.files[0];
+                if (file && file.type.startsWith('video/')) {
+                    handleFile(file);
+                }
+            });
+            
+            videoInput.addEventListener('change', (e) => {
+                if (e.target.files[0]) {
+                    handleFile(e.target.files[0]);
+                }
+            });
+        }
         
         function handleFile(file) {
             selectedFile = file;
             const preview = document.getElementById('videoPreview');
-            preview.innerHTML = `
-                <video controls>
-                    <source src="${URL.createObjectURL(file)}" type="${file.type}">
-                </video>
-            `;
+            if (preview) {
+                preview.innerHTML = `
+                    <video controls>
+                        <source src="${URL.createObjectURL(file)}" type="${file.type}">
+                    </video>
+                `;
+            }
             showStatus(`Selected: ${file.name}`, 'success');
         }
         
-        // Analyze function
+        // Analyze function with CORS headers
         async function analyze() {
             if (!selectedFile) {
                 showStatus('Please select a video first', 'error');
@@ -463,6 +488,7 @@
             try {
                 const response = await fetch(`${API_URL}/api/analyze`, {
                     method: 'POST',
+                    mode: 'cors',
                     headers: {
                         'Authorization': `Bearer ${authToken}`
                     },
@@ -485,6 +511,7 @@
                 }
             } catch (error) {
                 document.getElementById('loader').style.display = 'none';
+                console.error('Fetch error:', error);
                 showStatus('Network error. Please try again.', 'error');
             }
         }
@@ -570,14 +597,10 @@
             
             resultsDiv.style.display = 'block';
             
-            // Show analyses remaining if applicable
             if (data.analyses_remaining !== undefined) {
                 showStatus(`You have ${data.analyses_remaining} analyses remaining`, 'success');
             }
         }
-        
-        // Initialize on page load
-        checkAuth();
         
         // Load pros list
         async function loadPros() {
@@ -585,334 +608,21 @@
                 const response = await fetch(`${API_URL}/api/pros`);
                 const pros = await response.json();
                 const select = document.getElementById('proSelect');
-                select.innerHTML = pros.map(pro => 
-                    `<option value="${pro.id}">${pro.name} - ${pro.description}</option>`
-                ).join('');
+                if (select) {
+                    select.innerHTML = pros.map(pro => 
+                        `<option value="${pro.id}">${pro.name} - ${pro.description}</option>`
+                    ).join('');
+                }
             } catch (error) {
                 console.error('Failed to load pros:', error);
             }
         }
-        loadPros();
-    
+        
+        // Initialize on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('Page loaded, initializing...');
+            checkAuth();
+        });
     </script>
-    // API URL - YOUR RENDER URL
-    const API_URL = 'https://golf-swing-api-tm4l.onrender.com';
-    let authToken = null;
-    
-    // Make functions available globally
-    window.register = register;
-    window.login = login;
-    window.logout = logout;
-    window.analyze = analyze;
-    
-    // Check if user is logged in
-    function checkAuth() {
-        const token = localStorage.getItem('authToken');
-        if (token) {
-            authToken = token;
-            document.getElementById('loginSection').style.display = 'none';
-            document.getElementById('appSection').style.display = 'block';
-            loadPros();
-        } else {
-            document.getElementById('loginSection').style.display = 'block';
-            document.getElementById('appSection').style.display = 'none';
-        }
-    }
-    
-    // Register function
-    async function register() {
-        console.log('Register function called');
-        const email = document.getElementById('email').value;
-        const password = document.getElementById('password').value;
-        
-        if (!email || !password) {
-            showStatus('Please enter email and password', 'error');
-            return;
-        }
-        
-        showStatus('Creating account...', 'success');
-        
-        try {
-            const response = await fetch(`${API_URL}/api/register`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ email, password })
-            });
-            
-            const data = await response.json();
-            console.log('Register response:', data);
-            
-            if (data.success) {
-                authToken = data.token;
-                localStorage.setItem('authToken', authToken);
-                localStorage.setItem('userId', data.user_id);
-                showStatus('Account created! Logged in.', 'success');
-                checkAuth();
-            } else {
-                showStatus(data.error || 'Registration failed', 'error');
-            }
-        } catch (error) {
-            console.error('Register error:', error);
-            showStatus('Network error. Please try again.', 'error');
-        }
-    }
-    
-    // Login function
-    async function login() {
-        console.log('Login function called');
-        const email = document.getElementById('email').value;
-        const password = document.getElementById('password').value;
-        
-        if (!email || !password) {
-            showStatus('Please enter email and password', 'error');
-            return;
-        }
-        
-        showStatus('Logging in...', 'success');
-        
-        try {
-            const response = await fetch(`${API_URL}/api/login`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ email, password })
-            });
-            
-            const data = await response.json();
-            console.log('Login response:', data);
-            
-            if (data.success) {
-                authToken = data.token;
-                localStorage.setItem('authToken', authToken);
-                localStorage.setItem('userId', data.user_id);
-                showStatus('Logged in successfully!', 'success');
-                checkAuth();
-            } else {
-                showStatus(data.error || 'Login failed', 'error');
-            }
-        } catch (error) {
-            console.error('Login error:', error);
-            showStatus('Network error. Please try again.', 'error');
-        }
-    }
-    
-    // Logout function
-    function logout() {
-        localStorage.removeItem('authToken');
-        localStorage.removeItem('userId');
-        authToken = null;
-        checkAuth();
-        showStatus('Logged out', 'success');
-    }
-    
-    // Show status message
-    function showStatus(message, type) {
-        const statusDiv = document.getElementById('status');
-        statusDiv.textContent = message;
-        statusDiv.className = `status ${type}`;
-        setTimeout(() => {
-            statusDiv.className = 'status';
-        }, 3000);
-    }
-    
-    // File upload handling
-    const uploadArea = document.getElementById('uploadArea');
-    const videoInput = document.getElementById('videoInput');
-    let selectedFile = null;
-    
-    if (uploadArea) {
-        uploadArea.addEventListener('click', () => {
-            videoInput.click();
-        });
-        
-        uploadArea.addEventListener('dragover', (e) => {
-            e.preventDefault();
-            uploadArea.classList.add('drag-over');
-        });
-        
-        uploadArea.addEventListener('dragleave', () => {
-            uploadArea.classList.remove('drag-over');
-        });
-        
-        uploadArea.addEventListener('drop', (e) => {
-            e.preventDefault();
-            uploadArea.classList.remove('drag-over');
-            const file = e.dataTransfer.files[0];
-            if (file && file.type.startsWith('video/')) {
-                handleFile(file);
-            }
-        });
-        
-        videoInput.addEventListener('change', (e) => {
-            if (e.target.files[0]) {
-                handleFile(e.target.files[0]);
-            }
-        });
-    }
-    
-    function handleFile(file) {
-        selectedFile = file;
-        const preview = document.getElementById('videoPreview');
-        if (preview) {
-            preview.innerHTML = `
-                <video controls>
-                    <source src="${URL.createObjectURL(file)}" type="${file.type}">
-                </video>
-            `;
-        }
-        showStatus(`Selected: ${file.name}`, 'success');
-    }
-    
-    // Analyze function
-    async function analyze() {
-        if (!selectedFile) {
-            showStatus('Please select a video first', 'error');
-            return;
-        }
-        
-        const pro = document.getElementById('proSelect').value;
-        const formData = new FormData();
-        formData.append('video', selectedFile);
-        formData.append('pro', pro);
-        
-        document.getElementById('loader').style.display = 'block';
-        document.getElementById('results').style.display = 'none';
-        
-        try {
-            const response = await fetch(`${API_URL}/api/analyze`, {
-                method: 'POST',
-                headers: {
-                    'Authorization': `Bearer ${authToken}`
-                },
-                body: formData
-            });
-            
-            const data = await response.json();
-            
-            document.getElementById('loader').style.display = 'none';
-            
-            if (response.status === 402) {
-                showStatus('No analyses remaining. Please upgrade to premium.', 'error');
-                return;
-            }
-            
-            if (data.success || data.score) {
-                displayResults(data);
-            } else {
-                showStatus(data.error || 'Analysis failed', 'error');
-            }
-        } catch (error) {
-            document.getElementById('loader').style.display = 'none';
-            showStatus('Network error. Please try again.', 'error');
-        }
-    }
-    
-    // Display results
-    function displayResults(data) {
-        const resultsDiv = document.getElementById('results');
-        
-        let metricsHtml = '';
-        if (data.metrics) {
-            for (const [key, value] of Object.entries(data.metrics)) {
-                metricsHtml += `
-                    <div class="metric">
-                        <div class="metric-name">${key.replace(/_/g, ' ').toUpperCase()}</div>
-                        <div class="metric-values">
-                            <span class="your-value">You: ${value.your_value}°</span>
-                            <span class="pro-value">Pro: ${value.pro_value}°</span>
-                        </div>
-                    </div>
-                `;
-            }
-        }
-        
-        let recommendationsHtml = '';
-        if (data.recommendations && data.recommendations.length > 0) {
-            recommendationsHtml = '<h3>📋 Recommendations</h3>';
-            data.recommendations.forEach(rec => {
-                recommendationsHtml += `
-                    <div class="recommendation">
-                        ${rec.text}
-                    </div>
-                `;
-            });
-        }
-        
-        resultsDiv.innerHTML = `
-            <div class="score">
-                <div class="score-number">${data.score || 'N/A'}/100</div>
-                <div class="grade">Grade: ${data.grade || 'N/A'}</div>
-            </div>
-            
-            <div class="card">
-                <h2>Overall Assessment</h2>
-                <p>${data.overall_assessment || 'Analysis complete'}</p>
-            </div>
-            
-            <div class="card">
-                <h2>Key Metrics</h2>
-                ${metricsHtml || '<p>No metrics available</p>'}
-            </div>
-            
-            <div class="card">
-                ${recommendationsHtml || '<p>No recommendations available</p>'}
-            </div>
-            
-            ${data.drills && data.drills.length > 0 ? `
-            <div class="card">
-                <h2>🏋️ Recommended Drills</h2>
-                ${data.drills.map(drill => `
-                    <div class="metric">
-                        <div class="metric-name">${drill.focus_area || drill.name}</div>
-                        <p>${drill.drill?.description || drill.description || ''}</p>
-                        <small>Duration: ${drill.drill?.duration || '10 min'}</small>
-                    </div>
-                `).join('')}
-            </div>
-            ` : ''}
-            
-            ${data.swing_thoughts && data.swing_thoughts.length > 0 ? `
-            <div class="card">
-                <h2>💭 Swing Thoughts</h2>
-                ${data.swing_thoughts.map(thought => `<p>${thought}</p>`).join('')}
-            </div>
-            ` : ''}
-            
-            ${data.motivational_message ? `
-            <div class="card">
-                <h2>✨ Motivation</h2>
-                <p>${data.motivational_message}</p>
-            </div>
-            ` : ''}
-        `;
-        
-        resultsDiv.style.display = 'block';
-        
-        if (data.analyses_remaining !== undefined) {
-            showStatus(`You have ${data.analyses_remaining} analyses remaining`, 'success');
-        }
-    }
-    
-    // Load pros list
-    async function loadPros() {
-        try {
-            const response = await fetch(`${API_URL}/api/pros`);
-            const pros = await response.json();
-            const select = document.getElementById('proSelect');
-            if (select) {
-                select.innerHTML = pros.map(pro => 
-                    `<option value="${pro.id}">${pro.name} - ${pro.description}</option>`
-                ).join('');
-            }
-        } catch (error) {
-            console.error('Failed to load pros:', error);
-        }
-    }
-    
-    // Initialize on page load
-    document.addEventListener('DOMContentLoaded', function() {
-        console.log('Page loaded, initializing...');
-        checkAuth();
-    });
-</script>
 </body>
 </html>
