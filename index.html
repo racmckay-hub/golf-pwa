@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <meta name="theme-color" content="#4CAF50">
-    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black">
     <meta name="apple-mobile-web-app-title" content="Golf Analyzer">
     <title>Golf Swing Analyzer</title>
@@ -299,6 +299,15 @@
         const API_URL = 'https://golf-swing-api-tm4l.onrender.com';
         let authToken = null;
         
+        // Force CORS mode for ALL fetches
+        const originalFetch = window.fetch;
+        window.fetch = function(url, options = {}) {
+            options.mode = 'cors';
+            options.credentials = 'include';
+            if (!options.headers) options.headers = {};
+            return originalFetch(url, options);
+        };
+        
         // Check if user is logged in
         function checkAuth() {
             const token = localStorage.getItem('authToken');
@@ -445,7 +454,7 @@
             showStatus(`Selected: ${file.name}`, 'success');
         }
         
-        // Analyze function
+        // Analyze function with mode: 'cors'
         async function analyze() {
             if (!selectedFile) {
                 showStatus('Please select a video first', 'error');
@@ -463,6 +472,7 @@
             try {
                 const response = await fetch(`${API_URL}/api/analyze`, {
                     method: 'POST',
+                    mode: 'cors',
                     headers: {
                         'Authorization': `Bearer ${authToken}`
                     },
@@ -485,6 +495,7 @@
                 }
             } catch (error) {
                 document.getElementById('loader').style.display = 'none';
+                console.error('Fetch error:', error);
                 showStatus('Network error. Please try again.', 'error');
             }
         }
