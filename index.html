@@ -263,9 +263,9 @@
             <div class="card">
                 <h2>1. Select Professional</h2>
                 <select id="proSelect">
-                    <option value="rory_mcilroy">Rory McIlroy</option>
-                    <option value="tiger_woods">Tiger Woods</option>
-                    <option value="justin_thomas">Justin Thomas</option>
+                    <option value="rory_mcilroy">Rory McIlroy - 4x Major Champion</option>
+                    <option value="tiger_woods">Tiger Woods - 15x Major Champion</option>
+                    <option value="justin_thomas">Justin Thomas - 2x Major Champion</option>
                 </select>
             </div>
             
@@ -295,18 +295,9 @@
     </div>
     
     <script>
-        // API URL - YOUR RENDER URL
-        const API_URL = 'http://178.104.72.115:5000';
+        // API URL - Your Hetzner Server
+        const API_URL = 'https://golfanalyzer.duckdns.org';
         let authToken = null;
-        
-        // Force CORS mode for ALL fetches
-        const originalFetch = window.fetch;
-        window.fetch = function(url, options = {}) {
-            options.mode = 'cors';
-            options.credentials = 'include';
-            if (!options.headers) options.headers = {};
-            return originalFetch(url, options);
-        };
         
         // Check if user is logged in
         function checkAuth() {
@@ -407,7 +398,7 @@
             statusDiv.className = `status ${type}`;
             setTimeout(() => {
                 statusDiv.className = 'status';
-            }, 3000);
+            }, 5000);
         }
         
         // File upload handling
@@ -454,10 +445,16 @@
             showStatus(`Selected: ${file.name}`, 'success');
         }
         
-        // Analyze function with mode: 'cors'
+        // ***** FIXED ANALYZE FUNCTION *****
         async function analyze() {
             if (!selectedFile) {
                 showStatus('Please select a video first', 'error');
+                return;
+            }
+            
+            // Check if we have a token
+            if (!authToken) {
+                showStatus('Please login first', 'error');
                 return;
             }
             
@@ -466,36 +463,67 @@
             formData.append('video', selectedFile);
             formData.append('pro', pro);
             
+            // Show loader
             document.getElementById('loader').style.display = 'block';
             document.getElementById('results').style.display = 'none';
+            document.getElementById('results').innerHTML = '';
+            document.getElementById('analyzeBtn').disabled = true;
             
             try {
                 const response = await fetch(`${API_URL}/api/analyze`, {
                     method: 'POST',
-                    mode: 'cors',
                     headers: {
                         'Authorization': `Bearer ${authToken}`
                     },
                     body: formData
                 });
                 
-                const data = await response.json();
+                // Always try to parse JSON, even if status is not OK
+                let data = {};
+                const contentType = response.headers.get('content-type');
+                if (contentType && contentType.includes('application/json')) {
+                    data = await response.json();
+                } else {
+                    const text = await response.text();
+                    console.error('Non-JSON response:', text);
+                    throw new Error('Server returned invalid response');
+                }
                 
+                console.log('Analysis response:', data);
                 document.getElementById('loader').style.display = 'none';
+                document.getElementById('analyzeBtn').disabled = false;
                 
+                // Check for specific error cases
                 if (response.status === 402) {
                     showStatus('No analyses remaining. Please upgrade to premium.', 'error');
                     return;
                 }
                 
-                if (data.success || data.score) {
+                if (response.status === 401) {
+                    showStatus('Session expired. Please login again.', 'error');
+                    logout();
+                    return;
+                }
+                
+                if (!response.ok) {
+                    const errorMsg = data.error || data.message || `Error ${response.status}`;
+                    showStatus(errorMsg, 'error');
+                    return;
+                }
+                
+                // Check if we got valid data
+                if (data && (data.score !== undefined || data.success === true)) {
                     displayResults(data);
+                    showStatus('Analysis complete!', 'success');
                 } else {
-                    showStatus(data.error || 'Analysis failed', 'error');
+                    // If we got here but no data, show the error
+                    const errorMsg = data.error || data.message || 'No analysis data received. Try a different video.';
+                    showStatus(errorMsg, 'error');
                 }
             } catch (error) {
                 document.getElementById('loader').style.display = 'none';
-                console.error('Fetch error:', error);
+                document.getElementById('analyzeBtn').disabled = false;
+                console.error('Analyze error:', error);
                 showStatus('Network error. Please try again.', 'error');
             }
         }
@@ -504,31 +532,82 @@
         function displayResults(data) {
             const resultsDiv = document.getElementById('results');
             
+            // Build metrics HTML
             let metricsHtml = '';
             if (data.metrics) {
                 for (const [key, value] of Object.entries(data.metrics)) {
+                    // Skip if value is not an object or doesn't have required fields
+                    if (typeof value !== 'object' || value === null) continue;
+                    const yourVal = value.your_value !== undefined ? value.your_value : 'N/A';
+                    const proVal = value.pro_value !== undefined ? value.pro_value : 'N/A';
                     metricsHtml += `
                         <div class="metric">
                             <div class="metric-name">${key.replace(/_/g, ' ').toUpperCase()}</div>
                             <div class="metric-values">
-                                <span class="your-value">You: ${value.your_value}°</span>
-                                <span class="pro-value">Pro: ${value.pro_value}°</span>
+                                <span class="your-value">You: ${yourVal}°</span>
+                                <span class="pro-value">Pro: ${proVal}°</span>
                             </div>
                         </div>
                     `;
                 }
             }
             
+            // Build recommendations HTML
             let recommendationsHtml = '';
             if (data.recommendations && data.recommendations.length > 0) {
                 recommendationsHtml = '<h3>📋 Recommendations</h3>';
                 data.recommendations.forEach(rec => {
+                    const text = typeof rec === 'string' ? rec : (rec.text || JSON.stringify(rec));
                     recommendationsHtml += `
                         <div class="recommendation">
-                            ${rec.text}
+                            ${text}
                         </div>
                     `;
                 });
+            }
+            
+            // Build drills HTML
+            let drillsHtml = '';
+            if (data.drills && data.drills.length > 0) {
+                drillsHtml = `
+                    <div class="card">
+                        <h2>🏋️ Recommended Drills</h2>
+                        ${data.drills.map(drill => {
+                            const name = drill.focus_area || drill.name || 'Drill';
+                            const desc = drill.drill?.description || drill.description || '';
+                            const duration = drill.drill?.duration || drill.duration || '10 min';
+                            return `
+                                <div class="metric">
+                                    <div class="metric-name">${name}</div>
+                                    <p>${desc}</p>
+                                    <small>Duration: ${duration}</small>
+                                </div>
+                            `;
+                        }).join('')}
+                    </div>
+                `;
+            }
+            
+            // Build swing thoughts HTML
+            let thoughtsHtml = '';
+            if (data.swing_thoughts && data.swing_thoughts.length > 0) {
+                thoughtsHtml = `
+                    <div class="card">
+                        <h2>💭 Swing Thoughts</h2>
+                        ${data.swing_thoughts.map(thought => `<p>${thought}</p>`).join('')}
+                    </div>
+                `;
+            }
+            
+            // Build motivational HTML
+            let motivationalHtml = '';
+            if (data.motivational_message) {
+                motivationalHtml = `
+                    <div class="card">
+                        <h2>✨ Motivation</h2>
+                        <p>${data.motivational_message}</p>
+                    </div>
+                `;
             }
             
             resultsDiv.innerHTML = `
@@ -542,41 +621,22 @@
                     <p>${data.overall_assessment || 'Analysis complete'}</p>
                 </div>
                 
+                ${metricsHtml ? `
                 <div class="card">
                     <h2>Key Metrics</h2>
-                    ${metricsHtml || '<p>No metrics available</p>'}
-                </div>
-                
-                <div class="card">
-                    ${recommendationsHtml || '<p>No recommendations available</p>'}
-                </div>
-                
-                ${data.drills && data.drills.length > 0 ? `
-                <div class="card">
-                    <h2>🏋️ Recommended Drills</h2>
-                    ${data.drills.map(drill => `
-                        <div class="metric">
-                            <div class="metric-name">${drill.focus_area || drill.name}</div>
-                            <p>${drill.drill?.description || drill.description || ''}</p>
-                            <small>Duration: ${drill.drill?.duration || '10 min'}</small>
-                        </div>
-                    `).join('')}
+                    ${metricsHtml}
                 </div>
                 ` : ''}
                 
-                ${data.swing_thoughts && data.swing_thoughts.length > 0 ? `
+                ${recommendationsHtml ? `
                 <div class="card">
-                    <h2>💭 Swing Thoughts</h2>
-                    ${data.swing_thoughts.map(thought => `<p>${thought}</p>`).join('')}
+                    ${recommendationsHtml}
                 </div>
                 ` : ''}
                 
-                ${data.motivational_message ? `
-                <div class="card">
-                    <h2>✨ Motivation</h2>
-                    <p>${data.motivational_message}</p>
-                </div>
-                ` : ''}
+                ${drillsHtml}
+                ${thoughtsHtml}
+                ${motivationalHtml}
             `;
             
             resultsDiv.style.display = 'block';
@@ -594,13 +654,17 @@
         async function loadPros() {
             try {
                 const response = await fetch(`${API_URL}/api/pros`);
+                if (!response.ok) throw new Error('Failed to load pros');
                 const pros = await response.json();
                 const select = document.getElementById('proSelect');
-                select.innerHTML = pros.map(pro => 
-                    `<option value="${pro.id}">${pro.name} - ${pro.description}</option>`
-                ).join('');
+                if (pros && pros.length > 0) {
+                    select.innerHTML = pros.map(pro => 
+                        `<option value="${pro.id}">${pro.name} - ${pro.description || ''}</option>`
+                    ).join('');
+                }
             } catch (error) {
                 console.error('Failed to load pros:', error);
+                // Keep default options if API fails
             }
         }
         loadPros();
