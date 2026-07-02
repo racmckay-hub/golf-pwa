@@ -489,7 +489,7 @@
                     throw new Error('Server returned invalid response');
                 }
                 
-                console.log('Analysis response:', data);
+                console.log('📊 Analysis response:', data);
                 document.getElementById('loader').style.display = 'none';
                 document.getElementById('analyzeBtn').disabled = false;
                 
@@ -511,8 +511,9 @@
                     return;
                 }
                 
-                // Check if we got valid data
-                if (data && (data.score !== undefined || data.success === true)) {
+                // ✅ CRITICAL FIX: Check if we got valid data
+                // The API returns data.score OR data.success === true
+                if (data && (data.score !== undefined || data.success === true || data.overall_score !== undefined)) {
                     displayResults(data);
                     showStatus('Analysis complete!', 'success');
                 } else {
@@ -528,45 +529,69 @@
             }
         }
         
-        // Display results
+        // ***** FIXED DISPLAY RESULTS FUNCTION *****
         function displayResults(data) {
+            console.log('📊 Displaying results:', data);
             const resultsDiv = document.getElementById('results');
             
-            // Build metrics HTML
+            // Clear previous results
+            resultsDiv.innerHTML = '';
+            
+            // --- SCORE SECTION ---
+            const score = data.score || data.overall_score || 'N/A';
+            const grade = data.grade || 'N/A';
+            const scoreHtml = `
+                <div class="score">
+                    <div class="score-number">${score}/100</div>
+                    <div class="grade">Grade: ${grade}</div>
+                </div>
+            `;
+            
+            // --- ASSESSMENT ---
+            const assessmentHtml = `
+                <div class="card">
+                    <h2>Overall Assessment</h2>
+                    <p>${data.overall_assessment || data.message || 'Analysis complete'}</p>
+                </div>
+            `;
+            
+            // --- METRICS ---
             let metricsHtml = '';
-            if (data.metrics) {
+            if (data.metrics && Object.keys(data.metrics).length > 0) {
+                metricsHtml = '<div class="card"><h2>Key Metrics</h2>';
                 for (const [key, value] of Object.entries(data.metrics)) {
-                    // Skip if value is not an object or doesn't have required fields
-                    if (typeof value !== 'object' || value === null) continue;
-                    const yourVal = value.your_value !== undefined ? value.your_value : 'N/A';
-                    const proVal = value.pro_value !== undefined ? value.pro_value : 'N/A';
-                    metricsHtml += `
-                        <div class="metric">
-                            <div class="metric-name">${key.replace(/_/g, ' ').toUpperCase()}</div>
-                            <div class="metric-values">
-                                <span class="your-value">You: ${yourVal}°</span>
-                                <span class="pro-value">Pro: ${proVal}°</span>
+                    if (typeof value === 'object' && value !== null) {
+                        const yourVal = value.your_value !== undefined ? value.your_value : 'N/A';
+                        const proVal = value.pro_value !== undefined ? value.pro_value : 'N/A';
+                        metricsHtml += `
+                            <div class="metric">
+                                <div class="metric-name">${key.replace(/_/g, ' ').toUpperCase()}</div>
+                                <div class="metric-values">
+                                    <span class="your-value">You: ${yourVal}°</span>
+                                    <span class="pro-value">Pro: ${proVal}°</span>
+                                </div>
                             </div>
-                        </div>
-                    `;
+                        `;
+                    }
                 }
+                metricsHtml += '</div>';
             }
             
-            // Build recommendations HTML
+            // --- RECOMMENDATIONS ---
             let recommendationsHtml = '';
             if (data.recommendations && data.recommendations.length > 0) {
-                recommendationsHtml = '<h3>📋 Recommendations</h3>';
-                data.recommendations.forEach(rec => {
-                    const text = typeof rec === 'string' ? rec : (rec.text || JSON.stringify(rec));
-                    recommendationsHtml += `
-                        <div class="recommendation">
-                            ${text}
-                        </div>
-                    `;
-                });
+                recommendationsHtml = `
+                    <div class="card">
+                        <h3>📋 Recommendations</h3>
+                        ${data.recommendations.map(rec => {
+                            const text = typeof rec === 'string' ? rec : (rec.text || JSON.stringify(rec));
+                            return `<div class="recommendation">${text}</div>`;
+                        }).join('')}
+                    </div>
+                `;
             }
             
-            // Build drills HTML
+            // --- DRILLS ---
             let drillsHtml = '';
             if (data.drills && data.drills.length > 0) {
                 drillsHtml = `
@@ -588,7 +613,7 @@
                 `;
             }
             
-            // Build swing thoughts HTML
+            // --- SWING THOUGHTS ---
             let thoughtsHtml = '';
             if (data.swing_thoughts && data.swing_thoughts.length > 0) {
                 thoughtsHtml = `
@@ -599,7 +624,7 @@
                 `;
             }
             
-            // Build motivational HTML
+            // --- MOTIVATION ---
             let motivationalHtml = '';
             if (data.motivational_message) {
                 motivationalHtml = `
@@ -610,40 +635,35 @@
                 `;
             }
             
+            // --- ANALYSES REMAINING ---
+            let remainingHtml = '';
+            if (data.analyses_remaining !== undefined) {
+                remainingHtml = `
+                    <div class="card">
+                        <p>✅ You have <strong>${data.analyses_remaining}</strong> analyses remaining</p>
+                    </div>
+                `;
+            }
+            
+            // --- COMBINE EVERYTHING ---
             resultsDiv.innerHTML = `
-                <div class="score">
-                    <div class="score-number">${data.score || 'N/A'}/100</div>
-                    <div class="grade">Grade: ${data.grade || 'N/A'}</div>
-                </div>
-                
-                <div class="card">
-                    <h2>Overall Assessment</h2>
-                    <p>${data.overall_assessment || 'Analysis complete'}</p>
-                </div>
-                
-                ${metricsHtml ? `
-                <div class="card">
-                    <h2>Key Metrics</h2>
-                    ${metricsHtml}
-                </div>
-                ` : ''}
-                
-                ${recommendationsHtml ? `
-                <div class="card">
-                    ${recommendationsHtml}
-                </div>
-                ` : ''}
-                
+                ${scoreHtml}
+                ${assessmentHtml}
+                ${metricsHtml}
+                ${recommendationsHtml}
                 ${drillsHtml}
                 ${thoughtsHtml}
                 ${motivationalHtml}
+                ${remainingHtml}
             `;
             
             resultsDiv.style.display = 'block';
             
-            // Show analyses remaining if applicable
+            // Show success message
             if (data.analyses_remaining !== undefined) {
-                showStatus(`You have ${data.analyses_remaining} analyses remaining`, 'success');
+                showStatus(`Analysis complete! You have ${data.analyses_remaining} analyses remaining`, 'success');
+            } else {
+                showStatus('Analysis complete!', 'success');
             }
         }
         
