@@ -245,6 +245,12 @@
             letter-spacing: 0.5px;
         }
         
+        .metric-description {
+            font-size: 12px;
+            color: #7a9a7a;
+            margin-bottom: 4px;
+        }
+        
         .metric-values {
             display: flex;
             justify-content: space-between;
@@ -666,7 +672,7 @@
             }
         }
         
-        // ***** DISPLAY RESULTS FUNCTION *****
+        // ***** DISPLAY RESULTS FUNCTION WITH TOOLTIPS *****
         function displayResults(data) {
             console.log('📊 Displaying results:', data);
             const resultsDiv = document.getElementById('results');
@@ -688,11 +694,23 @@
                 </div>
             `;
             
+            // METRIC DESCRIPTIONS
+            const metricDescriptions = {
+                'club_angle_at_top': 'How vertical your club is at the top. 90° is ideal.',
+                'hip_rotation': 'How much your hips have rotated at impact. More = more power.',
+                'lead_arm_angle_at_top': 'Your lead arm position at the top. 90° = parallel to ground.',
+                'spine_angle': 'Your spine tilt at address. 20° is the pro average.',
+                'tempo_ratio': 'Backswing to downswing ratio. 3:1 is the Tour average.',
+                'x_factor': 'Shoulder-hip separation. More = more power.',
+                'swing_path': 'Club path: on plane, laid off, or over the top.'
+            };
+            
             let metricsHtml = '';
             if (data.metrics && Object.keys(data.metrics).length > 0) {
                 metricsHtml = '<div class="card"><h2>📊 Key Metrics</h2>';
                 for (const [key, value] of Object.entries(data.metrics)) {
                     if (typeof value === 'object' && value !== null) {
+                        const description = metricDescriptions[key] || '';
                         if (key === 'swing_path') {
                             const status = value.over_the_top ? '⚠️ Over the top' : '✅ On plane';
                             const pathDeviation = value.path_deviation || 0;
@@ -700,6 +718,7 @@
                             metricsHtml += `
                                 <div class="metric">
                                     <div class="metric-name">${key.replace(/_/g, ' ').toUpperCase()}</div>
+                                    <div class="metric-description">${description}</div>
                                     <div class="metric-values">
                                         <span class="your-value">${status}</span>
                                         <span class="pro-value">Deviation: ${pathDeviation.toFixed(1)}°</span>
@@ -713,6 +732,7 @@
                             metricsHtml += `
                                 <div class="metric">
                                     <div class="metric-name">${key.replace(/_/g, ' ').toUpperCase()}</div>
+                                    <div class="metric-description">${description}</div>
                                     <div class="metric-values">
                                         <span class="your-value">You: ${yourVal}°</span>
                                         <span class="pro-value">Pro: ${proVal}°</span>
