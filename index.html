@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-    <meta name="theme-color" content="#4CAF50">
+    <meta name="theme-color" content="#1a3c2a">
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black">
     <meta name="apple-mobile-web-app-title" content="Golf Analyzer">
@@ -19,13 +19,14 @@
         
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-            background: linear-gradient(135deg, #1a5d1a 0%, #0d3d0d 100%);
+            background: linear-gradient(145deg, #0f2a1a 0%, #1a3c2a 100%);
             min-height: 100vh;
             padding: 20px;
+            color: #1e2b27;
         }
         
         .container {
-            max-width: 600px;
+            max-width: 640px;
             margin: 0 auto;
         }
         
@@ -33,84 +34,172 @@
             text-align: center;
             color: white;
             margin-bottom: 30px;
+            padding-top: 10px;
         }
         
         .header h1 {
             font-size: 32px;
-            margin-bottom: 10px;
+            font-weight: 700;
+            letter-spacing: -0.5px;
+        }
+        
+        .header h1 span {
+            background: linear-gradient(135deg, #d4af37, #f5d76e);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
         }
         
         .header p {
-            font-size: 14px;
-            opacity: 0.9;
+            font-size: 15px;
+            opacity: 0.85;
+            font-weight: 300;
+            margin-top: 4px;
         }
         
         .card {
-            background: white;
-            border-radius: 20px;
-            padding: 20px;
+            background: #ffffff;
+            border-radius: 24px;
+            padding: 24px;
             margin-bottom: 20px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            box-shadow: 0 8px 30px rgba(0,0,0,0.12);
+            transition: transform 0.2s ease;
         }
         
         .card h2 {
-            color: #2c5f2d;
-            margin-bottom: 15px;
-            font-size: 20px;
+            color: #1a3c2a;
+            margin-bottom: 16px;
+            font-size: 18px;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            border-bottom: 2px solid #e8f0e8;
+            padding-bottom: 12px;
+        }
+        
+        .card h2 .step-icon {
+            background: #1a3c2a;
+            color: white;
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            font-weight: 700;
+        }
+        
+        .instruction-box {
+            background: #f4f8f4;
+            border-left: 4px solid #d4af37;
+            padding: 16px 18px;
+            border-radius: 12px;
+            margin: 16px 0 8px 0;
+        }
+        
+        .instruction-box strong {
+            color: #1a3c2a;
+        }
+        
+        .instruction-box ul {
+            margin: 8px 0 0 18px;
+            font-size: 14px;
+            line-height: 1.7;
+        }
+        
+        .instruction-box ul li::marker {
+            color: #d4af37;
         }
         
         .upload-area {
-            border: 2px dashed #ccc;
-            border-radius: 15px;
-            padding: 30px;
+            border: 2px dashed #c0d6c0;
+            border-radius: 16px;
+            padding: 30px 20px;
             text-align: center;
             cursor: pointer;
             transition: all 0.3s;
+            background: #fafcfa;
         }
         
         .upload-area:hover {
-            border-color: #4CAF50;
-            background: #f9f9f9;
+            border-color: #1a3c2a;
+            background: #f0f7f0;
         }
         
         .upload-area.drag-over {
-            border-color: #4CAF50;
-            background: #e8f5e9;
+            border-color: #d4af37;
+            background: #f5f0e0;
+        }
+        
+        .upload-area .icon-large {
+            font-size: 42px;
+            display: block;
+            margin-bottom: 6px;
         }
         
         .btn {
-            background: #4CAF50;
+            background: #1a3c2a;
             color: white;
             border: none;
-            padding: 12px 24px;
-            border-radius: 10px;
+            padding: 14px 24px;
+            border-radius: 12px;
             font-size: 16px;
+            font-weight: 600;
             cursor: pointer;
             width: 100%;
-            margin-top: 10px;
+            margin-top: 12px;
             transition: all 0.3s;
+            letter-spacing: 0.3px;
+        }
+        
+        .btn:hover:not(:disabled) {
+            background: #0f2a1a;
+            transform: scale(1.01);
         }
         
         .btn:disabled {
-            background: #ccc;
+            background: #a0b8a0;
             cursor: not-allowed;
+            transform: none;
         }
         
         .btn-primary {
-            background: #2c5f2d;
+            background: #1a3c2a;
         }
         
-        .btn-primary:hover:not(:disabled) {
-            background: #1d401d;
+        .btn-secondary {
+            background: #e8f0e8;
+            color: #1a3c2a;
+        }
+        
+        .btn-secondary:hover {
+            background: #d0e0d0;
+        }
+        
+        .btn-logout {
+            background: #8c4a4a;
+        }
+        
+        .btn-logout:hover {
+            background: #6b3535;
         }
         
         select, input {
             width: 100%;
-            padding: 12px;
-            border: 1px solid #ddd;
-            border-radius: 10px;
+            padding: 14px 16px;
+            border: 1px solid #d0ddd0;
+            border-radius: 12px;
             font-size: 16px;
-            margin-bottom: 15px;
+            margin-bottom: 6px;
+            background: #fafcfa;
+            transition: border 0.3s;
+        }
+        
+        select:focus, input:focus {
+            outline: none;
+            border-color: #1a3c2a;
+            box-shadow: 0 0 0 3px rgba(26, 60, 42, 0.15);
         }
         
         .result {
@@ -120,71 +209,81 @@
         
         .score {
             text-align: center;
-            padding: 20px;
-            background: linear-gradient(135deg, #2c5f2d, #1d401d);
+            padding: 24px;
+            background: linear-gradient(135deg, #1a3c2a, #0f2a1a);
             color: white;
-            border-radius: 15px;
-            margin-bottom: 20px;
+            border-radius: 20px;
+            margin-bottom: 24px;
         }
         
         .score-number {
-            font-size: 48px;
-            font-weight: bold;
+            font-size: 56px;
+            font-weight: 800;
+            letter-spacing: -2px;
         }
         
         .grade {
-            font-size: 24px;
-            margin-top: 5px;
+            font-size: 22px;
+            margin-top: 4px;
+            opacity: 0.9;
         }
         
         .metric {
-            background: #f5f5f5;
-            border-radius: 10px;
-            padding: 15px;
+            background: #f4f8f4;
+            border-radius: 12px;
+            padding: 14px 18px;
             margin-bottom: 10px;
+            border: 1px solid #e8f0e8;
         }
         
         .metric-name {
-            font-weight: bold;
-            margin-bottom: 5px;
+            font-weight: 600;
+            color: #1a3c2a;
+            margin-bottom: 4px;
+            font-size: 14px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
         }
         
         .metric-values {
             display: flex;
             justify-content: space-between;
-            font-size: 14px;
+            font-size: 15px;
         }
         
         .your-value {
-            color: #2196F3;
+            color: #1a6e4a;
+            font-weight: 500;
         }
         
         .pro-value {
-            color: #f44336;
+            color: #b35a3a;
+            font-weight: 500;
         }
         
         .recommendation {
-            background: #fff3e0;
-            border-left: 4px solid #ff9800;
-            padding: 15px;
+            background: #fdf8ee;
+            border-left: 4px solid #d4af37;
+            padding: 14px 18px;
             margin-bottom: 10px;
             border-radius: 8px;
+            font-size: 15px;
         }
         
         .loader {
             display: none;
             text-align: center;
-            padding: 20px;
+            padding: 30px;
         }
         
         .spinner {
-            border: 3px solid #f3f3f3;
-            border-top: 3px solid #4CAF50;
+            border: 4px solid #e8f0e8;
+            border-top: 4px solid #1a3c2a;
             border-radius: 50%;
-            width: 40px;
-            height: 40px;
-            animation: spin 1s linear infinite;
-            margin: 0 auto 10px;
+            width: 48px;
+            height: 48px;
+            animation: spin 0.9s linear infinite;
+            margin: 0 auto 16px;
         }
         
         @keyframes spin {
@@ -193,51 +292,72 @@
         }
         
         .video-preview {
-            margin-top: 15px;
-            border-radius: 10px;
+            margin-top: 16px;
+            border-radius: 16px;
             overflow: hidden;
+            background: #000;
         }
         
         video {
             width: 100%;
-            border-radius: 10px;
+            border-radius: 16px;
+            display: block;
         }
         
         .status {
-            padding: 10px;
-            border-radius: 8px;
-            margin-top: 10px;
+            padding: 12px 16px;
+            border-radius: 12px;
+            margin-top: 12px;
             display: none;
+            font-weight: 500;
         }
         
         .status.error {
-            background: #ffebee;
-            color: #c62828;
+            background: #fce8e8;
+            color: #8c2e2e;
             display: block;
+            border: 1px solid #f0d0d0;
         }
         
         .status.success {
-            background: #e8f5e9;
-            color: #2e7d32;
+            background: #e4f4e4;
+            color: #1a5a2a;
             display: block;
+            border: 1px solid #c0e0c0;
         }
         
         .auth-section {
             display: none;
         }
         
-        .logout-btn {
-            background: #f44336;
-            margin-top: 10px;
+        .auth-section .btn {
+            margin-top: 8px;
+        }
+        
+        .footer-note {
+            text-align: center;
+            color: #a0b8a0;
+            font-size: 13px;
+            margin-top: 30px;
+            border-top: 1px solid #2a4a3a;
+            padding-top: 20px;
         }
         
         @media (max-width: 600px) {
             body {
-                padding: 10px;
+                padding: 12px;
             }
             
             .header h1 {
-                font-size: 24px;
+                font-size: 26px;
+            }
+            
+            .card {
+                padding: 18px;
+            }
+            
+            .score-number {
+                font-size: 42px;
             }
         }
     </style>
@@ -245,53 +365,77 @@
 <body>
     <div class="container">
         <div class="header">
-            <h1>🏌️ Golf Swing Analyzer</h1>
-            <p>Compare your swing to the pros</p>
+            <h1>🏌️ <span>Golf Swing Analyzer</span></h1>
+            <p>Compare your swing to the pros • Powered by AI</p>
         </div>
         
         <!-- Auth Section -->
         <div class="card auth-section" id="loginSection">
-            <h2>Login / Sign Up</h2>
-            <input type="email" id="email" placeholder="Email" autocomplete="email">
+            <h2>🔐 Access Your Account</h2>
+            <input type="email" id="email" placeholder="Email address" autocomplete="email">
             <input type="password" id="password" placeholder="Password" autocomplete="current-password">
             <button class="btn btn-primary" onclick="login()">Login</button>
-            <button class="btn" onclick="register()">Sign Up (Free)</button>
+            <button class="btn btn-secondary" onclick="register()">Create Free Account</button>
         </div>
         
-        <!-- Main App Section (shown after login) -->
+        <!-- Main App -->
         <div id="appSection" style="display: none;">
+            
+            <!-- Step 1: Select Pro -->
             <div class="card">
-                <h2>1. Select Professional</h2>
+                <h2><span class="step-icon">1</span> Select a Professional</h2>
+                <p style="font-size:14px; color:#4a6a4a; margin-bottom:12px;">Choose a pro to compare your swing against.</p>
                 <select id="proSelect">
-                    <option value="rory_mcilroy">Rory McIlroy - 4x Major Champion</option>
-                    <option value="tiger_woods">Tiger Woods - 15x Major Champion</option>
-                    <option value="justin_thomas">Justin Thomas - 2x Major Champion</option>
+                    <option value="rory_mcilroy">🏆 Rory McIlroy – 4x Major Champion</option>
+                    <option value="tiger_woods">🏆 Tiger Woods – 15x Major Champion</option>
+                    <option value="justin_thomas">🏆 Justin Thomas – 2x Major Champion</option>
+                    <option value="collin_morikawa">🏆 Collin Morikawa – 2x Major Champion</option>
+                    <option value="jon_rahm">🏆 Jon Rahm – 2023 Masters Champion</option>
                 </select>
             </div>
             
+            <!-- Step 2: Upload Video -->
             <div class="card">
-                <h2>2. Upload Your Swing</h2>
+                <h2><span class="step-icon">2</span> Upload Your Swing</h2>
+                
+                <div class="instruction-box">
+                    <strong>📹 Recording Instructions</strong>
+                    <ul>
+                        <li>Film from <strong>“Down the Line”</strong> (behind the golfer, facing the target).</li>
+                        <li>Ensure your <strong>full body</strong> and the <strong>club</strong> are visible.</li>
+                        <li>Use good lighting and a steady camera (tripod recommended).</li>
+                        <li>Record at <strong>60fps</strong> if possible for the best analysis.</li>
+                    </ul>
+                </div>
+                
                 <div class="upload-area" id="uploadArea">
-                    📹 Tap to select or drag video here
+                    <span class="icon-large">🎥</span>
+                    <div style="font-weight:500; margin-bottom:4px;">Tap to select or drag your video here</div>
+                    <div style="font-size:13px; color:#7a9a7a;">MP4, MOV, or AVI • Max 100MB</div>
                     <input type="file" id="videoInput" accept="video/*" style="display: none;">
                 </div>
                 <div id="videoPreview" class="video-preview"></div>
-                <button class="btn btn-primary" id="analyzeBtn" onclick="analyze()">🔍 Analyze Swing</button>
+                <button class="btn btn-primary" id="analyzeBtn" onclick="analyze()">🚀 Analyze Swing</button>
             </div>
             
+            <!-- Loader -->
             <div class="loader" id="loader">
                 <div class="spinner"></div>
-                <p>Analyzing your swing with AI...</p>
+                <p style="color:#4a6a4a; font-weight:500;">Analyzing your swing with AI...</p>
+                <p style="font-size:14px; color:#7a9a7a;">This takes about 30 seconds</p>
             </div>
             
+            <!-- Results -->
             <div id="results" class="result"></div>
             
-            <div class="card">
-                <button class="btn logout-btn" onclick="logout()">Logout</button>
+            <!-- Logout -->
+            <div class="card" style="margin-top: 10px;">
+                <button class="btn btn-logout" onclick="logout()">Sign Out</button>
             </div>
         </div>
         
         <div id="status" class="status"></div>
+        <div class="footer-note">⛳ Improve your game with data-driven insights</div>
     </div>
     
     <script>
@@ -445,14 +589,13 @@
             showStatus(`Selected: ${file.name}`, 'success');
         }
         
-        // ***** FIXED ANALYZE FUNCTION *****
+        // ***** ANALYZE FUNCTION *****
         async function analyze() {
             if (!selectedFile) {
                 showStatus('Please select a video first', 'error');
                 return;
             }
             
-            // Check if we have a token
             if (!authToken) {
                 showStatus('Please login first', 'error');
                 return;
@@ -463,7 +606,6 @@
             formData.append('video', selectedFile);
             formData.append('pro', pro);
             
-            // Show loader
             document.getElementById('loader').style.display = 'block';
             document.getElementById('results').style.display = 'none';
             document.getElementById('results').innerHTML = '';
@@ -478,7 +620,6 @@
                     body: formData
                 });
                 
-                // Always try to parse JSON, even if status is not OK
                 let data = {};
                 const contentType = response.headers.get('content-type');
                 if (contentType && contentType.includes('application/json')) {
@@ -493,7 +634,6 @@
                 document.getElementById('loader').style.display = 'none';
                 document.getElementById('analyzeBtn').disabled = false;
                 
-                // Check for specific error cases
                 if (response.status === 402) {
                     showStatus('No analyses remaining. Please upgrade to premium.', 'error');
                     return;
@@ -511,13 +651,10 @@
                     return;
                 }
                 
-                // ✅ CRITICAL FIX: Check if we got valid data
-                // The API returns data.score OR data.success === true
                 if (data && (data.score !== undefined || data.success === true || data.overall_score !== undefined)) {
                     displayResults(data);
                     showStatus('Analysis complete!', 'success');
                 } else {
-                    // If we got here but no data, show the error
                     const errorMsg = data.error || data.message || 'No analysis data received. Try a different video.';
                     showStatus(errorMsg, 'error');
                 }
@@ -529,15 +666,12 @@
             }
         }
         
-        // ***** FIXED DISPLAY RESULTS FUNCTION *****
+        // ***** DISPLAY RESULTS FUNCTION *****
         function displayResults(data) {
             console.log('📊 Displaying results:', data);
             const resultsDiv = document.getElementById('results');
-            
-            // Clear previous results
             resultsDiv.innerHTML = '';
             
-            // --- SCORE SECTION ---
             const score = data.score || data.overall_score || 'N/A';
             const grade = data.grade || 'N/A';
             const scoreHtml = `
@@ -547,21 +681,18 @@
                 </div>
             `;
             
-            // --- ASSESSMENT ---
             const assessmentHtml = `
                 <div class="card">
-                    <h2>Overall Assessment</h2>
+                    <h2>📝 Overall Assessment</h2>
                     <p>${data.overall_assessment || data.message || 'Analysis complete'}</p>
                 </div>
             `;
             
-            // --- METRICS ---
             let metricsHtml = '';
             if (data.metrics && Object.keys(data.metrics).length > 0) {
-                metricsHtml = '<div class="card"><h2>Key Metrics</h2>';
+                metricsHtml = '<div class="card"><h2>📊 Key Metrics</h2>';
                 for (const [key, value] of Object.entries(data.metrics)) {
                     if (typeof value === 'object' && value !== null) {
-                        // Handle special display for swing_path
                         if (key === 'swing_path') {
                             const status = value.over_the_top ? '⚠️ Over the top' : '✅ On plane';
                             const pathDeviation = value.path_deviation || 0;
@@ -594,12 +725,11 @@
                 metricsHtml += '</div>';
             }
             
-            // --- RECOMMENDATIONS ---
             let recommendationsHtml = '';
             if (data.recommendations && data.recommendations.length > 0) {
                 recommendationsHtml = `
                     <div class="card">
-                        <h3>📋 Recommendations</h3>
+                        <h2>📋 Recommendations</h2>
                         ${data.recommendations.map(rec => {
                             const text = typeof rec === 'string' ? rec : (rec.text || JSON.stringify(rec));
                             return `<div class="recommendation">${text}</div>`;
@@ -608,7 +738,6 @@
                 `;
             }
             
-            // --- DRILLS ---
             let drillsHtml = '';
             if (data.drills && data.drills.length > 0) {
                 drillsHtml = `
@@ -630,7 +759,6 @@
                 `;
             }
             
-            // --- SWING THOUGHTS ---
             let thoughtsHtml = '';
             if (data.swing_thoughts && data.swing_thoughts.length > 0) {
                 thoughtsHtml = `
@@ -641,7 +769,6 @@
                 `;
             }
             
-            // --- MOTIVATION ---
             let motivationalHtml = '';
             if (data.motivational_message) {
                 motivationalHtml = `
@@ -652,7 +779,6 @@
                 `;
             }
             
-            // --- ANALYSES REMAINING ---
             let remainingHtml = '';
             if (data.analyses_remaining !== undefined) {
                 remainingHtml = `
@@ -662,7 +788,6 @@
                 `;
             }
             
-            // --- COMBINE EVERYTHING ---
             resultsDiv.innerHTML = `
                 ${scoreHtml}
                 ${assessmentHtml}
@@ -676,7 +801,6 @@
             
             resultsDiv.style.display = 'block';
             
-            // Show success message
             if (data.analyses_remaining !== undefined) {
                 showStatus(`Analysis complete! You have ${data.analyses_remaining} analyses remaining`, 'success');
             } else {
@@ -684,10 +808,9 @@
             }
         }
         
-        // Initialize on page load
+        // Initialize
         checkAuth();
         
-        // Load pros list
         async function loadPros() {
             try {
                 const response = await fetch(`${API_URL}/api/pros`);
@@ -696,12 +819,11 @@
                 const select = document.getElementById('proSelect');
                 if (pros && pros.length > 0) {
                     select.innerHTML = pros.map(pro => 
-                        `<option value="${pro.id}">${pro.name} - ${pro.description || ''}</option>`
+                        `<option value="${pro.id}">🏆 ${pro.name} – ${pro.description || ''}</option>`
                     ).join('');
                 }
             } catch (error) {
                 console.error('Failed to load pros:', error);
-                // Keep default options if API fails
             }
         }
         loadPros();
