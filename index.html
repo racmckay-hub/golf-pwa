@@ -561,17 +561,34 @@
                 metricsHtml = '<div class="card"><h2>Key Metrics</h2>';
                 for (const [key, value] of Object.entries(data.metrics)) {
                     if (typeof value === 'object' && value !== null) {
-                        const yourVal = value.your_value !== undefined ? value.your_value : 'N/A';
-                        const proVal = value.pro_value !== undefined ? value.pro_value : 'N/A';
-                        metricsHtml += `
-                            <div class="metric">
-                                <div class="metric-name">${key.replace(/_/g, ' ').toUpperCase()}</div>
-                                <div class="metric-values">
-                                    <span class="your-value">You: ${yourVal}°</span>
-                                    <span class="pro-value">Pro: ${proVal}°</span>
+                        // Handle special display for swing_path
+                        if (key === 'swing_path') {
+                            const status = value.over_the_top ? '⚠️ Over the top' : '✅ On plane';
+                            const pathDeviation = value.path_deviation || 0;
+                            const severity = value.severity || 'none';
+                            metricsHtml += `
+                                <div class="metric">
+                                    <div class="metric-name">${key.replace(/_/g, ' ').toUpperCase()}</div>
+                                    <div class="metric-values">
+                                        <span class="your-value">${status}</span>
+                                        <span class="pro-value">Deviation: ${pathDeviation.toFixed(1)}°</span>
+                                    </div>
+                                    ${severity === 'high' ? '<div style="color:#c62828;font-size:12px;margin-top:5px;">⚠️ Your swing is significantly over the top</div>' : ''}
                                 </div>
-                            </div>
-                        `;
+                            `;
+                        } else {
+                            const yourVal = value.your_value !== undefined ? value.your_value : 'N/A';
+                            const proVal = value.pro_value !== undefined ? value.pro_value : 'N/A';
+                            metricsHtml += `
+                                <div class="metric">
+                                    <div class="metric-name">${key.replace(/_/g, ' ').toUpperCase()}</div>
+                                    <div class="metric-values">
+                                        <span class="your-value">You: ${yourVal}°</span>
+                                        <span class="pro-value">Pro: ${proVal}°</span>
+                                    </div>
+                                </div>
+                            `;
+                        }
                     }
                 }
                 metricsHtml += '</div>';
