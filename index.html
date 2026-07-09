@@ -356,6 +356,101 @@
             border-top: 1px solid #2a4a3a;
             padding-top: 20px;
         }
+
+        /* Pricing card styles */
+        .pricing-card {
+            flex: 1;
+            min-width: 200px;
+            max-width: 300px;
+            border-radius: 16px;
+            padding: 24px;
+            text-align: center;
+        }
+        
+        .pricing-card.monthly {
+            background: #f4f8f4;
+            border: 2px solid #1a3c2a;
+        }
+        
+        .pricing-card.lifetime {
+            background: #fdf8ee;
+            border: 2px solid #d4af37;
+            position: relative;
+        }
+        
+        .best-value-badge {
+            position: absolute;
+            top: -10px;
+            right: 16px;
+            background: #d4af37;
+            color: white;
+            padding: 2px 14px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+        
+        .pricing-card h3 {
+            font-size: 20px;
+            margin-bottom: 8px;
+            color: #1a3c2a;
+        }
+        
+        .pricing-card .price {
+            font-size: 32px;
+            font-weight: bold;
+            margin: 10px 0;
+        }
+        
+        .pricing-card .price.monthly-price {
+            color: #1a3c2a;
+        }
+        
+        .pricing-card .price.lifetime-price {
+            color: #d4af37;
+        }
+        
+        .pricing-card .period {
+            color: #4a6a4a;
+            margin-bottom: 16px;
+        }
+        
+        .pricing-card ul {
+            text-align: left;
+            list-style: none;
+            padding: 0;
+            margin: 0 0 16px 0;
+            font-size: 14px;
+        }
+        
+        .pricing-card ul li {
+            padding: 4px 0;
+        }
+        
+        .btn-subscribe {
+            width: 100%;
+            padding: 12px;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+        
+        .btn-subscribe.monthly-btn {
+            background: #1a3c2a;
+            color: white;
+        }
+        
+        .btn-subscribe.lifetime-btn {
+            background: #d4af37;
+            color: white;
+        }
+        
+        .btn-subscribe:hover {
+            opacity: 0.9;
+            transform: scale(1.02);
+        }
         
         @media (max-width: 600px) {
             body {
@@ -372,6 +467,11 @@
             
             .score-number {
                 font-size: 42px;
+            }
+            
+            .pricing-card {
+                min-width: 100%;
+                max-width: 100%;
             }
         }
     </style>
@@ -441,6 +541,50 @@
             
             <!-- Results -->
             <div id="results" class="result"></div>
+
+            <!-- ============================================ -->
+            <!-- PRICING SECTION -->
+            <!-- ============================================ -->
+            <div id="pricing-section" style="display: none;">
+                <div class="card">
+                    <h2>🏌️ Upgrade to Premium</h2>
+                    <p style="text-align: center; color: #4a6a4a; margin-bottom: 20px;">Unlock unlimited swing analyses and pro comparisons</p>
+                    
+                    <div style="display: flex; flex-wrap: wrap; gap: 20px; justify-content: center;">
+                        
+                        <!-- Monthly Plan -->
+                        <div class="pricing-card monthly">
+                            <h3>Monthly Premium</h3>
+                            <p class="price monthly-price">$19.99</p>
+                            <p class="period">per month</p>
+                            <ul>
+                                <li>✅ Unlimited swing analyses</li>
+                                <li>✅ Compare to 10+ pros</li>
+                                <li>✅ Detailed metrics & feedback</li>
+                                <li>✅ Personalized drills</li>
+                                <li>✅ Cancel anytime</li>
+                            </ul>
+                            <button class="btn-subscribe monthly-btn" onclick="subscribeMonthly()">Subscribe Monthly</button>
+                        </div>
+                        
+                        <!-- Lifetime Plan -->
+                        <div class="pricing-card lifetime">
+                            <span class="best-value-badge">Best Value</span>
+                            <h3>Lifetime Premium</h3>
+                            <p class="price lifetime-price">$99.99</p>
+                            <p class="period">one-time payment</p>
+                            <ul>
+                                <li>✅ Unlimited analyses forever</li>
+                                <li>✅ Compare to 10+ pros</li>
+                                <li>✅ Detailed metrics & feedback</li>
+                                <li>✅ Personalized drills</li>
+                                <li>✅ No recurring charges</li>
+                            </ul>
+                            <button class="btn-subscribe lifetime-btn" onclick="subscribeLifetime()">Buy Lifetime</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
             
             <!-- Logout -->
             <div class="card" style="margin-top: 10px;">
@@ -475,6 +619,7 @@
                 authToken = token;
                 document.getElementById('loginSection').style.display = 'none';
                 document.getElementById('appSection').style.display = 'block';
+                checkShowPricing(); // Show pricing if user is free
             } else {
                 document.getElementById('loginSection').style.display = 'block';
                 document.getElementById('appSection').style.display = 'none';
@@ -872,6 +1017,107 @@
             }
         }
         
+        // ============================================
+        // STRIPE PAYMENT FUNCTIONS
+        // ============================================
+
+        async function subscribeMonthly() {
+            const token = localStorage.getItem('authToken');
+            if (!token) {
+                showStatus('Please log in first', 'error');
+                return;
+            }
+            
+            // 🔑 REPLACE WITH YOUR ACTUAL STRIPE PRICE ID
+            const priceId = 'price_1TrNo9AStvjfOdJRaP2IwSzb';
+            
+            try {
+                const response = await fetch(`${API_URL}/api/create-checkout-session`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify({
+                        price_id: priceId,
+                        mode: 'subscription'
+                    })
+                });
+                
+                const data = await response.json();
+                
+                if (data.url) {
+                    window.location.href = data.url;
+                } else {
+                    showStatus('Error creating checkout: ' + (data.error || 'Unknown error'), 'error');
+                }
+            } catch (error) {
+                console.error('Payment error:', error);
+                showStatus('Error processing payment. Please try again.', 'error');
+            }
+        }
+
+        async function subscribeLifetime() {
+            const token = localStorage.getItem('authToken');
+            if (!token) {
+                showStatus('Please log in first', 'error');
+                return;
+            }
+            
+            // 🔑 REPLACE WITH YOUR ACTUAL STRIPE PRICE ID
+            const priceId = 'price_1TrNvyAStvjfOdJRdWQgYocU';
+            
+            try {
+                const response = await fetch(`${API_URL}/api/create-checkout-session`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify({
+                        price_id: priceId,
+                        mode: 'payment'
+                    })
+                });
+                
+                const data = await response.json();
+                
+                if (data.url) {
+                    window.location.href = data.url;
+                } else {
+                    showStatus('Error creating checkout: ' + (data.error || 'Unknown error'), 'error');
+                }
+            } catch (error) {
+                console.error('Payment error:', error);
+                showStatus('Error processing payment. Please try again.', 'error');
+            }
+        }
+
+        // Show pricing section only for free users
+        async function checkShowPricing() {
+            const token = localStorage.getItem('authToken');
+            if (!token) return;
+            
+            try {
+                const response = await fetch(`${API_URL}/api/user/subscription`, {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+                const data = await response.json();
+                
+                // Show pricing only if user is NOT premium
+                if (!data.is_premium) {
+                    const pricingSection = document.getElementById('pricing-section');
+                    if (pricingSection) {
+                        pricingSection.style.display = 'block';
+                    }
+                }
+            } catch (error) {
+                console.error('Error checking subscription:', error);
+            }
+        }
+        
         // Initialize
         checkAuth();
         
@@ -891,15 +1137,6 @@
             }
         }
         loadPros();
-    </script>
-
-    <script>
-    // Simple page view tracking (no Google account needed)
-    fetch('https://golfanalyzer.duckdns.org/api/track', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ page: window.location.pathname })
-    });
     </script>
 </body>
 </html>
