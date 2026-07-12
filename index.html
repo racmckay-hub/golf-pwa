@@ -771,26 +771,35 @@
         // ============================================
 
         function showSection(section) {
-            // Hide all sections
-            document.querySelectorAll('.section-content').forEach(el => {
-                el.style.display = 'none';
-            });
-            
-            // Show selected section
-            const targetSection = document.getElementById(`section-${section}`);
-            if (targetSection) {
-                targetSection.style.display = 'block';
+            // If section is 'home', show home and hide others
+            if (section === 'home') {
+                document.getElementById('section-home').style.display = 'block';
+                document.getElementById('section-instructions').style.display = 'none';
+                document.getElementById('section-contact').style.display = 'none';
+        
+                // Update active button
+                document.querySelectorAll('.nav-btn').forEach(btn => btn.classList.remove('active'));
+                document.getElementById('nav-home').classList.add('active');
+                return;
             }
-            
-            // Update active button
-            document.querySelectorAll('.nav-btn').forEach(btn => {
-                btn.classList.remove('active');
-            });
-            const activeBtn = document.getElementById(`nav-${section}`);
-            if (activeBtn) {
-                activeBtn.classList.add('active');
-            }
+    
+            // For instructions or contact, hide home and show the selected one
+            document.getElementById('section-home').style.display = 'none';
+            document.getElementById('section-instructions').style.display = 'none';
+            document.getElementById('section-contact').style.display = 'none';
+    
+        const targetSection = document.getElementById(`section-${section}`);
+        if (targetSection) {
+            targetSection.style.display = 'block';
         }
+    
+        // Update active button
+        document.querySelectorAll('.nav-btn').forEach(btn => btn.classList.remove('active'));
+        const activeBtn = document.getElementById(`nav-${section}`);
+        if (activeBtn) {
+            activeBtn.classList.add('active');
+        }
+    }
         
         // Check if user is logged in
         function checkAuth() {
