@@ -33,7 +33,7 @@
         .header {
             text-align: center;
             color: white;
-            margin-bottom: 30px;
+            margin-bottom: 20px;
             padding-top: 10px;
         }
         
@@ -54,6 +54,64 @@
             opacity: 0.85;
             font-weight: 300;
             margin-top: 4px;
+        }
+
+        /* Navigation Menu Styles */
+        .nav-menu {
+            display: flex;
+            justify-content: center;
+            gap: 12px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .nav-btn {
+            background: rgba(255,255,255,0.1);
+            color: white;
+            border: 2px solid rgba(255,255,255,0.2);
+            padding: 10px 24px;
+            border-radius: 30px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            backdrop-filter: blur(4px);
+        }
+
+        .nav-btn:hover {
+            background: rgba(255,255,255,0.2);
+            border-color: rgba(255,255,255,0.4);
+            transform: translateY(-2px);
+        }
+
+        .nav-btn.active {
+            background: #d4af37;
+            border-color: #d4af37;
+            color: #1a3c2a;
+        }
+
+        .section-content {
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .section-content h3 {
+            color: #1a3c2a;
+            margin-top: 16px;
+            font-size: 16px;
+        }
+
+        .section-content ul {
+            color: #2a4a3a;
+        }
+
+        .section-content a {
+            color: #1a3c2a;
+            text-decoration: underline;
         }
         
         .card {
@@ -482,6 +540,13 @@
             <h1>🏌️ <span>Golf Swing Analyzer</span></h1>
             <p>Compare your swing to the pros • Powered by AI</p>
         </div>
+
+        <!-- Navigation Menu -->
+        <div class="nav-menu">
+            <button onclick="showSection('home')" class="nav-btn active" id="nav-home">🏠 Home</button>
+            <button onclick="showSection('instructions')" class="nav-btn" id="nav-instructions">📖 Instructions</button>
+            <button onclick="showSection('contact')" class="nav-btn" id="nav-contact">📧 Contact</button>
+        </div>
         
         <!-- Auth Section -->
         <div class="card auth-section" id="loginSection">
@@ -495,101 +560,167 @@
         <!-- Main App -->
         <div id="appSection" style="display: none;">
             
-            <!-- Step 1: Select Pro -->
-            <div class="card">
-                <h2><span class="step-icon">1</span> Select a Professional</h2>
-                <p style="font-size:14px; color:#4a6a4a; margin-bottom:12px;">Choose a pro to compare your swing against.</p>
-                <select id="proSelect">
-                    <option value="rory_mcilroy">🏆 Rory McIlroy – 4x Major Champion</option>
-                    <option value="tiger_woods">🏆 Tiger Woods – 15x Major Champion</option>
-                    <option value="justin_thomas">🏆 Justin Thomas – 2x Major Champion</option>
-                    <option value="collin_morikawa">🏆 Collin Morikawa – 2x Major Champion</option>
-                    <option value="jon_rahm">🏆 Jon Rahm – 2023 Masters Champion</option>
-                </select>
-            </div>
-            
-            <!-- Step 2: Upload Video -->
-            <div class="card">
-                <h2><span class="step-icon">2</span> Upload Your Swing</h2>
-                
-                <div class="instruction-box">
-                    <strong>📹 Recording Instructions</strong>
-                    <ul>
-                        <li>Film from <strong>“Down the Line”</strong> (behind the golfer, facing the target).</li>
-                        <li>Ensure your <strong>full body</strong> and the <strong>club</strong> are visible.</li>
-                        <li>Use good lighting and a steady camera (tripod recommended).</li>
-                        <li>Record at <strong>60fps</strong> if possible for the best analysis.</li>
-                    </ul>
-                </div>
-                
-                <div class="upload-area" id="uploadArea">
-                    <span class="icon-large">🎥</span>
-                    <div style="font-weight:500; margin-bottom:4px;">Tap to select or drag your video here</div>
-                    <div style="font-size:13px; color:#7a9a7a;">MP4, MOV, or AVI • Max 100MB</div>
-                    <input type="file" id="videoInput" accept="video/*" style="display: none;">
-                </div>
-                <div id="videoPreview" class="video-preview"></div>
-                <button class="btn btn-primary" id="analyzeBtn" onclick="analyze()">🚀 Analyze Swing</button>
-            </div>
-            
-            <!-- Loader -->
-            <div class="loader" id="loader">
-                <div class="spinner"></div>
-                <p style="color:#4a6a4a; font-weight:500;">Analyzing your swing with AI...</p>
-                <p style="font-size:14px; color:#7a9a7a;">This takes about 30 seconds</p>
-            </div>
-            
-            <!-- Results -->
-            <div id="results" class="result"></div>
-
-            <!-- ============================================ -->
-            <!-- PRICING SECTION -->
-            <!-- ============================================ -->
-            <div id="pricing-section" style="display: none;">
+            <!-- Sections Container -->
+            <div id="section-home" class="section-content">
+                <!-- Step 1: Select Pro -->
                 <div class="card">
-                    <h2>🏌️ Upgrade to Premium</h2>
-                    <p style="text-align: center; color: #4a6a4a; margin-bottom: 20px;">Unlock unlimited swing analyses and pro comparisons</p>
+                    <h2><span class="step-icon">1</span> Select a Professional</h2>
+                    <p style="font-size:14px; color:#4a6a4a; margin-bottom:12px;">Choose a pro to compare your swing against.</p>
+                    <select id="proSelect">
+                        <option value="rory_mcilroy">🏆 Rory McIlroy – 4x Major Champion</option>
+                        <option value="tiger_woods">🏆 Tiger Woods – 15x Major Champion</option>
+                        <option value="justin_thomas">🏆 Justin Thomas – 2x Major Champion</option>
+                        <option value="collin_morikawa">🏆 Collin Morikawa – 2x Major Champion</option>
+                        <option value="jon_rahm">🏆 Jon Rahm – 2023 Masters Champion</option>
+                    </select>
+                </div>
+                
+                <!-- Step 2: Upload Video -->
+                <div class="card">
+                    <h2><span class="step-icon">2</span> Upload Your Swing</h2>
                     
-                    <div style="display: flex; flex-wrap: wrap; gap: 20px; justify-content: center;">
+                    <div class="instruction-box">
+                        <strong>📹 Recording Instructions</strong>
+                        <ul>
+                            <li>Film from <strong>“Down the Line”</strong> (behind the golfer, facing the target).</li>
+                            <li>Ensure your <strong>full body</strong> and the <strong>club</strong> are visible.</li>
+                            <li>Use good lighting and a steady camera (tripod recommended).</li>
+                            <li>Record at <strong>60fps</strong> if possible for the best analysis.</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="upload-area" id="uploadArea">
+                        <span class="icon-large">🎥</span>
+                        <div style="font-weight:500; margin-bottom:4px;">Tap to select or drag your video here</div>
+                        <div style="font-size:13px; color:#7a9a7a;">MP4, MOV, or AVI • Max 100MB</div>
+                        <input type="file" id="videoInput" accept="video/*" style="display: none;">
+                    </div>
+                    <div id="videoPreview" class="video-preview"></div>
+                    <button class="btn btn-primary" id="analyzeBtn" onclick="analyze()">🚀 Analyze Swing</button>
+                </div>
+                
+                <!-- Loader -->
+                <div class="loader" id="loader">
+                    <div class="spinner"></div>
+                    <p style="color:#4a6a4a; font-weight:500;">Analyzing your swing with AI...</p>
+                    <p style="font-size:14px; color:#7a9a7a;">This takes about 30 seconds</p>
+                </div>
+                
+                <!-- Results -->
+                <div id="results" class="result"></div>
+
+                <!-- ============================================ -->
+                <!-- PRICING SECTION - Shows ONLY after free demo is used -->
+                <!-- ============================================ -->
+                <div id="pricing-section" style="display: none;">
+                    <div class="card">
+                        <h2>🏌️ Upgrade to Premium</h2>
+                        <p style="text-align: center; color: #4a6a4a; margin-bottom: 20px;">You've used your free analysis. Unlock unlimited analyses with one of our premium plans.</p>
                         
-                        <!-- Monthly Plan -->
-                        <div class="pricing-card monthly">
-                            <h3>Monthly Premium</h3>
-                            <p class="price monthly-price">$19.99</p>
-                            <p class="period">per month</p>
-                            <ul>
-                                <li>✅ Unlimited swing analyses</li>
-                                <li>✅ Compare to 10+ pros</li>
-                                <li>✅ Detailed metrics & feedback</li>
-                                <li>✅ Personalized drills</li>
-                                <li>✅ Cancel anytime</li>
-                            </ul>
-                            <button class="btn-subscribe monthly-btn" onclick="subscribeMonthly()">Subscribe Monthly</button>
-                        </div>
-                        
-                        <!-- Lifetime Plan -->
-                        <div class="pricing-card lifetime">
-                            <span class="best-value-badge">Best Value</span>
-                            <h3>Lifetime Premium</h3>
-                            <p class="price lifetime-price">$99.99</p>
-                            <p class="period">one-time payment</p>
-                            <ul>
-                                <li>✅ Unlimited analyses forever</li>
-                                <li>✅ Compare to 10+ pros</li>
-                                <li>✅ Detailed metrics & feedback</li>
-                                <li>✅ Personalized drills</li>
-                                <li>✅ No recurring charges</li>
-                            </ul>
-                            <button class="btn-subscribe lifetime-btn" onclick="subscribeLifetime()">Buy Lifetime</button>
+                        <div style="display: flex; flex-wrap: wrap; gap: 20px; justify-content: center;">
+                            
+                            <!-- Monthly Plan -->
+                            <div class="pricing-card monthly">
+                                <h3>Monthly Premium</h3>
+                                <p class="price monthly-price">$19.99</p>
+                                <p class="period">per month</p>
+                                <ul>
+                                    <li>✅ Unlimited swing analyses</li>
+                                    <li>✅ Compare to 10+ pros</li>
+                                    <li>✅ Detailed metrics & feedback</li>
+                                    <li>✅ Personalized drills</li>
+                                    <li>✅ Cancel anytime</li>
+                                </ul>
+                                <button class="btn-subscribe monthly-btn" onclick="subscribeMonthly()">Subscribe Monthly</button>
+                            </div>
+                            
+                            <!-- Lifetime Plan -->
+                            <div class="pricing-card lifetime">
+                                <span class="best-value-badge">Best Value</span>
+                                <h3>Lifetime Premium</h3>
+                                <p class="price lifetime-price">$99.99</p>
+                                <p class="period">one-time payment</p>
+                                <ul>
+                                    <li>✅ Unlimited analyses forever</li>
+                                    <li>✅ Compare to 10+ pros</li>
+                                    <li>✅ Detailed metrics & feedback</li>
+                                    <li>✅ Personalized drills</li>
+                                    <li>✅ No recurring charges</li>
+                                </ul>
+                                <button class="btn-subscribe lifetime-btn" onclick="subscribeLifetime()">Buy Lifetime</button>
+                            </div>
                         </div>
                     </div>
                 </div>
+                
+                <!-- Logout -->
+                <div class="card" style="margin-top: 10px;">
+                    <button class="btn btn-logout" onclick="logout()">Sign Out</button>
+                    <button class="btn btn-danger" onclick="deleteAccount()" style="margin-top:10px;">🗑️ Delete Account</button>
+                </div>
             </div>
-            
-            <!-- Logout -->
-            <div class="card" style="margin-top: 10px;">
-                <button class="btn btn-logout" onclick="logout()">Sign Out</button>
-                <button class="btn btn-danger" onclick="deleteAccount()" style="margin-top:10px;">🗑️ Delete Account</button>
+
+            <!-- INSTRUCTIONS SECTION -->
+            <div id="section-instructions" class="section-content" style="display: none;">
+                <div class="card">
+                    <h2>📖 How to Use the Golf Swing Analyzer</h2>
+                    
+                    <h3 style="margin-top: 20px;">🎯 What This Tool Does</h3>
+                    <p>Our AI-powered analyzer compares your golf swing to professional golfers and provides detailed feedback to help you improve.</p>
+                    
+                    <h3 style="margin-top: 20px;">📹 Video Requirements</h3>
+                    <ul style="margin-left: 20px; line-height: 1.8;">
+                        <li><strong>Camera Position:</strong> Film from "Down the Line" (behind the golfer, facing the target)</li>
+                        <li><strong>Full Body:</strong> Ensure your entire body and the club are visible</li>
+                        <li><strong>Lighting:</strong> Use good lighting (outdoor or bright indoor)</li>
+                        <li><strong>Frame Rate:</strong> 60fps recommended for best results</li>
+                        <li><strong>Format:</strong> MP4, MOV, or AVI (max 100MB)</li>
+                    </ul>
+                    
+                    <h3 style="margin-top: 20px;">📊 What You'll Get</h3>
+                    <ul style="margin-left: 20px; line-height: 1.8;">
+                        <li><strong>Overall Score:</strong> 0-100 rating of your swing</li>
+                        <li><strong>Key Metrics:</strong> Spine angle, hip rotation, X-factor, and more</li>
+                        <li><strong>Pro Comparison:</strong> See how you compare to Rory McIlroy, Tiger Woods, and others</li>
+                        <li><strong>Personalized Recommendations:</strong> Specific drills and swing thoughts</li>
+                        <li><strong>Grade:</strong> A+ to D based on your performance</li>
+                    </ul>
+                    
+                    <h3 style="margin-top: 20px;">⏱️ How Long It Takes</h3>
+                    <p>The analysis takes about 30 seconds after you upload your video. You'll see results immediately.</p>
+                    
+                    <h3 style="margin-top: 20px;">🔄 Free vs Premium</h3>
+                    <ul style="margin-left: 20px; line-height: 1.8;">
+                        <li><strong>Free Account:</strong> 1 analysis to try the service</li>
+                        <li><strong>Premium Monthly ($19.99):</strong> Unlimited analyses, cancel anytime</li>
+                        <li><strong>Premium Lifetime ($99.99):</strong> Unlimited analyses forever, no recurring charges</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- CONTACT SECTION -->
+            <div id="section-contact" class="section-content" style="display: none;">
+                <div class="card">
+                    <h2>📧 Contact & Suggestions</h2>
+                    
+                    <p style="margin-bottom: 20px;">We'd love to hear from you! Whether you have a question, suggestion, or just want to share your experience.</p>
+                    
+                    <div style="background: #f4f8f4; border-radius: 12px; padding: 20px; margin-bottom: 20px;">
+                        <h3 style="margin-bottom: 10px;">📧 Email</h3>
+                        <p><a href="mailto:alpialtd@gmail.com" style="color: #1a3c2a; font-weight: 600;">alpialtd@gmail.com</a></p>
+                        <p style="font-size: 14px; color: #4a6a4a; margin-top: 4px;">We aim to respond within 24 hours</p>
+                    </div>
+                    
+                    <div style="background: #f4f8f4; border-radius: 12px; padding: 20px; margin-bottom: 20px;">
+                        <h3 style="margin-bottom: 10px;">💬 What to Include</h3>
+                        <ul style="margin-left: 20px; line-height: 1.8;">
+                            <li><strong>Bug Reports:</strong> Describe what happened and what you expected</li>
+                            <li><strong>Feature Suggestions:</strong> What would make this tool better for you?</li>
+                            <li><strong>Feedback:</strong> What do you like or dislike about the analyzer?</li>
+                            <li><strong>Questions:</strong> Anything about the analysis or your results</li>
+                        </ul>
+                    </div>
+                </div>
             </div>
         </div>
         
@@ -597,12 +728,17 @@
         
         <div class="footer-note">
             <p style="margin-bottom:8px;">⛳ Improve your game with data-driven insights</p>
-            <div style="display:flex; justify-content:center; gap:16px; font-size:12px;">
+            <div style="display:flex; justify-content:center; gap:16px; font-size:12px; flex-wrap: wrap;">
+                <a href="#" onclick="showSection('instructions'); return false;" style="color:#d4af37; text-decoration:underline; cursor:pointer;">Instructions</a>
+                <span style="color:#a0b8a0;">•</span>
+                <a href="#" onclick="showSection('contact'); return false;" style="color:#d4af37; text-decoration:underline; cursor:pointer;">Contact</a>
+                <span style="color:#a0b8a0;">•</span>
                 <a href="privacy.html" style="color:#d4af37; text-decoration:underline;">Privacy Policy</a>
                 <span style="color:#a0b8a0;">•</span>
                 <a href="terms.html" style="color:#d4af37; text-decoration:underline;">Terms of Service</a>
-                <span style="color:#a0b8a0;">•</span>
-                <a href="mailto:alpialtd@gmail.com" style="color:#d4af37; text-decoration:underline;">Contact Us</a>
+            </div>
+            <div style="margin-top: 12px; color: #6a8a6a; font-size: 12px;">
+                © 2026 X-AI Golf. All rights reserved.
             </div>
         </div>
     </div>
@@ -612,6 +748,32 @@
         const API_URL = 'https://api.xaigolf.com';
         let authToken = null;
         
+        // ============================================
+        // NAVIGATION FUNCTIONS
+        // ============================================
+
+        function showSection(section) {
+            // Hide all sections
+            document.querySelectorAll('.section-content').forEach(el => {
+                el.style.display = 'none';
+            });
+            
+            // Show selected section
+            const targetSection = document.getElementById(`section-${section}`);
+            if (targetSection) {
+                targetSection.style.display = 'block';
+            }
+            
+            // Update active button
+            document.querySelectorAll('.nav-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            const activeBtn = document.getElementById(`nav-${section}`);
+            if (activeBtn) {
+                activeBtn.classList.add('active');
+            }
+        }
+        
         // Check if user is logged in
         function checkAuth() {
             const token = localStorage.getItem('authToken');
@@ -619,7 +781,7 @@
                 authToken = token;
                 document.getElementById('loginSection').style.display = 'none';
                 document.getElementById('appSection').style.display = 'block';
-                checkShowPricing(); // Show pricing if user is free
+                checkShowPricing(); // Show pricing if user has used their free demo
             } else {
                 document.getElementById('loginSection').style.display = 'block';
                 document.getElementById('appSection').style.display = 'none';
@@ -831,6 +993,12 @@
                 
                 if (response.status === 402) {
                     showStatus('No analyses remaining. Please upgrade to premium.', 'error');
+                    // Show pricing after analysis is complete
+                    const pricingSection = document.getElementById('pricing-section');
+                    if (pricingSection) {
+                        pricingSection.style.display = 'block';
+                        pricingSection.scrollIntoView({ behavior: 'smooth' });
+                    }
                     return;
                 }
                 
@@ -849,6 +1017,22 @@
                 if (data && (data.score !== undefined || data.success === true || data.overall_score !== undefined)) {
                     displayResults(data);
                     showStatus('Analysis complete!', 'success');
+                    
+                    // Check if user now has 0 analyses remaining (used their free demo)
+                    // After a successful analysis, check subscription again
+                    const subResponse = await fetch(`${API_URL}/api/user/subscription`, {
+                        headers: { 'Authorization': `Bearer ${authToken}` }
+                    });
+                    const subData = await subResponse.json();
+                    
+                    // Show pricing only if user is free and has 0 remaining
+                    if (!subData.is_premium && subData.analyses_remaining <= 0) {
+                        const pricingSection = document.getElementById('pricing-section');
+                        if (pricingSection) {
+                            pricingSection.style.display = 'block';
+                            pricingSection.scrollIntoView({ behavior: 'smooth' });
+                        }
+                    }
                 } else {
                     const errorMsg = data.error || data.message || 'No analysis data received. Try a different video.';
                     showStatus(errorMsg, 'error');
@@ -1028,7 +1212,7 @@
                 return;
             }
             
-            // 🔑 REPLACE WITH YOUR ACTUAL STRIPE PRICE ID
+            // Monthly subscription price ID
             const priceId = 'price_1TrNo9AStvjfOdJRaP2IwSzb';
             
             try {
@@ -1064,7 +1248,7 @@
                 return;
             }
             
-            // 🔑 REPLACE WITH YOUR ACTUAL STRIPE PRICE ID
+            // Lifetime one-time price ID
             const priceId = 'price_1TrNvyAStvjfOdJRdWQgYocU';
             
             try {
@@ -1093,7 +1277,7 @@
             }
         }
 
-        // Show pricing section only for free users
+        // Show pricing section ONLY when user has used their free analysis
         async function checkShowPricing() {
             const token = localStorage.getItem('authToken');
             if (!token) return;
@@ -1106,11 +1290,19 @@
                 });
                 const data = await response.json();
                 
-                // Show pricing only if user is NOT premium
-                if (!data.is_premium) {
+                // Show pricing ONLY if:
+                // 1. User is NOT premium (is_premium = false)
+                // 2. User has 0 analyses remaining (has used their free demo)
+                if (!data.is_premium && data.analyses_remaining <= 0) {
                     const pricingSection = document.getElementById('pricing-section');
                     if (pricingSection) {
                         pricingSection.style.display = 'block';
+                    }
+                } else {
+                    // Hide pricing if user still has analyses or is premium
+                    const pricingSection = document.getElementById('pricing-section');
+                    if (pricingSection) {
+                        pricingSection.style.display = 'none';
                     }
                 }
             } catch (error) {
