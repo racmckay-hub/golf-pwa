@@ -767,6 +767,33 @@
         // NAVIGATION FUNCTIONS
         // ============================================
 
+        // ============================================
+        // DEVICE FINGERPRINT FUNCTION
+        // ============================================
+
+        function getDeviceFingerprint() {
+            const screen = `${screen.width}x${screen.height}x${screen.colorDepth}`;
+            const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+            const language = navigator.language;
+            const userAgent = navigator.userAgent;
+            const platform = navigator.platform;
+            const memory = navigator.deviceMemory || 0;
+            const cores = navigator.hardwareConcurrency || 0;
+            const touchSupport = 'ontouchstart' in window ? 'touch' : 'no-touch';
+    
+            // Create a unique string from device characteristics
+            const fingerprint = `${screen}|${timezone}|${language}|${userAgent}|${platform}|${memory}|${cores}|${touchSupport}`;
+    
+            // Simple hash function to create a consistent ID
+            let hash = 0;
+            for (let i = 0; i < fingerprint.length; i++) {
+                const char = fingerprint.charCodeAt(i);
+                hash = ((hash << 5) - hash) + char;
+                hash = hash & hash;
+            }
+            return Math.abs(hash).toString(36);
+        }
+        
         function showSection(section) {
             // If section is 'home', show home and hide others
             if (section === 'home') {
@@ -816,6 +843,7 @@
         async function register() {
             const email = document.getElementById('email').value;
             const password = document.getElementById('password').value;
+            const fingerprint = getDeviceFingerprint(); // <-- ADD THIS
             
             if (!email || !password) {
                 showStatus('Please enter email and password', 'error');
@@ -828,7 +856,7 @@
                 const response = await fetch(`${API_URL}/api/register`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ email, password })
+                    body: JSON.stringify({ email, password, fingerprint: fingerprint })
                 });
                 
                 const data = await response.json();
