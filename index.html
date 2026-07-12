@@ -541,13 +541,6 @@
             <p>Compare your swing to the pros • Powered by AI</p>
         </div>
 
-        <!-- Navigation Menu -->
-        <div class="nav-menu">
-            <button onclick="showSection('home')" class="nav-btn active" id="nav-home">🏠 Home</button>
-            <button onclick="showSection('instructions')" class="nav-btn" id="nav-instructions">📖 Instructions</button>
-            <button onclick="showSection('contact')" class="nav-btn" id="nav-contact">📧 Contact</button>
-        </div>
-        
         <!-- Auth Section -->
         <div class="card auth-section" id="loginSection">
             <h2>🔐 Access Your Account</h2>
@@ -559,6 +552,31 @@
         
         <!-- Main App -->
         <div id="appSection" style="display: none;">
+            <!-- Navigation Menu (now inside appSection) -->
+            <div class="nav-menu">
+                <button onclick="showSection('home')" class="nav-btn active" id="nav-home">🏠 Home</button>
+                <button onclick="showSection('instructions')" class="nav-btn" id="nav-instructions">📖 Instructions</button>
+                <button onclick="showSection('contact')" class="nav-btn" id="nav-contact">📧 Contact</button>
+        </div>
+    
+    <!-- Sections Container -->
+    <div id="section-home" class="section-content">
+        <!-- ... rest of your content ... -->
+    </div>
+
+
+
+
+
+
+
+
+
+
+
+            
+
+
             
             <!-- Sections Container -->
             <div id="section-home" class="section-content">
@@ -947,7 +965,7 @@
         }
         
         // ***** ANALYZE FUNCTION *****
-        // ***** ANALYZE FUNCTION *****
+        
     async function analyze() {
         if (!selectedFile) {
             showStatus('Please select a video first', 'error');
@@ -994,7 +1012,6 @@
         
             if (response.status === 402) {
                 showStatus('No analyses remaining. Please upgrade to premium.', 'error');
-                // Show pricing below results (not scrolling past)
                 const pricingSection = document.getElementById('pricing-section');
                 if (pricingSection) {
                     pricingSection.style.display = 'block';
@@ -1018,13 +1035,11 @@
                 displayResults(data);
                 showStatus('Analysis complete!', 'success');
             
-                // Check if user now has 0 analyses remaining (used their free demo)
                 const subResponse = await fetch(`${API_URL}/api/user/subscription`, {
                     headers: { 'Authorization': `Bearer ${authToken}` }
                 });
                 const subData = await subResponse.json();
             
-                // Show pricing below results (no auto-scroll)
                 if (!subData.is_premium && subData.analyses_remaining <= 0) {
                     const pricingSection = document.getElementById('pricing-section');
                     if (pricingSection) {
@@ -1276,7 +1291,8 @@
         }
 
         // Show pricing section ONLY when user has used their free analysis
-        // Show pricing section ONLY when user has used their free analysis
+        
+        
     async function checkShowPricing() {
         const token = localStorage.getItem('authToken');
         if (!token) return;
@@ -1289,16 +1305,12 @@
             });
             const data = await response.json();
         
-            // Show pricing ONLY if:
-            // 1. User is NOT premium (is_premium = false)
-            // 2. User has 0 analyses remaining (has used their free demo)
             if (!data.is_premium && data.analyses_remaining <= 0) {
                 const pricingSection = document.getElementById('pricing-section');
                 if (pricingSection) {
                     pricingSection.style.display = 'block';
                 }
             } else {
-                // Hide pricing if user still has analyses or is premium
                 const pricingSection = document.getElementById('pricing-section');
                 if (pricingSection) {
                     pricingSection.style.display = 'none';
