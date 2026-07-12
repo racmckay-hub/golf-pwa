@@ -947,103 +947,101 @@
         }
         
         // ***** ANALYZE FUNCTION *****
-        async function analyze() {
-            if (!selectedFile) {
-                showStatus('Please select a video first', 'error');
-                return;
+        // ***** ANALYZE FUNCTION *****
+    async function analyze() {
+        if (!selectedFile) {
+            showStatus('Please select a video first', 'error');
+            return;
+        }
+    
+        if (!authToken) {
+            showStatus('Please login first', 'error');
+            return;
+        }
+    
+        const pro = document.getElementById('proSelect').value;
+        const formData = new FormData();
+        formData.append('video', selectedFile);
+        formData.append('pro', pro);
+    
+        document.getElementById('loader').style.display = 'block';
+        document.getElementById('results').style.display = 'none';
+        document.getElementById('results').innerHTML = '';
+        document.getElementById('analyzeBtn').disabled = true;
+    
+        try {
+            const response = await fetch(`${API_URL}/api/analyze`, {
+                method: 'POST',
+                headers: {
+                    'Authorization': `Bearer ${authToken}`
+                },
+                body: formData
+            });
+        
+            let data = {};
+            const contentType = response.headers.get('content-type');
+            if (contentType && contentType.includes('application/json')) {
+                data = await response.json();
+            } else {
+                const text = await response.text();
+                console.error('Non-JSON response:', text);
+                throw new Error('Server returned invalid response');
             }
-            
-            if (!authToken) {
-                showStatus('Please login first', 'error');
-                return;
-            }
-            
-            const pro = document.getElementById('proSelect').value;
-            const formData = new FormData();
-            formData.append('video', selectedFile);
-            formData.append('pro', pro);
-            
-            document.getElementById('loader').style.display = 'block';
-            document.getElementById('results').style.display = 'none';
-            document.getElementById('results').innerHTML = '';
-            document.getElementById('analyzeBtn').disabled = true;
-            
-            try {
-                const response = await fetch(`${API_URL}/api/analyze`, {
-                    method: 'POST',
-                    headers: {
-                        'Authorization': `Bearer ${authToken}`
-                    },
-                    body: formData
-                });
-                
-                let data = {};
-                const contentType = response.headers.get('content-type');
-                if (contentType && contentType.includes('application/json')) {
-                    data = await response.json();
-                } else {
-                    const text = await response.text();
-                    console.error('Non-JSON response:', text);
-                    throw new Error('Server returned invalid response');
+        
+            console.log('📊 Analysis response:', data);
+            document.getElementById('loader').style.display = 'none';
+            document.getElementById('analyzeBtn').disabled = false;
+        
+            if (response.status === 402) {
+                showStatus('No analyses remaining. Please upgrade to premium.', 'error');
+                // Show pricing below results (not scrolling past)
+                const pricingSection = document.getElementById('pricing-section');
+                if (pricingSection) {
+                    pricingSection.style.display = 'block';
                 }
-                
-                console.log('📊 Analysis response:', data);
-                document.getElementById('loader').style.display = 'none';
-                document.getElementById('analyzeBtn').disabled = false;
-                
-                if (response.status === 402) {
-                    showStatus('No analyses remaining. Please upgrade to premium.', 'error');
-                    // Show pricing after analysis is complete
+                return;
+            }
+        
+            if (response.status === 401) {
+                showStatus('Session expired. Please login again.', 'error');
+                logout();
+                return;
+            }
+        
+            if (!response.ok) {
+                const errorMsg = data.error || data.message || `Error ${response.status}`;
+                showStatus(errorMsg, 'error');
+                return;
+            }
+        
+            if (data && (data.score !== undefined || data.success === true || data.overall_score !== undefined)) {
+                displayResults(data);
+                showStatus('Analysis complete!', 'success');
+            
+                // Check if user now has 0 analyses remaining (used their free demo)
+                const subResponse = await fetch(`${API_URL}/api/user/subscription`, {
+                    headers: { 'Authorization': `Bearer ${authToken}` }
+                });
+                const subData = await subResponse.json();
+            
+                // Show pricing below results (no auto-scroll)
+                if (!subData.is_premium && subData.analyses_remaining <= 0) {
                     const pricingSection = document.getElementById('pricing-section');
                     if (pricingSection) {
                         pricingSection.style.display = 'block';
-                        pricingSection.scrollIntoView({ behavior: 'smooth' });
                     }
-                    return;
                 }
-                
-                if (response.status === 401) {
-                    showStatus('Session expired. Please login again.', 'error');
-                    logout();
-                    return;
-                }
-                
-                if (!response.ok) {
-                    const errorMsg = data.error || data.message || `Error ${response.status}`;
-                    showStatus(errorMsg, 'error');
-                    return;
-                }
-                
-                if (data && (data.score !== undefined || data.success === true || data.overall_score !== undefined)) {
-                    displayResults(data);
-                    showStatus('Analysis complete!', 'success');
-                    
-                    // Check if user now has 0 analyses remaining (used their free demo)
-                    // After a successful analysis, check subscription again
-                    const subResponse = await fetch(`${API_URL}/api/user/subscription`, {
-                        headers: { 'Authorization': `Bearer ${authToken}` }
-                    });
-                    const subData = await subResponse.json();
-                    
-                    // Show pricing only if user is free and has 0 remaining
-                    if (!subData.is_premium && subData.analyses_remaining <= 0) {
-                        const pricingSection = document.getElementById('pricing-section');
-                        if (pricingSection) {
-                            pricingSection.style.display = 'block';
-                            pricingSection.scrollIntoView({ behavior: 'smooth' });
-                        }
-                    }
-                } else {
-                    const errorMsg = data.error || data.message || 'No analysis data received. Try a different video.';
-                    showStatus(errorMsg, 'error');
-                }
-            } catch (error) {
-                document.getElementById('loader').style.display = 'none';
-                document.getElementById('analyzeBtn').disabled = false;
-                console.error('Analyze error:', error);
-                showStatus('Network error. Please try again.', 'error');
+            } else {
+                const errorMsg = data.error || data.message || 'No analysis data received. Try a different video.';
+                showStatus(errorMsg, 'error');
             }
+        } catch (error) {
+            document.getElementById('loader').style.display = 'none';
+            document.getElementById('analyzeBtn').disabled = false;
+            console.error('Analyze error:', error);
+            showStatus('Network error. Please try again.', 'error');
         }
+    }
         
         // ***** DISPLAY RESULTS FUNCTION WITH TOOLTIPS *****
         function displayResults(data) {
@@ -1278,37 +1276,38 @@
         }
 
         // Show pricing section ONLY when user has used their free analysis
-        async function checkShowPricing() {
-            const token = localStorage.getItem('authToken');
-            if (!token) return;
-            
-            try {
-                const response = await fetch(`${API_URL}/api/user/subscription`, {
-                    headers: {
-                        'Authorization': `Bearer ${token}`
-                    }
-                });
-                const data = await response.json();
-                
-                // Show pricing ONLY if:
-                // 1. User is NOT premium (is_premium = false)
-                // 2. User has 0 analyses remaining (has used their free demo)
-                if (!data.is_premium && data.analyses_remaining <= 0) {
-                    const pricingSection = document.getElementById('pricing-section');
-                    if (pricingSection) {
-                        pricingSection.style.display = 'block';
-                    }
-                } else {
-                    // Hide pricing if user still has analyses or is premium
-                    const pricingSection = document.getElementById('pricing-section');
-                    if (pricingSection) {
-                        pricingSection.style.display = 'none';
-                    }
+        // Show pricing section ONLY when user has used their free analysis
+    async function checkShowPricing() {
+        const token = localStorage.getItem('authToken');
+        if (!token) return;
+    
+        try {
+            const response = await fetch(`${API_URL}/api/user/subscription`, {
+                headers: {
+                    'Authorization': `Bearer ${token}`
                 }
-            } catch (error) {
-                console.error('Error checking subscription:', error);
+            });
+            const data = await response.json();
+        
+            // Show pricing ONLY if:
+            // 1. User is NOT premium (is_premium = false)
+            // 2. User has 0 analyses remaining (has used their free demo)
+            if (!data.is_premium && data.analyses_remaining <= 0) {
+                const pricingSection = document.getElementById('pricing-section');
+                if (pricingSection) {
+                    pricingSection.style.display = 'block';
+                }
+            } else {
+                // Hide pricing if user still has analyses or is premium
+                const pricingSection = document.getElementById('pricing-section');
+                if (pricingSection) {
+                    pricingSection.style.display = 'none';
+                }
             }
+        } catch (error) {
+            console.error('Error checking subscription:', error);
         }
+    }
         
         // Initialize
         checkAuth();
