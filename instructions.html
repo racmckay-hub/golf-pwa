@@ -1,0 +1,113 @@
+<!DOCTYPE html> 
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <meta name="theme-color" content="#1a3c2a">
+    <title>Instructions - Golf Swing Analyzer</title>
+    <link rel="manifest" href="manifest.json">
+    <link rel="apple-touch-icon" href="icon.png">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(145deg, #0f2a1a 0%, #1a3c2a 100%);
+            min-height: 100vh;
+            padding: 20px;
+            color: #1e2b27;
+        }
+        .container { max-width: 640px; margin: 0 auto; }
+        .header { text-align: center; color: white; margin-bottom: 20px; padding-top: 10px; }
+        .header h1 { font-size: 32px; font-weight: 700; }
+        .header h1 span { background: linear-gradient(135deg, #d4af37, #f5d76e); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .header p { font-size: 15px; opacity: 0.85; font-weight: 300; margin-top: 4px; }
+        .back-btn {
+            display: inline-block;
+            background: rgba(255,255,255,0.1);
+            color: white;
+            border: 2px solid rgba(255,255,255,0.2);
+            padding: 10px 24px;
+            border-radius: 30px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-decoration: none;
+            margin-bottom: 20px;
+        }
+        .back-btn:hover { background: rgba(255,255,255,0.2); border-color: rgba(255,255,255,0.4); transform: translateY(-2px); }
+        .card { background: #ffffff; border-radius: 24px; padding: 24px; margin-bottom: 20px; box-shadow: 0 8px 30px rgba(0,0,0,0.12); }
+        .card h2 { color: #1a3c2a; margin-bottom: 16px; font-size: 18px; font-weight: 700; border-bottom: 2px solid #e8f0e8; padding-bottom: 12px; }
+        .card h3 { color: #1a3c2a; margin-top: 20px; font-size: 16px; }
+        .card ul { margin-left: 20px; line-height: 1.8; color: #2a4a3a; }
+        .card p { color: #2a4a3a; line-height: 1.6; }
+        .footer-note { text-align: center; color: #a0b8a0; font-size: 13px; margin-top: 30px; border-top: 1px solid #2a4a3a; padding-top: 20px; }
+        .footer-note a { color: #d4af37; text-decoration: underline; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🏌️ <span>Golf Swing Analyzer</span></h1>
+            <p>Compare your swing to the pros • Powered by AI</p>
+        </div>
+
+        <a href="index.html" class="back-btn">← Back to Analysis</a>
+
+        <div class="card">
+            <h2>📖 How to Use the Golf Swing Analyzer</h2>
+            
+            <h3>🎯 What This Tool Does</h3>
+            <p>Our AI-powered analyzer compares your golf swing to professional golfers and provides detailed feedback to help you improve.</p>
+            
+            <h3>📹 Video Requirements</h3>
+            <ul>
+                <li><strong>Camera Position:</strong> Film from "Down the Line" (behind the golfer, facing the target)</li>
+                <li><strong>Full Body:</strong> Ensure your entire body and the club are visible</li>
+                <li><strong>Lighting:</strong> Use good lighting (outdoor or bright indoor)</li>
+                <li><strong>Frame Rate:</strong> 60fps recommended for best results</li>
+                <li><strong>Format:</strong> MP4, MOV, or AVI (max 100MB)</li>
+            </ul>
+            
+            <h3>📊 What You'll Get</h3>
+            <ul>
+                <li><strong>Overall Score:</strong> 0-100 rating of your swing</li>
+                <li><strong>Key Metrics:</strong> Spine angle, hip rotation, X-factor, and more</li>
+                <li><strong>Pro Comparison:</strong> See how you compare to Rory McIlroy, Tiger Woods, and others</li>
+                <li><strong>Personalized Recommendations:</strong> Specific drills and swing thoughts</li>
+                <li><strong>Grade:</strong> A+ to D based on your performance</li>
+            </ul>
+            
+            <h3>⏱️ How Long It Takes</h3>
+            <p>The analysis takes about 30 seconds after you upload your video. You'll see results immediately.</p>
+            
+            <h3>🔄 Free vs Premium</h3>
+            <ul>
+                <li><strong>Free Account:</strong> 1 analysis to try the service</li>
+                <li><strong>Premium Monthly ($19.99):</strong> Unlimited analyses, cancel anytime</li>
+                <li><strong>Premium Lifetime ($99.99):</strong> Unlimited analyses forever, no recurring charges</li>
+            </ul>
+            
+            <h3>💡 Tips for Best Results</h3>
+            <ul>
+                <li>Record multiple swings and upload the best one</li>
+                <li>Use a tripod for a steady camera</li>
+                <li>Ensure the club is clearly visible throughout the swing</li>
+                <li>Compare against different pros to see what works for you</li>
+            </ul>
+        </div>
+
+        <div class="footer-note">
+            <p style="margin-bottom:8px;">⛳ Improve your game with data-driven insights</p>
+            <div style="display:flex; justify-content:center; gap:16px; font-size:12px; flex-wrap: wrap;">
+                <a href="privacy.html">Privacy Policy</a>
+                <span style="color:#a0b8a0;">•</span>
+                <a href="terms.html">Terms of Service</a>
+            </div>
+            <div style="margin-top: 12px; color: #6a8a6a; font-size: 12px;">
+                © 2026 X-AI Golf. All rights reserved.
+            </div>
+        </div>
+    </div>
+</body>
+</html>
