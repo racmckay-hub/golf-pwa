@@ -838,6 +838,33 @@
                 document.getElementById('appSection').style.display = 'none';
             }
         }
+
+        // Show welcome message with remaining demos
+        async function showWelcomeMessage() {
+            const token = localStorage.getItem('authToken');
+            if (!token) return;
+    
+            try {
+                const response = await fetch(`${API_URL}/api/user/subscription`, {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+                const data = await response.json();
+        
+                // Check if user has just logged in (first time this session)
+                const hasSeenWelcome = sessionStorage.getItem('hasSeenWelcome');
+                if (!hasSeenWelcome && data.analyses_remaining > 0) {
+                    // Show welcome message with demo count
+                    const message = `👋 Welcome! You have ${data.analyses_remaining} free demo${data.analyses_remaining > 1 ? 's' : ''} remaining.`;
+                    showStatus(message, 'success');
+                    sessionStorage.setItem('hasSeenWelcome', 'true');
+                }
+            } catch (error) {
+        console.error('Error fetching subscription:', error);
+            }
+        }
+        
         
         // Register function
         async function register() {
