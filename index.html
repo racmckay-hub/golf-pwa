@@ -29,31 +29,137 @@
             max-width: 640px;
             margin: 0 auto;
         }
-        
-        .header {
+
+        /* ===== HERO SECTION STYLES ===== */
+        .hero {
+            position: relative;
+            min-height: 70vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
             text-align: center;
             color: white;
-            margin-bottom: 20px;
-            padding-top: 10px;
+            overflow: hidden;
+            border-radius: 24px;
+            margin-bottom: 30px;
+            background: linear-gradient(145deg, #0f2a1a 0%, #1a3c2a 100%);
         }
-        
-        .header h1 {
-            font-size: 32px;
+
+        .hero-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(15, 42, 26, 0.75);
+            z-index: 1;
+        }
+
+        .hero-gallery {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            z-index: 0;
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 0;
+        }
+
+        .hero-gallery img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            opacity: 0.35;
+        }
+
+        .hero-content {
+            position: relative;
+            z-index: 2;
+            padding: 40px 20px;
+            max-width: 700px;
+        }
+
+        .hero h1 {
+            font-size: 48px;
             font-weight: 700;
             letter-spacing: -0.5px;
+            margin: 0;
         }
-        
-        .header h1 span {
+
+        .hero h1 span {
             background: linear-gradient(135deg, #d4af37, #f5d76e);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
         }
-        
-        .header p {
-            font-size: 15px;
-            opacity: 0.85;
-            font-weight: 300;
-            margin-top: 4px;
+
+        .hero p {
+            font-size: 20px;
+            opacity: 0.9;
+            margin: 10px 0 30px;
+        }
+
+        .hero-buttons {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 12px;
+        }
+
+        .btn-hero {
+            display: inline-block;
+            background: #d4af37;
+            color: #1a3c2a;
+            padding: 14px 36px;
+            border-radius: 30px;
+            font-size: 18px;
+            font-weight: 600;
+            text-decoration: none;
+            transition: all 0.3s;
+            border: none;
+            cursor: pointer;
+        }
+
+        .btn-hero:hover {
+            background: #f5d76e;
+            transform: translateY(-2px);
+        }
+
+        .btn-hero-outline {
+            display: inline-block;
+            border: 2px solid white;
+            color: white;
+            padding: 14px 36px;
+            border-radius: 30px;
+            font-size: 18px;
+            font-weight: 600;
+            text-decoration: none;
+            transition: all 0.3s;
+            background: transparent;
+            cursor: pointer;
+        }
+
+        .btn-hero-outline:hover {
+            background: white;
+            color: #1a3c2a;
+            transform: translateY(-2px);
+        }
+
+        .hero-stats {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            margin-top: 30px;
+            font-size: 14px;
+            opacity: 0.8;
+        }
+
+        .hero-stats span {
+            background: rgba(255,255,255,0.1);
+            padding: 6px 16px;
+            border-radius: 20px;
+            backdrop-filter: blur(4px);
         }
 
         /* Navigation Menu Styles */
@@ -515,8 +621,25 @@
                 padding: 12px;
             }
             
-            .header h1 {
-                font-size: 26px;
+            .hero {
+                min-height: 60vh;
+            }
+            .hero h1 {
+                font-size: 30px;
+            }
+            .hero p {
+                font-size: 16px;
+            }
+            .btn-hero, .btn-hero-outline {
+                padding: 12px 24px;
+                font-size: 16px;
+            }
+            .hero-stats {
+                flex-wrap: wrap;
+                gap: 10px;
+            }
+            .hero-gallery {
+                grid-template-columns: repeat(2, 1fr);
             }
             
             .card {
@@ -536,10 +659,29 @@
 </head>
 <body>
     <div class="container">
-        <div class="header">
-            <h1>🏌️ <span>Golf Swing Analyzer</span></h1>
-            <p>Compare your swing to the pros • Powered by AI</p>
-        </div>
+        <!-- ===== HERO SECTION ===== -->
+        <section class="hero">
+            <div class="hero-gallery">
+                <img src="https://images.unsplash.com/photo-1535131749006-b7f58c99034b?w=600&h=400&fit=crop" alt="Golf swing" loading="lazy">
+                <img src="https://images.unsplash.com/photo-1587174486073-ae5e5cff23aa?w=600&h=400&fit=crop" alt="Golfer" loading="lazy">
+                <img src="https://images.unsplash.com/photo-1603219803109-81ad3c0dd6d5?w=600&h=400&fit=crop" alt="Golf course" loading="lazy">
+                <img src="https://images.unsplash.com/photo-1515003197210-e0cd71810b5f?w=600&h=400&fit=crop" alt="Golf ball" loading="lazy">
+            </div>
+            <div class="hero-overlay"></div>
+            <div class="hero-content">
+                <h1>🏌️ <span>Golf Swing Analyzer</span></h1>
+                <p>Compare your swing to the pros • Powered by AI</p>
+                <div class="hero-buttons">
+                    <a href="#auth-section" class="btn-hero">Start Free Analysis</a>
+                    <a href="#section-instructions" class="btn-hero-outline">How It Works</a>
+                </div>
+                <div class="hero-stats">
+                    <span>📊 5+ Pro Comparisons</span>
+                    <span>⚡ Instant AI Analysis</span>
+                    <span>🏌️ 1000+ Swings Analyzed</span>
+                </div>
+            </div>
+        </section>
 
         <!-- Auth Section -->
         <div class="card auth-section" id="loginSection">
@@ -553,31 +695,12 @@
         <!-- Main App -->
         <div id="appSection" style="display: none;">
             
-        <!-- Navigation Menu -->
-    <div class="nav-menu">
-        <a href="index.html" class="nav-btn active" id="nav-home">🏠 Home</a>
-        <a href="instructions.html" class="nav-btn" id="nav-instructions">📖 Instructions</a>
-        <a href="contact.html" class="nav-btn" id="nav-contact">📧 Contact</a>
-    </div>
-    
-    <!-- Sections Container -->
-    <div id="section-home" class="section-content">
-        <!-- ... rest of your content ... -->
-    </div>
-
-
-
-
-
-
-
-
-
-
-
-            
-
-
+            <!-- Navigation Menu -->
+            <div class="nav-menu">
+                <a href="index.html" class="nav-btn active" id="nav-home">🏠 Home</a>
+                <a href="instructions.html" class="nav-btn" id="nav-instructions">📖 Instructions</a>
+                <a href="contact.html" class="nav-btn" id="nav-contact">📧 Contact</a>
+            </div>
             
             <!-- Sections Container -->
             <div id="section-home" class="section-content">
@@ -782,7 +905,7 @@
             const touchSupport = 'ontouchstart' in window ? 'touch' : 'no-touch';
     
             // Create a unique string from device characteristics
-            const fingerprint = `${screen}|${timezone}|${language}|${userAgent}|${platform}|${memory}|${cores}|${touchSupport}`;
+            const fingerprint = `${screenInfo}|${timezone}|${language}|${userAgent}|${platform}|${memory}|${cores}|${touchSupport}`;
     
             // Simple hash function to create a consistent ID
             let hash = 0;
@@ -812,18 +935,18 @@
             document.getElementById('section-instructions').style.display = 'none';
             document.getElementById('section-contact').style.display = 'none';
     
-        const targetSection = document.getElementById(`section-${section}`);
-        if (targetSection) {
-            targetSection.style.display = 'block';
-        }
+            const targetSection = document.getElementById(`section-${section}`);
+            if (targetSection) {
+                targetSection.style.display = 'block';
+            }
     
-        // Update active button
-        document.querySelectorAll('.nav-btn').forEach(btn => btn.classList.remove('active'));
-        const activeBtn = document.getElementById(`nav-${section}`);
-        if (activeBtn) {
-            activeBtn.classList.add('active');
+            // Update active button
+            document.querySelectorAll('.nav-btn').forEach(btn => btn.classList.remove('active'));
+            const activeBtn = document.getElementById(`nav-${section}`);
+            if (activeBtn) {
+                activeBtn.classList.add('active');
+            }
         }
-    }
         
         // Check if user is logged in
         function checkAuth() {
@@ -862,7 +985,7 @@
                     sessionStorage.setItem('hasSeenWelcome', 'true');
                 }
             } catch (error) {
-        console.error('Error fetching subscription:', error);
+                console.error('Error fetching subscription:', error);
             }
         }
         
@@ -1028,97 +1151,97 @@
         
         // ***** ANALYZE FUNCTION *****
         
-    async function analyze() {
-        if (!selectedFile) {
-            showStatus('Please select a video first', 'error');
-            return;
-        }
-    
-        if (!authToken) {
-            showStatus('Please login first', 'error');
-            return;
-        }
-    
-        const pro = document.getElementById('proSelect').value;
-        const formData = new FormData();
-        formData.append('video', selectedFile);
-        formData.append('pro', pro);
-    
-        document.getElementById('loader').style.display = 'block';
-        document.getElementById('results').style.display = 'none';
-        document.getElementById('results').innerHTML = '';
-        document.getElementById('analyzeBtn').disabled = true;
-    
-        try {
-            const response = await fetch(`${API_URL}/api/analyze`, {
-                method: 'POST',
-                headers: {
-                    'Authorization': `Bearer ${authToken}`
-                },
-                body: formData
-            });
-        
-            let data = {};
-            const contentType = response.headers.get('content-type');
-            if (contentType && contentType.includes('application/json')) {
-                data = await response.json();
-            } else {
-                const text = await response.text();
-                console.error('Non-JSON response:', text);
-                throw new Error('Server returned invalid response');
-            }
-        
-            console.log('📊 Analysis response:', data);
-            document.getElementById('loader').style.display = 'none';
-            document.getElementById('analyzeBtn').disabled = false;
-        
-            if (response.status === 402) {
-                showStatus('No analyses remaining. Please upgrade to premium.', 'error');
-                const pricingSection = document.getElementById('pricing-section');
-                if (pricingSection) {
-                    pricingSection.style.display = 'block';
-                }
+        async function analyze() {
+            if (!selectedFile) {
+                showStatus('Please select a video first', 'error');
                 return;
             }
-        
-            if (response.status === 401) {
-                showStatus('Session expired. Please login again.', 'error');
-                logout();
+    
+            if (!authToken) {
+                showStatus('Please login first', 'error');
                 return;
             }
-        
-            if (!response.ok) {
-                const errorMsg = data.error || data.message || `Error ${response.status}`;
-                showStatus(errorMsg, 'error');
-                return;
-            }
-        
-            if (data && (data.score !== undefined || data.success === true || data.overall_score !== undefined)) {
-                displayResults(data);
-                showStatus('Analysis complete!', 'success');
-            
-                const subResponse = await fetch(`${API_URL}/api/user/subscription`, {
-                    headers: { 'Authorization': `Bearer ${authToken}` }
+    
+            const pro = document.getElementById('proSelect').value;
+            const formData = new FormData();
+            formData.append('video', selectedFile);
+            formData.append('pro', pro);
+    
+            document.getElementById('loader').style.display = 'block';
+            document.getElementById('results').style.display = 'none';
+            document.getElementById('results').innerHTML = '';
+            document.getElementById('analyzeBtn').disabled = true;
+    
+            try {
+                const response = await fetch(`${API_URL}/api/analyze`, {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${authToken}`
+                    },
+                    body: formData
                 });
-                const subData = await subResponse.json();
             
-                if (!subData.is_premium && subData.analyses_remaining <= 0) {
+                let data = {};
+                const contentType = response.headers.get('content-type');
+                if (contentType && contentType.includes('application/json')) {
+                    data = await response.json();
+                } else {
+                    const text = await response.text();
+                    console.error('Non-JSON response:', text);
+                    throw new Error('Server returned invalid response');
+                }
+            
+                console.log('📊 Analysis response:', data);
+                document.getElementById('loader').style.display = 'none';
+                document.getElementById('analyzeBtn').disabled = false;
+            
+                if (response.status === 402) {
+                    showStatus('No analyses remaining. Please upgrade to premium.', 'error');
                     const pricingSection = document.getElementById('pricing-section');
                     if (pricingSection) {
                         pricingSection.style.display = 'block';
                     }
+                    return;
                 }
-            } else {
-                const errorMsg = data.error || data.message || 'No analysis data received. Try a different video.';
-                showStatus(errorMsg, 'error');
+            
+                if (response.status === 401) {
+                    showStatus('Session expired. Please login again.', 'error');
+                    logout();
+                    return;
+                }
+            
+                if (!response.ok) {
+                    const errorMsg = data.error || data.message || `Error ${response.status}`;
+                    showStatus(errorMsg, 'error');
+                    return;
+                }
+            
+                if (data && (data.score !== undefined || data.success === true || data.overall_score !== undefined)) {
+                    displayResults(data);
+                    showStatus('Analysis complete!', 'success');
+                
+                    const subResponse = await fetch(`${API_URL}/api/user/subscription`, {
+                        headers: { 'Authorization': `Bearer ${authToken}` }
+                    });
+                    const subData = await subResponse.json();
+                
+                    if (!subData.is_premium && subData.analyses_remaining <= 0) {
+                        const pricingSection = document.getElementById('pricing-section');
+                        if (pricingSection) {
+                            pricingSection.style.display = 'block';
+                        }
+                    }
+                } else {
+                    const errorMsg = data.error || data.message || 'No analysis data received. Try a different video.';
+                    showStatus(errorMsg, 'error');
+                }
+            } catch (error) {
+                document.getElementById('loader').style.display = 'none';
+                document.getElementById('analyzeBtn').disabled = false;
+                console.error('Analyze error:', error);
+                showStatus('Network error. Please try again.', 'error');
             }
-        } catch (error) {
-            document.getElementById('loader').style.display = 'none';
-            document.getElementById('analyzeBtn').disabled = false;
-            console.error('Analyze error:', error);
-            showStatus('Network error. Please try again.', 'error');
         }
-    }
         
         // ***** DISPLAY RESULTS FUNCTION WITH TOOLTIPS *****
         function displayResults(data) {
@@ -1355,46 +1478,43 @@
             }
         }
 
-        // Show pricing section ONLY when user has used their free analysis
+        // Show pricing section ONLY when user has used all their free demos
+        async function checkShowPricing() {
+            const token = localStorage.getItem('authToken');
+            if (!token) return;
         
-        
-    // Show pricing section ONLY when user has used all their free demos
-    async function checkShowPricing() {
-        const token = localStorage.getItem('authToken');
-        if (!token) return;
-    
-        try {
-            const response = await fetch(`${API_URL}/api/user/subscription`, {
-                headers: {
-                    'Authorization': `Bearer ${token}`
-                }
-            });
-            const data = await response.json();
-        
-            // Show pricing ONLY if:
-            // 1. User is NOT premium (is_premium = false)
-            // 2. User has 0 analyses remaining (has used all free demos)
-            if (!data.is_premium && data.analyses_remaining <= 0) {
-                const pricingSection = document.getElementById('pricing-section');
-                if (pricingSection) {
-                    pricingSection.style.display = 'block';
-                    // Update the pricing header message
-                    const pricingHeader = pricingSection.querySelector('p');
-                    if (pricingHeader) {
-                        pricingHeader.textContent = "🎯 You've used all your free demos! Unlock unlimited analyses with one of our premium plans.";
+            try {
+                const response = await fetch(`${API_URL}/api/user/subscription`, {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+                const data = await response.json();
+            
+                // Show pricing ONLY if:
+                // 1. User is NOT premium (is_premium = false)
+                // 2. User has 0 analyses remaining (has used all free demos)
+                if (!data.is_premium && data.analyses_remaining <= 0) {
+                    const pricingSection = document.getElementById('pricing-section');
+                    if (pricingSection) {
+                        pricingSection.style.display = 'block';
+                        // Update the pricing header message
+                        const pricingHeader = pricingSection.querySelector('p');
+                        if (pricingHeader) {
+                            pricingHeader.textContent = "🎯 You've used all your free demos! Unlock unlimited analyses with one of our premium plans.";
+                        }
+                    }
+                } else {
+                    // Hide pricing if user still has demos or is premium
+                    const pricingSection = document.getElementById('pricing-section');
+                    if (pricingSection) {
+                        pricingSection.style.display = 'none';
                     }
                 }
-            } else {
-                // Hide pricing if user still has demos or is premium
-                const pricingSection = document.getElementById('pricing-section');
-                if (pricingSection) {
-                    pricingSection.style.display = 'none';
-                }
+            } catch (error) {
+                console.error('Error checking subscription:', error);
             }
-        } catch (error) {
-            console.error('Error checking subscription:', error);
         }
-    }
         
         // Initialize
         checkAuth();
