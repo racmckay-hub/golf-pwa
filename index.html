@@ -634,7 +634,7 @@
                 <div id="pricing-section" style="display: none;">
                     <div class="card">
                         <h2>🏌️ Upgrade to Premium</h2>
-                        <p style="text-align: center; color: #4a6a4a; margin-bottom: 20px;">You've used your free analysis. Unlock unlimited analyses with one of our premium plans.</p>
+                        <p style="text-align: center; color: #4a6a4a; margin-bottom: 20px;">🎯 You've used all your free demos! Unlock unlimited analyses with one of our premium plans.</p>
                         
                         <div style="display: flex; flex-wrap: wrap; gap: 20px; justify-content: center;">
                             
@@ -1249,9 +1249,12 @@
             
             let remainingHtml = '';
             if (data.analyses_remaining !== undefined) {
+                const demoText = data.analyses_remaining > 0 
+                    ? `🎯 You have <strong>${data.analyses_remaining}</strong> free demo${data.analyses_remaining > 1 ? 's' : ''} remaining.`
+                    : `🎯 You've used all your free demos! <a href="#" onclick="document.getElementById('pricing-section').scrollIntoView({behavior:'smooth'}); return false;">Upgrade to Premium →</a>`;
                 remainingHtml = `
                     <div class="card">
-                        <p>✅ You have <strong>${data.analyses_remaining}</strong> analyses remaining</p>
+                        <p>${demoText}</p>
                     </div>
                 `;
             }
