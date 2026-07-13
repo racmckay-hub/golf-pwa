@@ -833,6 +833,7 @@
                 document.getElementById('loginSection').style.display = 'none';
                 document.getElementById('appSection').style.display = 'block';
                 checkShowPricing(); // Show pricing if user has used their free demo
+                showWelcomeMessage(); // <-- ADD THIS: Show welcome with demo count
             } else {
                 document.getElementById('loginSection').style.display = 'block';
                 document.getElementById('appSection').style.display = 'none';
@@ -1354,6 +1355,7 @@
         // Show pricing section ONLY when user has used their free analysis
         
         
+    // Show pricing section ONLY when user has used all their free demos
     async function checkShowPricing() {
         const token = localStorage.getItem('authToken');
         if (!token) return;
@@ -1366,12 +1368,21 @@
             });
             const data = await response.json();
         
+            // Show pricing ONLY if:
+            // 1. User is NOT premium (is_premium = false)
+            // 2. User has 0 analyses remaining (has used all free demos)
             if (!data.is_premium && data.analyses_remaining <= 0) {
                 const pricingSection = document.getElementById('pricing-section');
                 if (pricingSection) {
                     pricingSection.style.display = 'block';
+                    // Update the pricing header message
+                    const pricingHeader = pricingSection.querySelector('p');
+                    if (pricingHeader) {
+                        pricingHeader.textContent = "🎯 You've used all your free demos! Unlock unlimited analyses with one of our premium plans.";
+                    }
                 }
             } else {
+                // Hide pricing if user still has demos or is premium
                 const pricingSection = document.getElementById('pricing-section');
                 if (pricingSection) {
                     pricingSection.style.display = 'none';
