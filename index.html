@@ -33,7 +33,7 @@
         /* ===== HERO SECTION STYLES ===== */
         .hero {
             position: relative;
-            min-height: 50vh;
+            min-height: 60vh;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -41,7 +41,7 @@
             color: white;
             overflow: hidden;
             border-radius: 24px;
-            margin-bottom: 30px;
+            margin-bottom: 20px;
             background: linear-gradient(145deg, #0f2a1a 0%, #1a3c2a 100%);
         }
 
@@ -51,7 +51,7 @@
             left: 0;
             right: 0;
             bottom: 0;
-            background: rgba(15, 42, 26, 0.65);
+            background: rgba(15, 42, 26, 0.5);
             z-index: 1;
         }
 
@@ -71,13 +71,13 @@
             width: 100%;
             height: 100%;
             object-fit: cover;
-            opacity: 0.6;
+            opacity: 0.65;
         }
 
         .hero-content {
             position: relative;
             z-index: 2;
-            padding: 40px 20px;
+            padding: 30px 20px;
             max-width: 700px;
         }
 
@@ -571,6 +571,50 @@
             opacity: 0.9;
             transform: scale(1.02);
         }
+
+        /* ===== SMALLER AUTH SECTION ===== */
+        .auth-card {
+            background: #ffffff;
+            border-radius: 24px;
+            padding: 16px 20px 20px 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 8px 30px rgba(0,0,0,0.12);
+        }
+        
+        .auth-card h2 {
+            color: #1a3c2a;
+            margin-bottom: 10px;
+            font-size: 16px;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            border-bottom: 2px solid #e8f0e8;
+            padding-bottom: 8px;
+        }
+        
+        .auth-card input {
+            width: 100%;
+            padding: 10px 14px;
+            border: 1px solid #d0ddd0;
+            border-radius: 10px;
+            font-size: 14px;
+            margin-bottom: 4px;
+            background: #fafcfa;
+            transition: border 0.3s;
+        }
+        
+        .auth-card input:focus {
+            outline: none;
+            border-color: #1a3c2a;
+            box-shadow: 0 0 0 3px rgba(26, 60, 42, 0.15);
+        }
+        
+        .auth-card .btn {
+            padding: 10px 20px;
+            font-size: 14px;
+            margin-top: 6px;
+        }
         
         @media (max-width: 600px) {
             body {
@@ -578,7 +622,7 @@
             }
             
             .hero {
-                min-height: 40vh;
+                min-height: 45vh;
             }
             .hero h1 {
                 font-size: 28px;
@@ -601,6 +645,21 @@
                 padding: 18px;
             }
             
+            .auth-card {
+                padding: 14px 16px 16px 16px;
+            }
+            .auth-card h2 {
+                font-size: 14px;
+            }
+            .auth-card input {
+                font-size: 13px;
+                padding: 8px 12px;
+            }
+            .auth-card .btn {
+                font-size: 13px;
+                padding: 8px 16px;
+            }
+            
             .score-number {
                 font-size: 42px;
             }
@@ -618,9 +677,9 @@
         <section class="hero">
             <div class="hero-gallery">
                 <img src="https://images.unsplash.com/photo-1535131749006-b7f58c99034b?w=600&h=400&fit=crop" alt="Golf swing" loading="lazy">
-                <img src="https://images.unsplash.com/photo-1587174486073-ae5e5cff23aa?w=600&h=400&fit=crop" alt="Golfer" loading="lazy">
-                <img src="https://images.unsplash.com/photo-1603219803109-81ad3c0dd6d5?w=600&h=400&fit=crop" alt="Golf course" loading="lazy">
-                <img src="https://images.unsplash.com/photo-1515003197210-e0cd71810b5f?w=600&h=400&fit=crop" alt="Golf ball" loading="lazy">
+                <img src="https://images.unsplash.com/photo-1587174486073-ae5e5cff23aa?w=600&h=400&fit=crop" alt="Golfer on course" loading="lazy">
+                <img src="https://images.unsplash.com/photo-1603219803109-81ad3c0dd6d5?w=600&h=400&fit=crop" alt="Golf ball on tee" loading="lazy">
+                <img src="https://images.unsplash.com/photo-1515003197210-e0cd71810b5f?w=600&h=400&fit=crop" alt="Golf course landscape" loading="lazy">
             </div>
             <div class="hero-overlay"></div>
             <div class="hero-content">
@@ -634,8 +693,8 @@
             </div>
         </section>
 
-        <!-- Auth Section -->
-        <div class="card auth-section" id="loginSection">
+        <!-- Auth Section - Smaller -->
+        <div class="auth-card" id="loginSection">
             <h2>🔐 Access Your Account</h2>
             <input type="email" id="email" placeholder="Email address" autocomplete="email">
             <input type="password" id="password" placeholder="Password" autocomplete="current-password">
