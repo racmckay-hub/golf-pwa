@@ -42,7 +42,8 @@
             overflow: hidden;
             border-radius: 24px;
             margin-bottom: 20px;
-            background: linear-gradient(145deg, #0f2a1a 0%, #1a3c2a 100%);
+            background: linear-gradient(145deg, #0a1f12 0%, #143322 100%);
+            box-shadow: 0 10px 40px rgba(0,0,0,0.6);
         }
 
         .hero-overlay {
@@ -51,8 +52,9 @@
             left: 0;
             right: 0;
             bottom: 0;
-            background: rgba(15, 42, 26, 0.5);
+            background: rgba(8, 20, 12, 0.6);
             z-index: 1;
+            backdrop-filter: brightness(0.85) contrast(1.2);
         }
 
         .hero-gallery {
@@ -71,7 +73,8 @@
             width: 100%;
             height: 100%;
             object-fit: cover;
-            opacity: 0.65;
+            opacity: 0.9;
+            filter: contrast(1.3) saturate(1.1);
         }
 
         .hero-content {
@@ -79,6 +82,7 @@
             z-index: 2;
             padding: 30px 20px;
             max-width: 700px;
+            text-shadow: 0 4px 20px rgba(0,0,0,0.7);
         }
 
         .hero h1 {
@@ -89,15 +93,17 @@
         }
 
         .hero h1 span {
-            background: linear-gradient(135deg, #d4af37, #f5d76e);
+            background: linear-gradient(135deg, #e6c45e, #f5d76e);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
+            text-shadow: 0 2px 10px rgba(0,0,0,0.3);
         }
 
         .hero p {
             font-size: 18px;
-            opacity: 0.9;
+            opacity: 0.95;
             margin: 10px 0 20px;
+            font-weight: 500;
         }
 
         .hero-stats {
@@ -106,15 +112,16 @@
             gap: 20px;
             margin-top: 20px;
             font-size: 14px;
-            opacity: 0.9;
+            opacity: 0.95;
             flex-wrap: wrap;
         }
 
         .hero-stats span {
-            background: rgba(255,255,255,0.12);
+            background: rgba(0,0,0,0.5);
             padding: 6px 16px;
             border-radius: 20px;
             backdrop-filter: blur(4px);
+            border: 1px solid rgba(255,255,255,0.15);
         }
 
         /* Navigation Menu Styles */
@@ -676,10 +683,10 @@
         <!-- ===== HERO SECTION ===== -->
         <section class="hero">
             <div class="hero-gallery">
-                <img src="https://images.unsplash.com/photo-1535131749006-b7f58c99034b?w=600&h=400&fit=crop" alt="Golf swing" loading="lazy">
-                <img src="https://images.unsplash.com/photo-1587174486073-ae5e5cff23aa?w=600&h=400&fit=crop" alt="Golfer on course" loading="lazy">
-                <img src="https://images.unsplash.com/photo-1603219803109-81ad3c0dd6d5?w=600&h=400&fit=crop" alt="Golf ball on tee" loading="lazy">
-                <img src="https://images.unsplash.com/photo-1515003197210-e0cd71810b5f?w=600&h=400&fit=crop" alt="Golf course landscape" loading="lazy">
+                <img src="https://images.unsplash.com/photo-1560260954-2b18cef3c1ca?w=600&h=400&fit=crop&crop=center" alt="Golf swing power" loading="lazy">
+                <img src="https://images.unsplash.com/photo-1587174486073-ae5e5cff23aa?w=600&h=400&fit=crop&crop=center" alt="Golfer on course" loading="lazy">
+                <img src="https://images.unsplash.com/photo-1603219803109-81ad3c0dd6d5?w=600&h=400&fit=crop&crop=center" alt="Golf ball on tee" loading="lazy">
+                <img src="https://images.unsplash.com/photo-1515003197210-e0cd71810b5f?w=600&h=400&fit=crop&crop=center" alt="Golf course landscape" loading="lazy">
             </div>
             <div class="hero-overlay"></div>
             <div class="hero-content">
@@ -965,6 +972,8 @@
                 authToken = token;
                 document.getElementById('loginSection').style.display = 'none';
                 document.getElementById('appSection').style.display = 'block';
+                // Ensure home section is shown and priced is checked
+                showSection('home');
                 checkShowPricing();
                 showWelcomeMessage();
             } else {
