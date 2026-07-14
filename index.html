@@ -33,7 +33,7 @@
         /* ===== HERO SECTION STYLES ===== */
         .hero {
             position: relative;
-            min-height: 70vh;
+            min-height: 50vh;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -51,7 +51,7 @@
             left: 0;
             right: 0;
             bottom: 0;
-            background: rgba(15, 42, 26, 0.75);
+            background: rgba(15, 42, 26, 0.65);
             z-index: 1;
         }
 
@@ -71,7 +71,7 @@
             width: 100%;
             height: 100%;
             object-fit: cover;
-            opacity: 0.35;
+            opacity: 0.6;
         }
 
         .hero-content {
@@ -82,7 +82,7 @@
         }
 
         .hero h1 {
-            font-size: 48px;
+            font-size: 42px;
             font-weight: 700;
             letter-spacing: -0.5px;
             margin: 0;
@@ -95,68 +95,23 @@
         }
 
         .hero p {
-            font-size: 20px;
+            font-size: 18px;
             opacity: 0.9;
-            margin: 10px 0 30px;
-        }
-
-        .hero-buttons {
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: center;
-            gap: 12px;
-        }
-
-        .btn-hero {
-            display: inline-block;
-            background: #d4af37;
-            color: #1a3c2a;
-            padding: 14px 36px;
-            border-radius: 30px;
-            font-size: 18px;
-            font-weight: 600;
-            text-decoration: none;
-            transition: all 0.3s;
-            border: none;
-            cursor: pointer;
-        }
-
-        .btn-hero:hover {
-            background: #f5d76e;
-            transform: translateY(-2px);
-        }
-
-        .btn-hero-outline {
-            display: inline-block;
-            border: 2px solid white;
-            color: white;
-            padding: 14px 36px;
-            border-radius: 30px;
-            font-size: 18px;
-            font-weight: 600;
-            text-decoration: none;
-            transition: all 0.3s;
-            background: transparent;
-            cursor: pointer;
-        }
-
-        .btn-hero-outline:hover {
-            background: white;
-            color: #1a3c2a;
-            transform: translateY(-2px);
+            margin: 10px 0 20px;
         }
 
         .hero-stats {
             display: flex;
             justify-content: center;
-            gap: 30px;
-            margin-top: 30px;
+            gap: 20px;
+            margin-top: 20px;
             font-size: 14px;
-            opacity: 0.8;
+            opacity: 0.9;
+            flex-wrap: wrap;
         }
 
         .hero-stats span {
-            background: rgba(255,255,255,0.1);
+            background: rgba(255,255,255,0.12);
             padding: 6px 16px;
             border-radius: 20px;
             backdrop-filter: blur(4px);
@@ -182,6 +137,7 @@
             cursor: pointer;
             transition: all 0.3s;
             backdrop-filter: blur(4px);
+            text-decoration: none;
         }
 
         .nav-btn:hover {
@@ -622,21 +578,20 @@
             }
             
             .hero {
-                min-height: 60vh;
+                min-height: 40vh;
             }
             .hero h1 {
-                font-size: 30px;
+                font-size: 28px;
             }
             .hero p {
-                font-size: 16px;
-            }
-            .btn-hero, .btn-hero-outline {
-                padding: 12px 24px;
-                font-size: 16px;
+                font-size: 15px;
             }
             .hero-stats {
-                flex-wrap: wrap;
+                font-size: 12px;
                 gap: 10px;
+            }
+            .hero-stats span {
+                padding: 4px 12px;
             }
             .hero-gallery {
                 grid-template-columns: repeat(2, 1fr);
@@ -671,10 +626,6 @@
             <div class="hero-content">
                 <h1>🏌️ <span>Golf Swing Analyzer</span></h1>
                 <p>Compare your swing to the pros • Powered by AI</p>
-                <div class="hero-buttons">
-                    <a href="#auth-section" class="btn-hero">Start Free Analysis</a>
-                    <a href="#section-instructions" class="btn-hero-outline">How It Works</a>
-                </div>
                 <div class="hero-stats">
                     <span>📊 5+ Pro Comparisons</span>
                     <span>⚡ Instant AI Analysis</span>
@@ -955,8 +906,8 @@
                 authToken = token;
                 document.getElementById('loginSection').style.display = 'none';
                 document.getElementById('appSection').style.display = 'block';
-                checkShowPricing(); // Show pricing if user has used their free demo
-                showWelcomeMessage(); // <-- ADD THIS: Show welcome with demo count
+                checkShowPricing();
+                showWelcomeMessage();
             } else {
                 document.getElementById('loginSection').style.display = 'block';
                 document.getElementById('appSection').style.display = 'none';
@@ -976,10 +927,8 @@
                 });
                 const data = await response.json();
         
-                // Check if user has just logged in (first time this session)
                 const hasSeenWelcome = sessionStorage.getItem('hasSeenWelcome');
                 if (!hasSeenWelcome && data.analyses_remaining > 0) {
-                    // Show welcome message with demo count
                     const message = `👋 Welcome! You have ${data.analyses_remaining} free demo${data.analyses_remaining > 1 ? 's' : ''} remaining.`;
                     showStatus(message, 'success');
                     sessionStorage.setItem('hasSeenWelcome', 'true');
@@ -994,7 +943,7 @@
         async function register() {
             const email = document.getElementById('email').value;
             const password = document.getElementById('password').value;
-            const fingerprint = getDeviceFingerprint(); // <-- ADD THIS
+            const fingerprint = getDeviceFingerprint();
             
             if (!email || !password) {
                 showStatus('Please enter email and password', 'error');
@@ -1491,21 +1440,16 @@
                 });
                 const data = await response.json();
             
-                // Show pricing ONLY if:
-                // 1. User is NOT premium (is_premium = false)
-                // 2. User has 0 analyses remaining (has used all free demos)
                 if (!data.is_premium && data.analyses_remaining <= 0) {
                     const pricingSection = document.getElementById('pricing-section');
                     if (pricingSection) {
                         pricingSection.style.display = 'block';
-                        // Update the pricing header message
                         const pricingHeader = pricingSection.querySelector('p');
                         if (pricingHeader) {
                             pricingHeader.textContent = "🎯 You've used all your free demos! Unlock unlimited analyses with one of our premium plans.";
                         }
                     }
                 } else {
-                    // Hide pricing if user still has demos or is premium
                     const pricingSection = document.getElementById('pricing-section');
                     if (pricingSection) {
                         pricingSection.style.display = 'none';
