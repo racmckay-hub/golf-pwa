@@ -235,6 +235,90 @@
         .instruction-box ul li::marker {
             color: #d4af37;
         }
+
+        /* Enhanced Video Requirements Box */
+        .video-requirements {
+            background: #f0f7f0;
+            border-left: 4px solid #d4af37;
+            padding: 16px 18px;
+            border-radius: 12px;
+            margin: 16px 0 8px 0;
+        }
+
+        .video-requirements strong {
+            color: #1a3c2a;
+            font-size: 16px;
+        }
+
+        .video-requirements ul {
+            margin: 8px 0 0 18px;
+            font-size: 14px;
+            line-height: 1.7;
+        }
+
+        .video-requirements .warning {
+            color: #c62828;
+            font-weight: 600;
+        }
+
+        .video-requirements .success {
+            color: #2e7d32;
+            font-weight: 600;
+        }
+
+        .video-requirements .tip-box {
+            margin-top: 10px;
+            background: #e8f0e8;
+            border-radius: 8px;
+            padding: 10px 14px;
+            font-size: 13px;
+            color: #2a4a3a;
+        }
+
+        /* Info Box for Instructions Page */
+        .info-box-warning {
+            background: #fff3e0;
+            border-left: 4px solid #d4af37;
+            padding: 16px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+
+        .info-box-warning h3 {
+            color: #1a3c2a;
+            margin-top: 0;
+        }
+
+        .info-box-warning ul {
+            margin: 8px 0 0 18px;
+            line-height: 1.8;
+        }
+
+        .info-box-warning .warning {
+            color: #c62828;
+            font-weight: 600;
+        }
+
+        .info-box-warning .success {
+            color: #2e7d32;
+            font-weight: 600;
+        }
+
+        .info-box-good {
+            background: #e3f2fd;
+            border-radius: 8px;
+            padding: 16px;
+            margin-top: 16px;
+        }
+
+        .info-box-good h4 {
+            margin: 0 0 8px 0;
+        }
+
+        .info-box-good ul {
+            margin: 0 0 0 18px;
+            line-height: 1.8;
+        }
         
         .upload-area {
             border: 2px dashed #c0d6c0;
@@ -729,20 +813,26 @@
                 <div class="card">
                     <h2><span class="step-icon">2</span> Upload Your Swing</h2>
                     
-                    <div class="instruction-box">
-                        <strong>📹 Recording Instructions</strong>
+                    <!-- ===== ENHANCED VIDEO REQUIREMENTS BOX ===== -->
+                    <div class="video-requirements">
+                        <strong>📹 Video Requirements for Best Results</strong>
                         <ul>
-                            <li>Film from <strong>“Down the Line”</strong> (behind the golfer, facing the target).</li>
-                            <li>Ensure your <strong>full body</strong> and the <strong>club</strong> are visible.</li>
-                            <li>Use good lighting and a steady camera (tripod recommended).</li>
-                            <li>Record at <strong>60fps</strong> if possible for the best analysis.</li>
+                            <li><span class="warning">📱 LANDSCAPE MODE</span> – Hold your phone horizontally (wide, not tall)</li>
+                            <li><span class="warning">⏱️ At least 8-10 seconds</span> – Capture the full swing cycle</li>
+                            <li><span class="success">🎯 "Down the Line"</span> – Camera behind the golfer, facing the target</li>
+                            <li><span class="success">👤 Full Body Visible</span> – Head to toes, with the club in frame</li>
+                            <li><span class="success">☀️ Good Lighting</span> – Outdoor or bright indoor lighting</li>
+                            <li><span class="success">📹 30fps or 60fps</span> – Higher frame rate = better analysis</li>
                         </ul>
+                        <div class="tip-box">
+                            💡 <strong>Tip:</strong> Watch the pro videos in the dropdown for examples of good camera angles.
+                        </div>
                     </div>
                     
                     <div class="upload-area" id="uploadArea">
                         <span class="icon-large">🎥</span>
                         <div style="font-weight:500; margin-bottom:4px;">Tap to select or drag your video here</div>
-                        <div style="font-size:13px; color:#7a9a7a;">MP4, MOV, or AVI • Max 100MB</div>
+                        <div style="font-size:13px; color:#7a9a7a;">MP4, MOV, or AVI • Max 100MB • Landscape preferred</div>
                         <input type="file" id="videoInput" accept="video/*" style="display: none;">
                     </div>
                     <div id="videoPreview" class="video-preview"></div>
@@ -815,17 +905,43 @@
                 <div class="card">
                     <h2>📖 How to Use the Golf Swing Analyzer</h2>
                     
+                    <!-- Enhanced Warning Box -->
+                    <div class="info-box-warning">
+                        <h3>🎯 Before You Start</h3>
+                        <p style="margin-bottom: 8px;"><strong>The quality of your video directly affects the analysis accuracy.</strong></p>
+                        <ul>
+                            <li><span class="warning">❌ Portrait videos (tall) will NOT work correctly</span></li>
+                            <li><span class="warning">❌ Videos shorter than 8 seconds will NOT capture the full swing</span></li>
+                            <li><span class="success">✅ Landscape videos (wide) give the best results</span></li>
+                            <li><span class="success">✅ 8-12 second videos capture the complete swing</span></li>
+                        </ul>
+                    </div>
+                    
                     <h3 style="margin-top: 20px;">🎯 What This Tool Does</h3>
                     <p>Our AI-powered analyzer compares your golf swing to professional golfers and provides detailed feedback to help you improve.</p>
                     
                     <h3 style="margin-top: 20px;">📹 Video Requirements</h3>
                     <ul style="margin-left: 20px; line-height: 1.8;">
                         <li><strong>Camera Position:</strong> Film from "Down the Line" (behind the golfer, facing the target)</li>
+                        <li><strong>Orientation:</strong> <span style="color: #c62828; font-weight: bold;">LANDSCAPE ONLY</span> – hold your phone horizontally</li>
+                        <li><strong>Duration:</strong> At least <strong>8-10 seconds</strong> to capture the full swing</li>
                         <li><strong>Full Body:</strong> Ensure your entire body and the club are visible</li>
                         <li><strong>Lighting:</strong> Use good lighting (outdoor or bright indoor)</li>
-                        <li><strong>Frame Rate:</strong> 60fps recommended for best results</li>
+                        <li><strong>Frame Rate:</strong> 30fps or 60fps recommended</li>
                         <li><strong>Format:</strong> MP4, MOV, or AVI (max 100MB)</li>
                     </ul>
+                    
+                    <div class="info-box-good">
+                        <h4>✅ Example of a Good Video:</h4>
+                        <ul>
+                            <li>Landscape (wide) orientation</li>
+                            <li>8-10 seconds long</li>
+                            <li>Full body visible from head to toes</li>
+                            <li>Club visible throughout the swing</li>
+                            <li>Good lighting, no shadows on the golfer</li>
+                            <li>Camera at waist height, behind the golfer</li>
+                        </ul>
+                    </div>
                     
                     <h3 style="margin-top: 20px;">📊 What You'll Get</h3>
                     <ul style="margin-left: 20px; line-height: 1.8;">
@@ -841,7 +957,7 @@
                     
                     <h3 style="margin-top: 20px;">🔄 Free vs Premium</h3>
                     <ul style="margin-left: 20px; line-height: 1.8;">
-                        <li><strong>Free Account:</strong> 1 analysis to try the service</li>
+                        <li><strong>Free Account:</strong> 3 free analyses to try the service</li>
                         <li><strong>Premium Monthly ($19.99):</strong> Unlimited analyses, cancel anytime</li>
                         <li><strong>Premium Lifetime ($99.99):</strong> Unlimited analyses forever, no recurring charges</li>
                     </ul>
