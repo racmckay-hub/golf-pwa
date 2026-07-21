@@ -573,6 +573,11 @@
             border-radius: 16px;
             padding: 24px;
             text-align: center;
+            transition: transform 0.3s ease;
+        }
+        
+        .pricing-card:hover {
+            transform: translateY(-5px);
         }
         
         .pricing-card.monthly {
@@ -584,6 +589,13 @@
             background: #fdf8ee;
             border: 2px solid #d4af37;
             position: relative;
+        }
+
+        .pricing-card.premium {
+            background: #f0f7f0;
+            border: 2px solid #d4af37;
+            position: relative;
+            transform: scale(1.02);
         }
         
         .best-value-badge {
@@ -617,6 +629,10 @@
         .pricing-card .price.lifetime-price {
             color: #d4af37;
         }
+
+        .pricing-card .price.premium-price {
+            color: #1a3c2a;
+        }
         
         .pricing-card .period {
             color: #4a6a4a;
@@ -643,6 +659,12 @@
             font-size: 16px;
             font-weight: 600;
             cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .btn-subscribe:hover {
+            opacity: 0.9;
+            transform: scale(1.02);
         }
         
         .btn-subscribe.monthly-btn {
@@ -651,6 +673,11 @@
         }
         
         .btn-subscribe.lifetime-btn {
+            background: #d4af37;
+            color: white;
+        }
+
+        .btn-subscribe.premium-btn {
             background: #d4af37;
             color: white;
         }
@@ -753,6 +780,10 @@
                 min-width: 100%;
                 max-width: 100%;
             }
+            
+            .pricing-card.premium {
+                transform: scale(1);
+            }
         }
     </style>
 </head>
@@ -768,7 +799,7 @@
                 <h1>🏌️ <span>Golf Swing Analyzer</span></h1>
                 <p>Compare your swing to the pros • Powered by AI</p>
                 <div class="hero-stats">
-                    <span>📊 5+ Pro Comparisons</span>
+                    <span>📊 7 Pro Comparisons</span>
                     <span>⚡ Instant AI Analysis</span>
                     <span>🏌️ 1000+ Swings Analyzed</span>
                 </div>
@@ -850,45 +881,17 @@
                 <div id="results" class="result"></div>
 
                 <!-- ============================================ -->
-                <!-- PRICING SECTION - Shows ONLY after free demo is used -->
+                <!-- PRICING SECTION - Dynamic from API -->
+                <!-- Shows ONLY after free demo is used -->
                 <!-- ============================================ -->
                 <div id="pricing-section" style="display: none;">
                     <div class="card">
                         <h2>🏌️ Upgrade to Premium</h2>
                         <p style="text-align: center; color: #4a6a4a; margin-bottom: 20px;">🎯 You've used all your free demos! Unlock unlimited analyses with one of our premium plans.</p>
                         
-                        <div style="display: flex; flex-wrap: wrap; gap: 20px; justify-content: center;">
-                            
-                            <!-- Monthly Plan -->
-                            <div class="pricing-card monthly">
-                                <h3>Monthly Premium</h3>
-                                <p class="price monthly-price">$19.99</p>
-                                <p class="period">per month</p>
-                                <ul>
-                                    <li>✅ Unlimited swing analyses</li>
-                                    <li>✅ Compare to 10+ pros</li>
-                                    <li>✅ Detailed metrics & feedback</li>
-                                    <li>✅ Personalized drills</li>
-                                    <li>✅ Cancel anytime</li>
-                                </ul>
-                                <button class="btn-subscribe monthly-btn" onclick="subscribeMonthly()">Subscribe Monthly</button>
-                            </div>
-                            
-                            <!-- Lifetime Plan -->
-                            <div class="pricing-card lifetime">
-                                <span class="best-value-badge">Best Value</span>
-                                <h3>Lifetime Premium</h3>
-                                <p class="price lifetime-price">$99.99</p>
-                                <p class="period">one-time payment</p>
-                                <ul>
-                                    <li>✅ Unlimited analyses forever</li>
-                                    <li>✅ Compare to 10+ pros</li>
-                                    <li>✅ Detailed metrics & feedback</li>
-                                    <li>✅ Personalized drills</li>
-                                    <li>✅ No recurring charges</li>
-                                </ul>
-                                <button class="btn-subscribe lifetime-btn" onclick="subscribeLifetime()">Buy Lifetime</button>
-                            </div>
+                        <div style="display: flex; flex-wrap: wrap; gap: 20px; justify-content: center;" id="pricingGrid">
+                            <!-- Plans will be loaded here dynamically -->
+                            <div style="text-align: center; width: 100%; color: #7a9a7a;">Loading pricing...</div>
                         </div>
                     </div>
                 </div>
@@ -957,9 +960,10 @@
                     
                     <h3 style="margin-top: 20px;">🔄 Free vs Premium</h3>
                     <ul style="margin-left: 20px; line-height: 1.8;">
-                        <li><strong>Free Account:</strong> <strong>3 free analyses</strong> to try the service</li>
-                        <li><strong>Premium Monthly ($19.99):</strong> Unlimited analyses, cancel anytime</li>
-                        <li><strong>Premium Lifetime ($99.99):</strong> Unlimited analyses forever, no recurring charges</li>
+                        <li><strong>Free Account:</strong> <strong>1 free demo</strong> to try the service</li>
+                        <li><strong>Starter (£4.99/month):</strong> 10 analyses per month</li>
+                        <li><strong>Premium (£9.99/month):</strong> Unlimited analyses, all pros, advanced metrics</li>
+                        <li><strong>Lifetime (£99.99):</strong> Unlimited analyses forever, no recurring charges</li>
                     </ul>
                 </div>
             </div>
@@ -1011,10 +1015,6 @@
         let authToken = null;
         
         // ============================================
-        // NAVIGATION FUNCTIONS
-        // ============================================
-
-        // ============================================
         // DEVICE FINGERPRINT FUNCTION
         // ============================================
 
@@ -1040,6 +1040,10 @@
             }
             return Math.abs(hash).toString(36);
         }
+        
+        // ============================================
+        // NAVIGATION FUNCTIONS
+        // ============================================
         
         function showSection(section) {
             // If section is 'home', show home and hide others
@@ -1114,7 +1118,6 @@
                 console.error('Error fetching subscription:', error);
             }
         }
-        
         
         // Register function
         async function register() {
@@ -1326,6 +1329,7 @@
                     const pricingSection = document.getElementById('pricing-section');
                     if (pricingSection) {
                         pricingSection.style.display = 'block';
+                        await loadPricing();
                     }
                     return;
                 }
@@ -1355,6 +1359,7 @@
                         const pricingSection = document.getElementById('pricing-section');
                         if (pricingSection) {
                             pricingSection.style.display = 'block';
+                            await loadPricing();
                         }
                     }
                 } else {
@@ -1529,74 +1534,98 @@
         }
         
         // ============================================
-        // STRIPE PAYMENT FUNCTIONS
+        // DYNAMIC PRICING FUNCTIONS
         // ============================================
 
-        async function subscribeMonthly() {
-            const token = localStorage.getItem('authToken');
-            if (!token) {
-                showStatus('Please log in first', 'error');
-                return;
-            }
-            
-            // Monthly subscription price ID
-            const priceId = 'price_1TrNo9AStvjfOdJRaP2IwSzb';
+        async function loadPricing() {
+            const grid = document.getElementById('pricingGrid');
+            if (!grid) return;
             
             try {
-                const response = await fetch(`${API_URL}/api/create-checkout-session`, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Authorization': `Bearer ${token}`
-                    },
-                    body: JSON.stringify({
-                        price_id: priceId,
-                        mode: 'subscription'
-                    })
+                const response = await fetch(`${API_URL}/api/pricing`);
+                if (!response.ok) throw new Error('Failed to load pricing');
+                const data = await response.json();
+                const plans = data.plans;
+                
+                // Order: starter, premium, lifetime
+                const planOrder = ['starter', 'premium', 'lifetime'];
+                let html = '';
+                
+                planOrder.forEach(key => {
+                    const plan = plans[key];
+                    if (!plan) return;
+                    
+                    const isPopular = key === 'premium';
+                    const isLifetime = key === 'lifetime';
+                    const priceDisplay = `£${plan.price}`;
+                    const periodDisplay = isLifetime ? 'one-time' : '/month';
+                    const btnText = isLifetime ? 'Buy Lifetime' : 'Subscribe Monthly';
+                    const btnClass = isLifetime ? 'lifetime-btn' : (isPopular ? 'premium-btn' : 'monthly-btn');
+                    const cardClass = isLifetime ? 'lifetime' : (isPopular ? 'premium' : 'monthly');
+                    
+                    html += `
+                        <div class="pricing-card ${cardClass}">
+                            ${isPopular ? '<span class="best-value-badge">Most Popular</span>' : ''}
+                            <h3>${plan.name}</h3>
+                            <p class="price ${isLifetime ? 'lifetime-price' : (isPopular ? 'premium-price' : 'monthly-price')}">${priceDisplay}</p>
+                            <p class="period">${periodDisplay}</p>
+                            <ul>
+                                <li>✅ ${plan.features.analyses === 'unlimited' ? 'Unlimited' : plan.features.analyses} analyses</li>
+                                <li>✅ Compare with ${plan.features.pro_comparisons} pros</li>
+                                <li>✅ Metrics: ${plan.features.metrics.join(', ')}</li>
+                            </ul>
+                            <button class="btn-subscribe ${btnClass}" onclick="handleSubscribe('${key}')">${btnText}</button>
+                        </div>
+                    `;
                 });
                 
-                const data = await response.json();
+                grid.innerHTML = html;
                 
-                if (data.url) {
-                    window.location.href = data.url;
-                } else {
-                    showStatus('Error creating checkout: ' + (data.error || 'Unknown error'), 'error');
-                }
             } catch (error) {
-                console.error('Payment error:', error);
-                showStatus('Error processing payment. Please try again.', 'error');
+                console.error('Error loading pricing:', error);
+                grid.innerHTML = '<p style="color:#c62828;">Failed to load pricing. Please refresh.</p>';
             }
         }
 
-        async function subscribeLifetime() {
+        async function handleSubscribe(planKey) {
             const token = localStorage.getItem('authToken');
             if (!token) {
                 showStatus('Please log in first', 'error');
                 return;
             }
             
-            // Lifetime one-time price ID
-            const priceId = 'price_1TrNvyAStvjfOdJRdWQgYocU';
-            
             try {
-                const response = await fetch(`${API_URL}/api/create-checkout-session`, {
+                // First get the pricing data to get the price_id
+                const response = await fetch(`${API_URL}/api/pricing`);
+                const data = await response.json();
+                const plan = data.plans[planKey];
+                
+                if (!plan || !plan.price_id) {
+                    showStatus('Invalid plan selected', 'error');
+                    return;
+                }
+                
+                const mode = planKey === 'lifetime' ? 'payment' : 'subscription';
+                
+                const checkoutResponse = await fetch(`${API_URL}/api/create-checkout-session`, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
                         'Authorization': `Bearer ${token}`
                     },
                     body: JSON.stringify({
-                        price_id: priceId,
-                        mode: 'payment'
+                        plan: planKey,
+                        price_id: plan.price_id,
+                        mode: mode
                     })
                 });
                 
-                const data = await response.json();
+                const session = await checkoutResponse.json();
                 
-                if (data.url) {
-                    window.location.href = data.url;
+                if (session.url) {
+                    window.location.href = session.url;
                 } else {
-                    showStatus('Error creating checkout: ' + (data.error || 'Unknown error'), 'error');
+                    showStatus('Error creating checkout: ' + (session.error || 'Unknown error'), 'error');
                 }
             } catch (error) {
                 console.error('Payment error:', error);
@@ -1617,20 +1646,14 @@
                 });
                 const data = await response.json();
             
+                const pricingSection = document.getElementById('pricing-section');
+                if (!pricingSection) return;
+            
                 if (!data.is_premium && data.analyses_remaining <= 0) {
-                    const pricingSection = document.getElementById('pricing-section');
-                    if (pricingSection) {
-                        pricingSection.style.display = 'block';
-                        const pricingHeader = pricingSection.querySelector('p');
-                        if (pricingHeader) {
-                            pricingHeader.textContent = "🎯 You've used all your free demos! Unlock unlimited analyses with one of our premium plans.";
-                        }
-                    }
+                    pricingSection.style.display = 'block';
+                    await loadPricing();
                 } else {
-                    const pricingSection = document.getElementById('pricing-section');
-                    if (pricingSection) {
-                        pricingSection.style.display = 'none';
-                    }
+                    pricingSection.style.display = 'none';
                 }
             } catch (error) {
                 console.error('Error checking subscription:', error);
