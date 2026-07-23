@@ -1013,6 +1013,60 @@
         let allPros = []; // Store all pros for filtering
         
         // ============================================
+        // PAYMENT REDIRECT HANDLER
+        // ============================================
+
+        function handlePaymentRedirect() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const sessionId = urlParams.get('session_id');
+            const cancelled = urlParams.get('cancelled');
+            
+            // Check if this is a payment success redirect
+            if (sessionId) {
+                // Show success message
+                const resultsDiv = document.getElementById('results');
+                if (resultsDiv) {
+                    resultsDiv.style.display = 'block';
+                    resultsDiv.innerHTML = `
+                        <div class="card" style="text-align: center; padding: 40px 20px;">
+                            <div style="font-size: 64px; margin-bottom: 16px;">🎉</div>
+                            <h2 style="color: #1a3c2a; margin-bottom: 8px;">Payment Successful!</h2>
+                            <p style="color: #4a6a4a; margin-bottom: 20px;">Your account has been upgraded to Premium. You now have unlimited access to all features.</p>
+                            <button class="btn btn-primary" onclick="location.href='/'">Go to Dashboard</button>
+                        </div>
+                    `;
+                }
+                // Clear the URL parameters
+                window.history.replaceState({}, document.title, '/');
+                // Refresh subscription status
+                checkShowPricing();
+                loadUserPlan();
+                return true;
+            }
+            
+            // Check if this is a payment cancellation
+            if (cancelled) {
+                const resultsDiv = document.getElementById('results');
+                if (resultsDiv) {
+                    resultsDiv.style.display = 'block';
+                    resultsDiv.innerHTML = `
+                        <div class="card" style="text-align: center; padding: 40px 20px;">
+                            <div style="font-size: 64px; margin-bottom: 16px;">😅</div>
+                            <h2 style="color: #1a3c2a; margin-bottom: 8px;">Payment Cancelled</h2>
+                            <p style="color: #4a6a4a; margin-bottom: 20px;">Your payment was cancelled. You can try again anytime.</p>
+                            <button class="btn btn-primary" onclick="location.href='/'">Go back to Dashboard</button>
+                        </div>
+                    `;
+                }
+                // Clear the URL parameters
+                window.history.replaceState({}, document.title, '/');
+                return true;
+            }
+            
+            return false;
+        }
+        
+        // ============================================
         // DEVICE FINGERPRINT FUNCTION
         // ============================================
 
@@ -1076,6 +1130,18 @@
         
         // Check if user is logged in
         function checkAuth() {
+            // Handle payment redirect first
+            if (handlePaymentRedirect()) {
+                // If it was a payment redirect, still show the app but with the message
+                document.getElementById('loginSection').style.display = 'none';
+                document.getElementById('appSection').style.display = 'block';
+                showSection('home');
+                // Update subscription status
+                checkShowPricing();
+                loadUserPlan();
+                return;
+            }
+            
             const token = localStorage.getItem('authToken');
             if (token) {
                 authToken = token;
