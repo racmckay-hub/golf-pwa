@@ -799,7 +799,7 @@
                 <h1>🏌️ <span>Golf Swing Analyzer</span></h1>
                 <p>Compare your swing to the pros • Powered by AI</p>
                 <div class="hero-stats">
-                    <span>📊 7 Pro Comparisons</span>
+                    <span>📊 20 Pro Comparisons</span>
                     <span>⚡ Instant AI Analysis</span>
                     <span>🏌️ 1000+ Swings Analyzed</span>
                 </div>
@@ -832,11 +832,7 @@
                     <h2><span class="step-icon">1</span> Select a Professional</h2>
                     <p style="font-size:14px; color:#4a6a4a; margin-bottom:12px;">Choose a pro to compare your swing against.</p>
                     <select id="proSelect">
-                        <option value="rory_mcilroy">🏆 Rory McIlroy – 4x Major Champion</option>
-                        <option value="tiger_woods">🏆 Tiger Woods – 15x Major Champion</option>
-                        <option value="justin_thomas">🏆 Justin Thomas – 2x Major Champion</option>
-                        <option value="collin_morikawa">🏆 Collin Morikawa – 2x Major Champion</option>
-                        <option value="jon_rahm">🏆 Jon Rahm – 2023 Masters Champion</option>
+                        <option value="">Loading pros...</option>
                     </select>
                 </div>
                 
@@ -961,8 +957,8 @@
                     <h3 style="margin-top: 20px;">🔄 Free vs Premium</h3>
                     <ul style="margin-left: 20px; line-height: 1.8;">
                         <li><strong>Free Account:</strong> <strong>1 free demo</strong> to try the service</li>
-                        <li><strong>Starter (£4.99/month):</strong> 10 analyses per month</li>
-                        <li><strong>Premium (£9.99/month):</strong> Unlimited analyses, all pros, advanced metrics</li>
+                        <li><strong>Starter (£4.99/month):</strong> 10 analyses per month, compare with 10 pros, basic metrics</li>
+                        <li><strong>Premium (£9.99/month):</strong> Unlimited analyses, all 20 pros, advanced metrics</li>
                         <li><strong>Lifetime (£99.99):</strong> Unlimited analyses forever, no recurring charges</li>
                     </ul>
                 </div>
@@ -1013,6 +1009,8 @@
         // API URL - Your Hetzner Server
         const API_URL = 'https://api.xaigolf.com';
         let authToken = null;
+        let currentPlanType = 'free'; // Track user's plan
+        let allPros = []; // Store all pros for filtering
         
         // ============================================
         // DEVICE FINGERPRINT FUNCTION
@@ -1087,11 +1085,30 @@
                 showSection('home');
                 checkShowPricing();
                 showWelcomeMessage();
+                loadUserPlan();
                 // Scroll to top of the app section so step 1 is visible
                 document.getElementById('appSection').scrollIntoView({ behavior: 'smooth', block: 'start' });
             } else {
                 document.getElementById('loginSection').style.display = 'block';
                 document.getElementById('appSection').style.display = 'none';
+            }
+        }
+
+        // Load user's plan type
+        async function loadUserPlan() {
+            const token = localStorage.getItem('authToken');
+            if (!token) return;
+            
+            try {
+                const response = await fetch(`${API_URL}/api/user/subscription`, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                const data = await response.json();
+                currentPlanType = data.account_type || 'free';
+                // Refresh pro list based on new plan
+                loadPros();
+            } catch (error) {
+                console.error('Error loading user plan:', error);
             }
         }
 
@@ -1278,6 +1295,39 @@
             showStatus(`Selected: ${file.name}`, 'success');
         }
         
+        // ***** LOAD PROS - FILTERED BY PLAN *****
+        async function loadPros() {
+            try {
+                const response = await fetch(`${API_URL}/api/pros`);
+                if (!response.ok) throw new Error('Failed to load pros');
+                allPros = await response.json();
+                
+                // Determine how many pros to show based on plan
+                let proLimit = 0;
+                if (currentPlanType === 'starter') {
+                    proLimit = 10;
+                } else if (currentPlanType === 'premium' || currentPlanType === 'lifetime') {
+                    proLimit = allPros.length; // All 20 pros
+                } else {
+                    proLimit = 2; // Free plan - 2 pros
+                }
+                
+                const availablePros = allPros.slice(0, proLimit);
+                const select = document.getElementById('proSelect');
+                
+                if (availablePros.length > 0) {
+                    select.innerHTML = availablePros.map(pro => 
+                        `<option value="${pro.id}">🏆 ${pro.name} – ${pro.description || ''}</option>`
+                    ).join('');
+                } else {
+                    select.innerHTML = '<option value="">No pros available</option>';
+                }
+            } catch (error) {
+                console.error('Failed to load pros:', error);
+                document.getElementById('proSelect').innerHTML = '<option value="">Failed to load pros</option>';
+            }
+        }
+        
         // ***** ANALYZE FUNCTION *****
         
         async function analyze() {
@@ -1354,6 +1404,10 @@
                         headers: { 'Authorization': `Bearer ${authToken}` }
                     });
                     const subData = await subResponse.json();
+                    
+                    // Update current plan
+                    currentPlanType = subData.account_type || 'free';
+                    loadPros();
                 
                     if (!subData.is_premium && subData.analyses_remaining <= 0) {
                         const pricingSection = document.getElementById('pricing-section');
@@ -1374,11 +1428,14 @@
             }
         }
         
-        // ***** DISPLAY RESULTS FUNCTION WITH TOOLTIPS *****
+        // ***** DISPLAY RESULTS FUNCTION WITH PLAN-BASED FILTERING *****
         function displayResults(data) {
             console.log('📊 Displaying results:', data);
             const resultsDiv = document.getElementById('results');
             resultsDiv.innerHTML = '';
+            
+            // Add plan to data for filtering
+            data.plan_type = currentPlanType;
             
             const score = data.score || data.overall_score || 'N/A';
             const grade = data.grade || 'N/A';
@@ -1407,10 +1464,25 @@
                 'swing_path': 'Club path: on plane, laid off, or over the top.'
             };
             
+            // Define which metrics are available for each plan
+            const planMetrics = {
+                'free': ['tempo_ratio', 'spine_angle', 'shoulder_rotation'],
+                'starter': ['tempo_ratio', 'spine_angle', 'shoulder_rotation'],
+                'premium': ['tempo_ratio', 'spine_angle', 'shoulder_rotation', 'hip_rotation', 'x_factor', 'club_angle_at_top', 'lead_arm_angle_at_top', 'swing_path'],
+                'lifetime': ['tempo_ratio', 'spine_angle', 'shoulder_rotation', 'hip_rotation', 'x_factor', 'club_angle_at_top', 'lead_arm_angle_at_top', 'swing_path']
+            };
+            
+            const availableMetrics = planMetrics[currentPlanType] || planMetrics['free'];
+            
             let metricsHtml = '';
             if (data.metrics && Object.keys(data.metrics).length > 0) {
                 metricsHtml = '<div class="card"><h2>📊 Key Metrics</h2>';
                 for (const [key, value] of Object.entries(data.metrics)) {
+                    // Skip metrics not available for this plan
+                    if (!availableMetrics.includes(key)) {
+                        continue;
+                    }
+                    
                     if (typeof value === 'object' && value !== null) {
                         const description = metricDescriptions[key] || '';
                         if (key === 'swing_path') {
@@ -1645,6 +1717,10 @@
                     }
                 });
                 const data = await response.json();
+                
+                // Update current plan
+                currentPlanType = data.account_type || 'free';
+                loadPros();
             
                 const pricingSection = document.getElementById('pricing-section');
                 if (!pricingSection) return;
@@ -1662,22 +1738,6 @@
         
         // Initialize
         checkAuth();
-        
-        async function loadPros() {
-            try {
-                const response = await fetch(`${API_URL}/api/pros`);
-                if (!response.ok) throw new Error('Failed to load pros');
-                const pros = await response.json();
-                const select = document.getElementById('proSelect');
-                if (pros && pros.length > 0) {
-                    select.innerHTML = pros.map(pro => 
-                        `<option value="${pro.id}">🏆 ${pro.name} – ${pro.description || ''}</option>`
-                    ).join('');
-                }
-            } catch (error) {
-                console.error('Failed to load pros:', error);
-            }
-        }
         loadPros();
     </script>
 </body>
