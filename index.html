@@ -1640,7 +1640,7 @@
             }
             
             let remainingHtml = '';
-            if (data.analyses_remaining !== undefined) {
+            if (data.analyses_remaining !== undefined && data.analyses_remaining >= 0) {
                 const demoText = data.analyses_remaining > 0 
                     ? `🎯 You have <strong>${data.analyses_remaining}</strong> free demo${data.analyses_remaining > 1 ? 's' : ''} remaining.`
                     : `🎯 You've used all your free demos! <a href="#" onclick="document.getElementById('pricing-section').scrollIntoView({behavior:'smooth'}); return false;">Upgrade to Premium →</a>`;
@@ -1664,7 +1664,7 @@
             
             resultsDiv.style.display = 'block';
             
-            if (data.analyses_remaining !== undefined) {
+            if (data.analyses_remaining !== undefined && data.analyses_remaining >= 0) {
                 showStatus(`Analysis complete! You have ${data.analyses_remaining} analyses remaining`, 'success');
             } else {
                 showStatus('Analysis complete!', 'success');
