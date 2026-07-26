@@ -121,6 +121,111 @@
             border: 1px solid rgba(255,255,255,0.15);
         }
 
+        /* ===== USER STAGE BANNER ===== */
+        .user-stage-banner {
+            background: #ffffff;
+            border-radius: 16px;
+            padding: 16px 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 16px rgba(0,0,0,0.1);
+            border-left: 5px solid #d4af37;
+            display: none;
+        }
+
+        .user-stage-banner .stage-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .user-stage-banner .user-info {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .user-stage-banner .user-email {
+            font-weight: 600;
+            color: #1a3c2a;
+            font-size: 14px;
+        }
+
+        .user-stage-banner .stage-badge {
+            padding: 5px 16px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .stage-badge.demo {
+            background: #fff3e0;
+            color: #e65100;
+            border: 1px solid #ffcc80;
+        }
+
+        .stage-badge.starter {
+            background: #e3f2fd;
+            color: #0d47a1;
+            border: 1px solid #90caf9;
+        }
+
+        .stage-badge.premium {
+            background: #d4af37;
+            color: #1a3c2a;
+            border: 1px solid #c9a030;
+        }
+
+        .stage-badge.lifetime {
+            background: linear-gradient(135deg, #d4af37, #f5d76e);
+            color: #1a3c2a;
+            border: 1px solid #c9a030;
+            box-shadow: 0 2px 8px rgba(212, 175, 55, 0.3);
+        }
+
+        .stage-badge.free {
+            background: #e8f0e8;
+            color: #4a6a4a;
+            border: 1px solid #d0ddd0;
+        }
+
+        .stage-badge.expired {
+            background: #fce8e8;
+            color: #c62828;
+            border: 1px solid #f0d0d0;
+        }
+
+        .user-stage-banner .stage-details {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            flex-wrap: wrap;
+            font-size: 13px;
+            color: #4a6a4a;
+            margin-top: 8px;
+        }
+
+        .user-stage-banner .stage-details strong {
+            color: #1a3c2a;
+        }
+
+        .user-stage-banner .stage-features {
+            font-size: 12px;
+            color: #7a9a7a;
+            margin-top: 4px;
+        }
+
+        .stage-status-icon {
+            font-size: 18px;
+        }
+
         /* Navigation Menu Styles */
         .nav-menu {
             display: flex;
@@ -548,6 +653,13 @@
             border: 1px solid #c0e0c0;
         }
         
+        .status.info {
+            background: #e3f2fd;
+            color: #0d47a1;
+            display: block;
+            border: 1px solid #90caf9;
+        }
+        
         .auth-section {
             display: none;
         }
@@ -596,6 +708,10 @@
             border: 2px solid #d4af37;
             position: relative;
             transform: scale(1.02);
+        }
+
+        .pricing-card.current-plan {
+            border: 3px solid #2e7d32;
         }
         
         .best-value-badge {
@@ -681,6 +797,12 @@
             background: #d4af37;
             color: white;
         }
+
+        .btn-subscribe.current-plan-btn {
+            background: #e8f0e8;
+            color: #4a6a4a;
+            cursor: default;
+        }
         
         .btn-subscribe:hover {
             opacity: 0.9;
@@ -729,6 +851,64 @@
             padding: 10px 20px;
             font-size: 14px;
             margin-top: 6px;
+        }
+
+        /* Stage info box in results */
+        .stage-info-box {
+            background: #f4f8f4;
+            border-radius: 12px;
+            padding: 16px 20px;
+            margin-top: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+
+        .stage-info-box .stage-label {
+            font-size: 14px;
+            color: #4a6a4a;
+        }
+
+        .stage-info-box .stage-label strong {
+            color: #1a3c2a;
+        }
+
+        /* Upgrade reminder */
+        .upgrade-reminder {
+            background: #fdf8ee;
+            border: 2px solid #d4af37;
+            border-radius: 12px;
+            padding: 16px 20px;
+            margin-top: 16px;
+            text-align: center;
+        }
+
+        .upgrade-reminder h4 {
+            color: #1a3c2a;
+            margin-bottom: 8px;
+        }
+
+        .upgrade-reminder p {
+            color: #4a6a4a;
+            font-size: 14px;
+        }
+
+        /* Subscription Management Card */
+        #subscriptionManagementCard {
+            display: none;
+        }
+
+        #subscriptionManagementCard .subscription-details {
+            background: #f4f8f4;
+            padding: 16px;
+            border-radius: 12px;
+            margin-bottom: 16px;
+        }
+
+        #subscriptionManagementCard .subscription-details p {
+            margin: 4px 0;
         }
         
         @media (max-width: 600px) {
@@ -784,6 +964,25 @@
             .pricing-card.premium {
                 transform: scale(1);
             }
+
+            .user-stage-banner .stage-header {
+                flex-direction: column;
+                align-items: stretch;
+                text-align: center;
+            }
+
+            .user-stage-banner .user-info {
+                justify-content: center;
+            }
+
+            .user-stage-banner .stage-details {
+                justify-content: center;
+            }
+
+            .stage-info-box {
+                flex-direction: column;
+                text-align: center;
+            }
         }
     </style>
 </head>
@@ -818,11 +1017,36 @@
         <!-- Main App -->
         <div id="appSection" style="display: none;">
             
+            <!-- ===== USER STAGE BANNER ===== -->
+            <div class="user-stage-banner" id="userStageBanner">
+                <div class="stage-header">
+                    <div class="user-info">
+                        <span class="user-email" id="userEmailDisplay">user@example.com</span>
+                        <span class="stage-badge demo" id="stageBadge">
+                            <span class="stage-status-icon">📊</span> DEMO
+                        </span>
+                    </div>
+                    <div class="stage-details" id="stageDetails">
+                        <span id="analysesDisplay">🎯 <strong>1</strong> analysis remaining</span>
+                        <span id="prosDisplay">🏆 <strong>2</strong> pros available</span>
+                        <span id="expiryDisplay" style="display:none;">⏱️ <strong>30</strong> days remaining</span>
+                        <span id="autoRenewDisplay" style="display:none; font-size:12px;"></span>
+                    </div>
+                </div>
+                <div class="stage-features" id="stageFeatures">
+                    📊 Metrics: Tempo, Spine Angle, Shoulder Rotation
+                </div>
+                <div id="stageUpgradeLink" style="margin-top:8px; font-size:13px;">
+                    <a href="#" onclick="showSection('plans'); return false;" style="color:#1a3c2a; font-weight:600;">📈 Upgrade your plan →</a>
+                </div>
+            </div>
+            
             <!-- Navigation Menu -->
             <div class="nav-menu">
-                <a href="index.html" class="nav-btn active" id="nav-home">🏠 Home</a>
-                <a href="instructions.html" class="nav-btn" id="nav-instructions">📖 Instructions</a>
-                <a href="contact.html" class="nav-btn" id="nav-contact">📧 Contact</a>
+                <a href="#" class="nav-btn active" id="nav-home" onclick="showSection('home')">🏠 Home</a>
+                <a href="#" class="nav-btn" id="nav-instructions" onclick="showSection('instructions')">📖 Instructions</a>
+                <a href="#" class="nav-btn" id="nav-contact" onclick="showSection('contact')">📧 Contact</a>
+                <a href="#" class="nav-btn" id="nav-plans" onclick="showSection('plans')">📊 Plans</a>
             </div>
             
             <!-- Sections Container -->
@@ -834,6 +1058,9 @@
                     <select id="proSelect">
                         <option value="">Loading pros...</option>
                     </select>
+                    <div style="font-size:12px; color:#7a9a7a; margin-top:8px;" id="proLimitInfo">
+                        <span id="availableProCountDisplay">2</span> professionals available on your plan
+                    </div>
                 </div>
                 
                 <!-- Step 2: Upload Video -->
@@ -863,6 +1090,19 @@
                         <input type="file" id="videoInput" accept="video/*" style="display: none;">
                     </div>
                     <div id="videoPreview" class="video-preview"></div>
+
+                    <!-- Analysis limit warning -->
+                    <div id="analysisLimitWarning" style="display:none; background:#fff3e0; padding:12px 16px; border-radius:12px; margin-top:12px; border-left:4px solid #e65100;">
+                        <strong>⚠️ Demo Limit:</strong> You have <span id="remainingAnalysesDisplay">1</span> free analysis remaining. 
+                        <a href="#" onclick="showSection('plans'); return false;" style="color:#1a3c2a; font-weight:600;">Upgrade for unlimited →</a>
+                    </div>
+
+                    <!-- Expired subscription warning -->
+                    <div id="expiredWarning" style="display:none; background:#fce8e8; padding:12px 16px; border-radius:12px; margin-top:12px; border-left:4px solid #c62828;">
+                        <strong>❌ Subscription Expired:</strong> Your plan has expired. 
+                        <a href="#" onclick="showSection('plans'); return false;" style="color:#1a3c2a; font-weight:600;">Renew now →</a>
+                    </div>
+                    
                     <button class="btn btn-primary" id="analyzeBtn" onclick="analyze()">🚀 Analyze Swing</button>
                 </div>
                 
@@ -988,6 +1228,80 @@
                     </div>
                 </div>
             </div>
+
+            <!-- PLANS SECTION -->
+            <div id="section-plans" class="section-content" style="display: none;">
+                <div class="card">
+                    <h2>📊 Plans & Features</h2>
+                    <p style="color: #4a6a4a; margin-bottom: 16px;">
+                        Your current plan: <strong id="currentPlanDisplayName">Demo</strong>
+                        <span class="stage-badge demo" id="currentPlanBadge" style="margin-left:8px;">DEMO</span>
+                    </p>
+                    
+                    <div style="overflow-x: auto;">
+                        <table style="width:100%; border-collapse:collapse; font-size:13px;">
+                            <thead>
+                                <tr style="background:#1a3c2a; color:white;">
+                                    <th style="padding:10px 12px; text-align:left;">Feature</th>
+                                    <th style="padding:10px 12px; text-align:center;">Demo</th>
+                                    <th style="padding:10px 12px; text-align:center;">Starter</th>
+                                    <th style="padding:10px 12px; text-align:center;">Premium</th>
+                                    <th style="padding:10px 12px; text-align:center;">Lifetime</th>
+                                </tr>
+                            </thead>
+                            <tbody id="planComparisonBody">
+                                <tr><td colspan="5" style="text-align:center; padding:20px;">Loading plan details...</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                
+                <!-- Pricing Cards -->
+                <div id="pricing-section-plans" style="display: block;">
+                    <div class="card">
+                        <h2>🏌️ Upgrade Your Plan</h2>
+                        <div style="display: flex; flex-wrap: wrap; gap: 20px; justify-content: center;" id="pricingGridPlans">
+                            <div style="text-align: center; width: 100%; color: #7a9a7a;">Loading pricing...</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ===== SUBSCRIPTION MANAGEMENT CARD ===== -->
+                <div id="subscriptionManagementCard">
+                    <div class="card">
+                        <h2>🔄 Subscription Management</h2>
+                        <div id="subscriptionDetails">
+                            <div class="subscription-details">
+                                <p><strong>Current Plan:</strong> <span id="managePlanName" style="text-transform:capitalize;">Premium</span></p>
+                                <p><strong>Status:</strong> <span id="managePlanStatus">Active</span></p>
+                                <p><strong>Auto-Renews:</strong> <span id="manageAutoRenew">Yes</span></p>
+                                <p><strong>Next Billing Date:</strong> <span id="manageNextBilling">N/A</span></p>
+                            </div>
+                            
+                            <div id="cancelSection">
+                                <button class="btn btn-danger" onclick="cancelSubscription()" id="cancelSubscriptionBtn">
+                                    ❌ Cancel Subscription
+                                </button>
+                                <p style="font-size:12px; color:#7a9a7a; margin-top:8px; padding:8px 12px; background:#fff3e0; border-radius:8px;">
+                                    💡 <strong>Important:</strong> You will continue to have access until the end of your current billing period. 
+                                    No further charges will be made after cancellation.
+                                </p>
+                            </div>
+                            
+                            <div id="cancelledSection" style="display:none; background:#e8f5e9; padding:16px; border-radius:12px; margin-top:12px; border-left:4px solid #2e7d32;">
+                                <p style="font-weight:600; color:#1a3c2a;">✅ Subscription Cancelled</p>
+                                <p style="font-size:14px; color:#4a6a4a; margin-top:4px;">
+                                    Your subscription has been cancelled. You will have access until <strong id="cancelEndDate">N/A</strong>.
+                                    No further charges will be made.
+                                </p>
+                                <p style="font-size:13px; color:#4a6a4a; margin-top:8px;">
+                                    💡 You can resubscribe at any time from the plans above.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
         
         <div id="status" class="status"></div>
@@ -1011,6 +1325,89 @@
         let authToken = null;
         let currentPlanType = 'free'; // Track user's plan
         let allPros = []; // Store all pros for filtering
+        let currentUserEmail = '';
+        let currentAnalysesRemaining = 1;
+        let currentDaysRemaining = 0;
+        let currentSubscriptionCancelled = false;
+        
+        // ============================================
+        // PLAN DEFINITIONS
+        // ============================================
+        
+        const PLAN_DEFINITIONS = {
+            'demo': {
+                label: 'Demo',
+                badgeClass: 'demo',
+                icon: '📊',
+                analyses: 1,
+                pros: 2,
+                metrics: ['Tempo', 'Spine Angle', 'Shoulder Rotation'],
+                metricsCount: 3,
+                price: '£0',
+                period: 'one-time',
+                description: '1 free analysis to try the service'
+            },
+            'free': {
+                label: 'Free',
+                badgeClass: 'free',
+                icon: '🆓',
+                analyses: 0,
+                pros: 2,
+                metrics: ['Tempo', 'Spine Angle', 'Shoulder Rotation'],
+                metricsCount: 3,
+                price: '£0',
+                period: 'forever',
+                description: 'Limited access after demo expires'
+            },
+            'starter': {
+                label: 'Starter',
+                badgeClass: 'starter',
+                icon: '📈',
+                analyses: '10/month',
+                pros: 10,
+                metrics: ['Tempo', 'Spine Angle', 'Shoulder Rotation'],
+                metricsCount: 3,
+                price: '£4.99',
+                period: '/month',
+                description: '10 analyses per month, 10 pros'
+            },
+            'premium': {
+                label: 'Premium',
+                badgeClass: 'premium',
+                icon: '⭐',
+                analyses: 'Unlimited',
+                pros: 'All 20+',
+                metrics: ['Tempo', 'Spine Angle', 'Shoulder Rotation', 'Hip Rotation', 'X-Factor', 'Club Angle', 'Lead Arm Angle', 'Swing Path'],
+                metricsCount: 8,
+                price: '£9.99',
+                period: '/month',
+                description: 'Unlimited analyses, all pros, all metrics'
+            },
+            'lifetime': {
+                label: 'Lifetime',
+                badgeClass: 'lifetime',
+                icon: '👑',
+                analyses: 'Unlimited',
+                pros: 'All 20+',
+                metrics: ['Tempo', 'Spine Angle', 'Shoulder Rotation', 'Hip Rotation', 'X-Factor', 'Club Angle', 'Lead Arm Angle', 'Swing Path'],
+                metricsCount: 8,
+                price: '£99.99',
+                period: 'one-time',
+                description: 'Unlimited forever, no recurring charges'
+            },
+            'expired': {
+                label: 'Expired',
+                badgeClass: 'expired',
+                icon: '❌',
+                analyses: 0,
+                pros: 2,
+                metrics: ['Tempo', 'Spine Angle', 'Shoulder Rotation'],
+                metricsCount: 3,
+                price: '£0',
+                period: 'expired',
+                description: 'Subscription expired - renew to continue'
+            }
+        };
         
         // ============================================
         // PAYMENT REDIRECT HANDLER
@@ -1031,7 +1428,7 @@
                         <div class="card" style="text-align: center; padding: 40px 20px;">
                             <div style="font-size: 64px; margin-bottom: 16px;">🎉</div>
                             <h2 style="color: #1a3c2a; margin-bottom: 8px;">Payment Successful!</h2>
-                            <p style="color: #4a6a4a; margin-bottom: 20px;">Your account has been upgraded to Premium. You now have unlimited access to all features.</p>
+                            <p style="color: #4a6a4a; margin-bottom: 20px;">Your account has been upgraded. You now have access to all features of your new plan.</p>
                             <button class="btn btn-primary" onclick="location.href='/'">Go to Dashboard</button>
                         </div>
                     `;
@@ -1103,6 +1500,7 @@
                 document.getElementById('section-home').style.display = 'block';
                 document.getElementById('section-instructions').style.display = 'none';
                 document.getElementById('section-contact').style.display = 'none';
+                document.getElementById('section-plans').style.display = 'none';
         
                 // Update active button
                 document.querySelectorAll('.nav-btn').forEach(btn => btn.classList.remove('active'));
@@ -1110,14 +1508,20 @@
                 return;
             }
     
-            // For instructions or contact, hide home and show the selected one
+            // For other sections, hide home and show the selected one
             document.getElementById('section-home').style.display = 'none';
             document.getElementById('section-instructions').style.display = 'none';
             document.getElementById('section-contact').style.display = 'none';
+            document.getElementById('section-plans').style.display = 'none';
     
             const targetSection = document.getElementById(`section-${section}`);
             if (targetSection) {
                 targetSection.style.display = 'block';
+                if (section === 'plans') {
+                    buildPlanComparison();
+                    loadPricingForSection('pricingGridPlans');
+                    loadSubscriptionManagement();
+                }
             }
     
             // Update active button
@@ -1125,6 +1529,183 @@
             const activeBtn = document.getElementById(`nav-${section}`);
             if (activeBtn) {
                 activeBtn.classList.add('active');
+            }
+        }
+        
+        // ============================================
+        // BUILD PLAN COMPARISON TABLE
+        // ============================================
+        
+        function buildPlanComparison() {
+            const tbody = document.getElementById('planComparisonBody');
+            if (!tbody) return;
+            
+            const features = [
+                { key: 'analyses', label: 'Analyses' },
+                { key: 'pros', label: 'Professional Comparisons' },
+                { key: 'metrics', label: 'Metrics Available' },
+                { key: 'price', label: 'Price' },
+                { key: 'period', label: 'Billing' },
+                { key: 'description', label: 'Description' }
+            ];
+            
+            const planKeys = ['demo', 'starter', 'premium', 'lifetime'];
+            
+            let html = '';
+            features.forEach(feature => {
+                html += `<tr>`;
+                html += `<td style="padding:10px 12px; text-align:left; font-weight:500; color:#1a3c2a;">${feature.label}</td>`;
+                planKeys.forEach((planKey) => {
+                    const plan = PLAN_DEFINITIONS[planKey];
+                    const isCurrent = planKey === currentPlanType || (currentPlanType === 'free' && planKey === 'demo');
+                    const value = plan[feature.key];
+                    
+                    let displayValue = value;
+                    if (Array.isArray(value)) {
+                        displayValue = value.join(', ');
+                    }
+                    
+                    const bgColor = isCurrent ? 'background:#e8f5e9;' : '';
+                    const fontWeight = isCurrent ? 'font-weight:600;' : '';
+                    html += `<td style="padding:10px 12px; text-align:center; ${bgColor} ${fontWeight}">${displayValue}</td>`;
+                });
+                html += `</tr>`;
+            });
+            
+            tbody.innerHTML = html;
+        }
+        
+        // ============================================
+        // USER STAGE DISPLAY
+        // ============================================
+        
+        function updateUserStageDisplay() {
+            const plan = PLAN_DEFINITIONS[currentPlanType] || PLAN_DEFINITIONS['demo'];
+            const isExpired = currentPlanType === 'expired';
+            const isFree = currentPlanType === 'free' || currentPlanType === 'demo';
+            
+            // Show the banner
+            document.getElementById('userStageBanner').style.display = 'block';
+            
+            // Update stage badge
+            const badge = document.getElementById('stageBadge');
+            badge.className = `stage-badge ${plan.badgeClass}`;
+            badge.innerHTML = `<span class="stage-status-icon">${plan.icon}</span> ${plan.label.toUpperCase()}`;
+            
+            // Update email
+            document.getElementById('userEmailDisplay').textContent = currentUserEmail || 'User';
+            
+            // Update analyses display
+            const analysesDisplay = document.getElementById('analysesDisplay');
+            if (plan.analyses === 'Unlimited') {
+                analysesDisplay.innerHTML = `🎯 <strong>∞</strong> unlimited analyses`;
+            } else if (isExpired || currentAnalysesRemaining <= 0) {
+                analysesDisplay.innerHTML = `🎯 <strong>0</strong> analyses remaining - <span style="color:#c62828;">EXPIRED</span>`;
+            } else {
+                analysesDisplay.innerHTML = `🎯 <strong>${currentAnalysesRemaining}</strong> analysis${currentAnalysesRemaining !== 1 ? 'es' : ''} remaining`;
+            }
+            
+            // Update pros display
+            const prosDisplay = document.getElementById('prosDisplay');
+            prosDisplay.innerHTML = `🏆 <strong>${plan.pros}</strong> pros available`;
+            
+            // Update expiry display
+            const expiryDisplay = document.getElementById('expiryDisplay');
+            if (currentPlanType === 'starter' || currentPlanType === 'premium') {
+                expiryDisplay.style.display = 'inline';
+                if (currentDaysRemaining > 7) {
+                    expiryDisplay.innerHTML = `⏱️ <strong>${currentDaysRemaining}</strong> days remaining`;
+                } else if (currentDaysRemaining > 0) {
+                    expiryDisplay.innerHTML = `⏱️ <strong style="color:#e65100;">${currentDaysRemaining}</strong> days remaining`;
+                } else if (currentDaysRemaining === 0) {
+                    expiryDisplay.innerHTML = `⏱️ <strong style="color:#c62828;">EXPIRES TODAY</strong>`;
+                } else {
+                    expiryDisplay.style.display = 'none';
+                }
+            } else if (currentPlanType === 'lifetime') {
+                expiryDisplay.style.display = 'inline';
+                expiryDisplay.innerHTML = `👑 <strong>LIFETIME</strong> - never expires`;
+            } else {
+                expiryDisplay.style.display = 'none';
+            }
+            
+            // Update auto-renew display
+            const autoRenewDisplay = document.getElementById('autoRenewDisplay');
+            if (autoRenewDisplay) {
+                if (currentPlanType === 'lifetime') {
+                    autoRenewDisplay.textContent = '👑 Never expires';
+                    autoRenewDisplay.style.display = 'inline';
+                    autoRenewDisplay.style.color = '#2e7d32';
+                } else if (currentPlanType === 'starter' || currentPlanType === 'premium') {
+                    if (currentSubscriptionCancelled) {
+                        autoRenewDisplay.textContent = '⛔ Cancelled (ends at period)';
+                        autoRenewDisplay.style.color = '#c62828';
+                        autoRenewDisplay.style.display = 'inline';
+                    } else {
+                        autoRenewDisplay.textContent = '🔄 Auto-renews';
+                        autoRenewDisplay.style.color = '#2e7d32';
+                        autoRenewDisplay.style.display = 'inline';
+                    }
+                } else {
+                    autoRenewDisplay.style.display = 'none';
+                }
+            }
+            
+            // Update features
+            const features = document.getElementById('stageFeatures');
+            features.textContent = `📊 Metrics: ${plan.metrics.join(', ')}`;
+            
+            // Update upgrade link
+            const upgradeLink = document.getElementById('stageUpgradeLink');
+            if (currentPlanType === 'premium' || currentPlanType === 'lifetime') {
+                upgradeLink.innerHTML = `✅ You're on the <strong>${plan.label}</strong> plan - all features unlocked!`;
+            } else if (currentPlanType === 'starter') {
+                upgradeLink.innerHTML = `📈 You're on the <strong>${plan.label}</strong> plan. <a href="#" onclick="showSection('plans'); return false;" style="color:#1a3c2a; font-weight:600;">Upgrade to Premium for more →</a>`;
+            } else if (currentPlanType === 'expired') {
+                upgradeLink.innerHTML = `❌ <strong style="color:#c62828;">EXPIRED</strong> - <a href="#" onclick="showSection('plans'); return false;" style="color:#1a3c2a; font-weight:600;">Renew now →</a>`;
+            } else {
+                upgradeLink.innerHTML = `📈 <a href="#" onclick="showSection('plans'); return false;" style="color:#1a3c2a; font-weight:600;">Upgrade your plan →</a>`;
+            }
+            
+            // Update available pros count
+            const proCountDisplay = document.getElementById('availableProCountDisplay');
+            const proLimit = plan.pros === 'All 20+' ? allPros.length : plan.pros;
+            proCountDisplay.textContent = proLimit;
+            
+            // Update analysis limit warning
+            const warning = document.getElementById('analysisLimitWarning');
+            const expiredWarn = document.getElementById('expiredWarning');
+            if (currentPlanType === 'expired') {
+                warning.style.display = 'none';
+                expiredWarn.style.display = 'block';
+            } else if (isFree && currentAnalysesRemaining <= 1) {
+                warning.style.display = 'block';
+                document.getElementById('remainingAnalysesDisplay').textContent = currentAnalysesRemaining;
+                expiredWarn.style.display = 'none';
+            } else {
+                warning.style.display = 'none';
+                expiredWarn.style.display = 'none';
+            }
+            
+            // Update current plan display on plans page
+            document.getElementById('currentPlanDisplayName').textContent = plan.label;
+            const planBadge = document.getElementById('currentPlanBadge');
+            planBadge.className = `stage-badge ${plan.badgeClass}`;
+            planBadge.textContent = plan.label.toUpperCase();
+            
+            // Update analyze button
+            const analyzeBtn = document.getElementById('analyzeBtn');
+            if (currentPlanType === 'expired') {
+                analyzeBtn.textContent = '🔄 Renew Subscription to Analyze';
+                analyzeBtn.style.background = '#c62828';
+            } else if (isFree && currentAnalysesRemaining <= 0) {
+                analyzeBtn.textContent = '📈 Upgrade to Analyze More';
+                analyzeBtn.style.background = '#d4af37';
+                analyzeBtn.style.color = '#1a3c2a';
+            } else {
+                analyzeBtn.textContent = '🚀 Analyze Swing';
+                analyzeBtn.style.background = '';
+                analyzeBtn.style.color = '';
             }
         }
         
@@ -1170,7 +1751,24 @@
                     headers: { 'Authorization': `Bearer ${token}` }
                 });
                 const data = await response.json();
-                currentPlanType = data.account_type || 'free';
+                
+                // Determine plan type
+                let planType = data.account_type || 'demo';
+                
+                // Check if subscription is expired
+                if (data.requires_renewal || data.subscription_expired) {
+                    planType = 'expired';
+                }
+                
+                currentPlanType = planType;
+                currentAnalysesRemaining = data.analyses_remaining || 0;
+                currentUserEmail = data.email || 'User';
+                currentDaysRemaining = data.days_remaining || 0;
+                currentSubscriptionCancelled = data.subscription_cancelled || false;
+                
+                // Update display
+                updateUserStageDisplay();
+                
                 // Refresh pro list based on new plan
                 loadPros();
             } catch (error) {
@@ -1310,7 +1908,7 @@
         // Show status message
         function showStatus(message, type) {
             const statusDiv = document.getElementById('status');
-            statusDiv.textContent = message;
+            statusDiv.innerHTML = message;
             statusDiv.className = `status ${type}`;
             setTimeout(() => {
                 statusDiv.className = 'status';
@@ -1369,13 +1967,10 @@
                 allPros = await response.json();
                 
                 // Determine how many pros to show based on plan
-                let proLimit = 0;
-                if (currentPlanType === 'starter') {
-                    proLimit = 10;
-                } else if (currentPlanType === 'premium' || currentPlanType === 'lifetime') {
-                    proLimit = allPros.length; // All 20 pros
-                } else {
-                    proLimit = 2; // Free plan - 2 pros
+                const plan = PLAN_DEFINITIONS[currentPlanType] || PLAN_DEFINITIONS['demo'];
+                let proLimit = plan.pros;
+                if (proLimit === 'All 20+') {
+                    proLimit = allPros.length;
                 }
                 
                 const availablePros = allPros.slice(0, proLimit);
@@ -1387,6 +1982,12 @@
                     ).join('');
                 } else {
                     select.innerHTML = '<option value="">No pros available</option>';
+                }
+                
+                // Update available pro count
+                const proCountDisplay = document.getElementById('availableProCountDisplay');
+                if (proCountDisplay) {
+                    proCountDisplay.textContent = availablePros.length;
                 }
             } catch (error) {
                 console.error('Failed to load pros:', error);
@@ -1404,6 +2005,24 @@
     
             if (!authToken) {
                 showStatus('Please login first', 'error');
+                return;
+            }
+            
+            // Check if expired
+            if (currentPlanType === 'expired') {
+                showStatus('❌ Your subscription has expired. Please renew to continue analyzing.', 'error');
+                showSection('plans');
+                return;
+            }
+            
+            // Check if free/demo with no analyses left
+            if ((currentPlanType === 'demo' || currentPlanType === 'free') && currentAnalysesRemaining <= 0) {
+                showStatus('No analyses remaining. Please upgrade to continue.', 'error');
+                const pricingSection = document.getElementById('pricing-section');
+                if (pricingSection) {
+                    pricingSection.style.display = 'block';
+                    await loadPricing();
+                }
                 return;
             }
     
@@ -1441,11 +2060,18 @@
                 document.getElementById('analyzeBtn').disabled = false;
             
                 if (response.status === 402) {
-                    showStatus('No analyses remaining. Please upgrade to premium.', 'error');
-                    const pricingSection = document.getElementById('pricing-section');
-                    if (pricingSection) {
-                        pricingSection.style.display = 'block';
-                        await loadPricing();
+                    if (data.requires_renewal) {
+                        showStatus('❌ Your subscription has expired. Please renew to continue.', 'error');
+                        currentPlanType = 'expired';
+                        updateUserStageDisplay();
+                        showSection('plans');
+                    } else {
+                        showStatus('No analyses remaining. Please upgrade to continue.', 'error');
+                        const pricingSection = document.getElementById('pricing-section');
+                        if (pricingSection) {
+                            pricingSection.style.display = 'block';
+                            await loadPricing();
+                        }
                     }
                     return;
                 }
@@ -1465,22 +2091,18 @@
                 if (data && (data.score !== undefined || data.success === true || data.overall_score !== undefined)) {
                     displayResults(data);
                     showStatus('Analysis complete!', 'success');
-                
-                    const subResponse = await fetch(`${API_URL}/api/user/subscription`, {
-                        headers: { 'Authorization': `Bearer ${authToken}` }
-                    });
-                    const subData = await subResponse.json();
                     
-                    // Update current plan
-                    currentPlanType = subData.account_type || 'free';
-                    loadPros();
-                
-                    if (!subData.is_premium && subData.analyses_remaining <= 0) {
+                    // Refresh user status
+                    await loadUserPlan();
+                    
+                    // Check if user has used all demos
+                    if ((currentPlanType === 'demo' || currentPlanType === 'free') && currentAnalysesRemaining <= 0) {
                         const pricingSection = document.getElementById('pricing-section');
                         if (pricingSection) {
                             pricingSection.style.display = 'block';
                             await loadPricing();
                         }
+                        showStatus('🎯 You\'ve used all your free analyses! Upgrade to continue.', 'info');
                     }
                 } else {
                     const errorMsg = data.error || data.message || 'No analysis data received. Try a different video.';
@@ -1503,6 +2125,8 @@
             // Add plan to data for filtering
             data.plan_type = currentPlanType;
             
+            const plan = PLAN_DEFINITIONS[currentPlanType] || PLAN_DEFINITIONS['demo'];
+            
             const score = data.score || data.overall_score || 'N/A';
             const grade = data.grade || 'N/A';
             const scoreHtml = `
@@ -1519,6 +2143,56 @@
                 </div>
             `;
             
+            // Plan info
+            let planInfoHtml = `
+                <div class="card">
+                    <h2>📊 Your Plan</h2>
+                    <div class="stage-info-box">
+                        <div>
+                            <span class="stage-badge ${plan.badgeClass}" style="font-size:14px; padding:6px 18px;">
+                                <span class="stage-status-icon">${plan.icon}</span> ${plan.label.toUpperCase()}
+                            </span>
+                        </div>
+                        <div>
+                            <span style="font-size:14px; color:#4a6a4a;">
+                                ${plan.analyses === 'Unlimited' ? '∞ Unlimited analyses' : `${currentAnalysesRemaining} analyses remaining`}
+                            </span>
+                        </div>
+                        <div>
+                            <span style="font-size:14px; color:#4a6a4a;">
+                                ${plan.pros} pros available
+                            </span>
+                        </div>
+                    </div>
+                    ${(currentPlanType === 'demo' || currentPlanType === 'free') && currentAnalysesRemaining <= 0 ? `
+                        <div class="upgrade-reminder">
+                            <h4>🎯 Upgrade to Continue</h4>
+                            <p>You've used all your free analyses. Upgrade to Premium for unlimited access.</p>
+                            <button class="btn btn-primary" onclick="showSection('plans')" style="margin-top:8px;">📊 View Plans</button>
+                        </div>
+                    ` : ''}
+                    ${currentPlanType === 'expired' ? `
+                        <div class="upgrade-reminder" style="border-color:#c62828;">
+                            <h4>❌ Subscription Expired</h4>
+                            <p>Your subscription has expired. Renew to continue analyzing.</p>
+                            <button class="btn btn-primary" onclick="showSection('plans')" style="margin-top:8px;">🔄 Renew Now</button>
+                        </div>
+                    ` : ''}
+                    ${currentPlanType === 'starter' && currentDaysRemaining < 7 && currentDaysRemaining > 0 ? `
+                        <div style="background:#fff3e0; padding:12px 16px; border-radius:12px; margin-top:12px; border-left:4px solid #e65100; font-size:14px;">
+                            ⏱️ Your Starter plan expires in <strong>${currentDaysRemaining}</strong> days. 
+                            <a href="#" onclick="showSection('plans'); return false;" style="color:#1a3c2a; font-weight:600;">Renew or upgrade →</a>
+                        </div>
+                    ` : ''}
+                    ${currentPlanType === 'premium' && currentDaysRemaining < 7 && currentDaysRemaining > 0 ? `
+                        <div style="background:#fff3e0; padding:12px 16px; border-radius:12px; margin-top:12px; border-left:4px solid #e65100; font-size:14px;">
+                            ⏱️ Your Premium plan expires in <strong>${currentDaysRemaining}</strong> days. 
+                            <a href="#" onclick="showSection('plans'); return false;" style="color:#1a3c2a; font-weight:600;">Renew →</a>
+                        </div>
+                    ` : ''}
+                </div>
+            `;
+            
             // METRIC DESCRIPTIONS
             const metricDescriptions = {
                 'club_angle_at_top': 'How vertical your club is at the top. 90° is ideal.',
@@ -1531,21 +2205,21 @@
             };
             
             // Define which metrics are available for each plan
-            const planMetrics = {
-                'free': ['tempo_ratio', 'spine_angle', 'shoulder_rotation'],
-                'starter': ['tempo_ratio', 'spine_angle', 'shoulder_rotation'],
-                'premium': ['tempo_ratio', 'spine_angle', 'shoulder_rotation', 'hip_rotation', 'x_factor', 'club_angle_at_top', 'lead_arm_angle_at_top', 'swing_path'],
-                'lifetime': ['tempo_ratio', 'spine_angle', 'shoulder_rotation', 'hip_rotation', 'x_factor', 'club_angle_at_top', 'lead_arm_angle_at_top', 'swing_path']
-            };
-            
-            const availableMetrics = planMetrics[currentPlanType] || planMetrics['free'];
+            const availableMetricKeys = plan.metrics.map(m => 
+                m.toLowerCase().replace(/ /g, '_').replace(/[^a-z_]/g, '')
+            );
             
             let metricsHtml = '';
             if (data.metrics && Object.keys(data.metrics).length > 0) {
                 metricsHtml = '<div class="card"><h2>📊 Key Metrics</h2>';
+                
+                let lockedCount = 0;
+                
                 for (const [key, value] of Object.entries(data.metrics)) {
-                    // Skip metrics not available for this plan
-                    if (!availableMetrics.includes(key)) {
+                    const isAllowed = availableMetricKeys.some(ak => key.includes(ak) || ak.includes(key));
+                    
+                    if (!isAllowed && currentPlanType !== 'premium' && currentPlanType !== 'lifetime') {
+                        lockedCount++;
                         continue;
                     }
                     
@@ -1582,6 +2256,16 @@
                         }
                     }
                 }
+                
+                if (lockedCount > 0 && (currentPlanType === 'demo' || currentPlanType === 'free' || currentPlanType === 'starter')) {
+                    metricsHtml += `
+                        <div style="background:#fdf8ee; padding:12px 16px; border-radius:8px; margin-top:12px; border-left:4px solid #d4af37; font-size:14px;">
+                            🔒 <strong>${lockedCount}</strong> advanced metrics are locked. 
+                            <a href="#" onclick="showSection('plans'); return false;" style="color:#1a3c2a; font-weight:600;">Upgrade to unlock →</a>
+                        </div>
+                    `;
+                }
+                
                 metricsHtml += '</div>';
             }
             
@@ -1639,18 +2323,6 @@
                 `;
             }
             
-            let remainingHtml = '';
-            if (data.analyses_remaining !== undefined) {
-                const demoText = data.analyses_remaining > 0 
-                    ? `🎯 You have <strong>${data.analyses_remaining}</strong> free demo${data.analyses_remaining > 1 ? 's' : ''} remaining.`
-                    : `🎯 You've used all your free demos! <a href="#" onclick="document.getElementById('pricing-section').scrollIntoView({behavior:'smooth'}); return false;">Upgrade to Premium →</a>`;
-                remainingHtml = `
-                    <div class="card">
-                        <p>${demoText}</p>
-                    </div>
-                `;
-            }
-            
             resultsDiv.innerHTML = `
                 ${scoreHtml}
                 ${assessmentHtml}
@@ -1659,7 +2331,7 @@
                 ${drillsHtml}
                 ${thoughtsHtml}
                 ${motivationalHtml}
-                ${remainingHtml}
+                ${planInfoHtml}
             `;
             
             resultsDiv.style.display = 'block';
@@ -1695,24 +2367,81 @@
                     
                     const isPopular = key === 'premium';
                     const isLifetime = key === 'lifetime';
+                    const isCurrent = key === currentPlanType;
+                    
                     const priceDisplay = `£${plan.price}`;
                     const periodDisplay = isLifetime ? 'one-time' : '/month';
-                    const btnText = isLifetime ? 'Buy Lifetime' : 'Subscribe Monthly';
-                    const btnClass = isLifetime ? 'lifetime-btn' : (isPopular ? 'premium-btn' : 'monthly-btn');
+                    const btnText = isCurrent ? '✓ Current Plan' : (isLifetime ? 'Buy Lifetime' : 'Subscribe Monthly');
+                    const btnClass = isCurrent ? 'current-plan-btn' : (isLifetime ? 'lifetime-btn' : (isPopular ? 'premium-btn' : 'monthly-btn'));
                     const cardClass = isLifetime ? 'lifetime' : (isPopular ? 'premium' : 'monthly');
                     
                     html += `
-                        <div class="pricing-card ${cardClass}">
-                            ${isPopular ? '<span class="best-value-badge">Most Popular</span>' : ''}
+                        <div class="pricing-card ${cardClass} ${isCurrent ? 'current-plan' : ''}">
+                            ${isPopular && !isCurrent ? '<span class="best-value-badge">Most Popular</span>' : ''}
+                            ${isCurrent ? '<span style="position:absolute;top:-10px;left:16px;background:#2e7d32;color:white;padding:2px 14px;border-radius:20px;font-size:12px;font-weight:bold;">CURRENT PLAN</span>' : ''}
                             <h3>${plan.name}</h3>
                             <p class="price ${isLifetime ? 'lifetime-price' : (isPopular ? 'premium-price' : 'monthly-price')}">${priceDisplay}</p>
                             <p class="period">${periodDisplay}</p>
                             <ul>
                                 <li>✅ ${plan.features.analyses === 'unlimited' ? 'Unlimited' : plan.features.analyses} analyses</li>
-                                <li>✅ Compare with all ${plan.features.pro_comparisons} pros</li>
+                                <li>✅ Compare with ${plan.features.pro_comparisons} pros</li>
                                 <li>✅ Metrics: ${plan.features.metrics.join(', ')}</li>
                             </ul>
-                            <button class="btn-subscribe ${btnClass}" onclick="handleSubscribe('${key}')">${btnText}</button>
+                            ${!isCurrent ? `<button class="btn-subscribe ${btnClass}" onclick="handleSubscribe('${key}')">${btnText}</button>` : 
+                            `<button class="btn-subscribe ${btnClass}" disabled>✓ Active</button>`}
+                        </div>
+                    `;
+                });
+                
+                grid.innerHTML = html;
+                
+            } catch (error) {
+                console.error('Error loading pricing:', error);
+                grid.innerHTML = '<p style="color:#c62828;">Failed to load pricing. Please refresh.</p>';
+            }
+        }
+
+        async function loadPricingForSection(gridId) {
+            const grid = document.getElementById(gridId);
+            if (!grid) return;
+            
+            try {
+                const response = await fetch(`${API_URL}/api/pricing`);
+                if (!response.ok) throw new Error('Failed to load pricing');
+                const data = await response.json();
+                const plans = data.plans;
+                
+                const planOrder = ['starter', 'premium', 'lifetime'];
+                let html = '';
+                
+                planOrder.forEach(key => {
+                    const plan = plans[key];
+                    if (!plan) return;
+                    
+                    const isPopular = key === 'premium';
+                    const isLifetime = key === 'lifetime';
+                    const isCurrent = key === currentPlanType;
+                    
+                    const priceDisplay = `£${plan.price}`;
+                    const periodDisplay = isLifetime ? 'one-time' : '/month';
+                    const btnText = isCurrent ? '✓ Current Plan' : (isLifetime ? 'Buy Lifetime' : 'Subscribe Monthly');
+                    const btnClass = isCurrent ? 'current-plan-btn' : (isLifetime ? 'lifetime-btn' : (isPopular ? 'premium-btn' : 'monthly-btn'));
+                    const cardClass = isLifetime ? 'lifetime' : (isPopular ? 'premium' : 'monthly');
+                    
+                    html += `
+                        <div class="pricing-card ${cardClass} ${isCurrent ? 'current-plan' : ''}">
+                            ${isPopular && !isCurrent ? '<span class="best-value-badge">Most Popular</span>' : ''}
+                            ${isCurrent ? '<span style="position:absolute;top:-10px;left:16px;background:#2e7d32;color:white;padding:2px 14px;border-radius:20px;font-size:12px;font-weight:bold;">CURRENT PLAN</span>' : ''}
+                            <h3>${plan.name}</h3>
+                            <p class="price ${isLifetime ? 'lifetime-price' : (isPopular ? 'premium-price' : 'monthly-price')}">${priceDisplay}</p>
+                            <p class="period">${periodDisplay}</p>
+                            <ul>
+                                <li>✅ ${plan.features.analyses === 'unlimited' ? 'Unlimited' : plan.features.analyses} analyses</li>
+                                <li>✅ Compare with ${plan.features.pro_comparisons} pros</li>
+                                <li>✅ Metrics: ${plan.features.metrics.join(', ')}</li>
+                            </ul>
+                            ${!isCurrent ? `<button class="btn-subscribe ${btnClass}" onclick="handleSubscribe('${key}')">${btnText}</button>` : 
+                            `<button class="btn-subscribe ${btnClass}" disabled>✓ Active</button>`}
                         </div>
                     `;
                 });
@@ -1794,11 +2523,108 @@
                 if (!data.is_premium && data.analyses_remaining <= 0) {
                     pricingSection.style.display = 'block';
                     await loadPricing();
+                } else if (data.requires_renewal || data.subscription_expired) {
+                    pricingSection.style.display = 'block';
+                    pricingSection.querySelector('h2').textContent = '🔄 Renew Your Subscription';
+                    await loadPricing();
                 } else {
                     pricingSection.style.display = 'none';
                 }
             } catch (error) {
                 console.error('Error checking subscription:', error);
+            }
+        }
+        
+        // ============================================
+        // SUBSCRIPTION MANAGEMENT FUNCTIONS
+        // ============================================
+
+        async function loadSubscriptionManagement() {
+            const token = localStorage.getItem('authToken');
+            if (!token) return;
+            
+            try {
+                const response = await fetch(`${API_URL}/api/subscription/status`, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                const data = await response.json();
+                
+                const card = document.getElementById('subscriptionManagementCard');
+                if (!card) return;
+                
+                // Only show for paid plans that can be cancelled
+                if (data.can_cancel && data.account_type !== 'lifetime') {
+                    card.style.display = 'block';
+                    
+                    document.getElementById('managePlanName').textContent = 
+                        data.account_type.charAt(0).toUpperCase() + data.account_type.slice(1);
+                    document.getElementById('managePlanStatus').textContent = 
+                        data.subscription_cancelled ? 'Cancelling (active until period end)' : 'Active';
+                    document.getElementById('manageAutoRenew').textContent = 
+                        data.auto_renews ? 'Yes' : 'No';
+                    document.getElementById('manageNextBilling').textContent = 
+                        data.expiry_date ? new Date(data.expiry_date).toLocaleDateString() : 'N/A';
+                    
+                    // Show/hide cancel button
+                    const cancelSection = document.getElementById('cancelSection');
+                    const cancelledSection = document.getElementById('cancelledSection');
+                    
+                    if (data.subscription_cancelled) {
+                        cancelSection.style.display = 'none';
+                        cancelledSection.style.display = 'block';
+                        document.getElementById('cancelEndDate').textContent = 
+                            data.expiry_date ? new Date(data.expiry_date).toLocaleDateString() : 'end of billing period';
+                    } else {
+                        cancelSection.style.display = 'block';
+                        cancelledSection.style.display = 'none';
+                    }
+                } else if (data.account_type === 'lifetime') {
+                    card.style.display = 'block';
+                    document.getElementById('managePlanName').textContent = 'Lifetime';
+                    document.getElementById('managePlanStatus').textContent = 'Active (Never Expires)';
+                    document.getElementById('manageAutoRenew').textContent = 'N/A';
+                    document.getElementById('manageNextBilling').textContent = 'N/A';
+                    document.getElementById('cancelSection').style.display = 'none';
+                    document.getElementById('cancelledSection').style.display = 'none';
+                } else {
+                    card.style.display = 'none';
+                }
+            } catch (error) {
+                console.error('Error loading subscription management:', error);
+            }
+        }
+
+        async function cancelSubscription() {
+            if (!confirm('⚠️ Are you sure you want to cancel your subscription?')) return;
+            if (!confirm('You will continue to have access until the end of your current billing period. No further charges will be made. Confirm?')) return;
+            
+            const token = localStorage.getItem('authToken');
+            if (!token) {
+                showStatus('Please log in first', 'error');
+                return;
+            }
+            
+            try {
+                const response = await fetch(`${API_URL}/api/subscription/cancel`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    showStatus(data.message, 'success');
+                    loadSubscriptionManagement();
+                    loadUserPlan();
+                } else {
+                    showStatus(data.error || 'Failed to cancel subscription', 'error');
+                }
+            } catch (error) {
+                console.error('Error cancelling subscription:', error);
+                showStatus('Network error. Please try again.', 'error');
             }
         }
         
