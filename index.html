@@ -1565,6 +1565,14 @@
                         displayValue = value.join(', ');
                     }
                     
+                    // Handle special values for display
+                    if (feature.key === 'analyses' && value === 'Unlimited') {
+                        displayValue = '♾️ Unlimited';
+                    }
+                    if (feature.key === 'pros' && value === 'All 20+') {
+                        displayValue = 'All 20+ Pros';
+                    }
+                    
                     const bgColor = isCurrent ? 'background:#e8f5e9;' : '';
                     const fontWeight = isCurrent ? 'font-weight:600;' : '';
                     html += `<td style="padding:10px 12px; text-align:center; ${bgColor} ${fontWeight}">${displayValue}</td>`;
@@ -1598,7 +1606,7 @@
             // Update analyses display
             const analysesDisplay = document.getElementById('analysesDisplay');
             if (plan.analyses === 'Unlimited') {
-                analysesDisplay.innerHTML = `🎯 <strong>∞</strong> unlimited analyses`;
+                analysesDisplay.innerHTML = `🎯 <strong>♾️</strong> unlimited analyses`;
             } else if (isExpired || currentAnalysesRemaining <= 0) {
                 analysesDisplay.innerHTML = `🎯 <strong>0</strong> analyses remaining - <span style="color:#c62828;">EXPIRED</span>`;
             } else {
@@ -1607,7 +1615,11 @@
             
             // Update pros display
             const prosDisplay = document.getElementById('prosDisplay');
-            prosDisplay.innerHTML = `🏆 <strong>${plan.pros}</strong> pros available`;
+            let proDisplayText = plan.pros;
+            if (proDisplayText === 'All 20+') {
+                proDisplayText = `All ${allPros.length}+ Pros`;
+            }
+            prosDisplay.innerHTML = `🏆 <strong>${proDisplayText}</strong>`;
             
             // Update expiry display
             const expiryDisplay = document.getElementById('expiryDisplay');
@@ -2454,6 +2466,10 @@
             }
         }
 
+        // ============================================
+        // CORRECTED HANDLE SUBSCRIBE - STRIPE FIX
+        // ============================================
+        
         async function handleSubscribe(planKey) {
             const token = localStorage.getItem('authToken');
             if (!token) {
@@ -2464,6 +2480,7 @@
             try {
                 // First get the pricing data to get the price_id
                 const response = await fetch(`${API_URL}/api/pricing`);
+                if (!response.ok) throw new Error('Failed to load pricing');
                 const data = await response.json();
                 const plan = data.plans[planKey];
                 
@@ -2473,6 +2490,8 @@
                 }
                 
                 const mode = planKey === 'lifetime' ? 'payment' : 'subscription';
+                
+                showStatus('Redirecting to payment...', 'success');
                 
                 const checkoutResponse = await fetch(`${API_URL}/api/create-checkout-session`, {
                     method: 'POST',
@@ -2489,8 +2508,13 @@
                 
                 const session = await checkoutResponse.json();
                 
+                // ✅ FIX: Properly redirect to Stripe Checkout
                 if (session.url) {
+                    // Redirect to Stripe Checkout page
                     window.location.href = session.url;
+                } else if (session.sessionId) {
+                    // Alternative: Use Stripe's Checkout redirect with session ID
+                    window.location.href = `https://checkout.stripe.com/pay/${session.sessionId}`;
                 } else {
                     showStatus('Error creating checkout: ' + (session.error || 'Unknown error'), 'error');
                 }
@@ -2504,7 +2528,7 @@
         async function checkShowPricing() {
             const token = localStorage.getItem('authToken');
             if (!token) return;
-        
+
             try {
                 const response = await fetch(`${API_URL}/api/user/subscription`, {
                     headers: {
@@ -2515,17 +2539,37 @@
                 
                 // Update current plan
                 currentPlanType = data.account_type || 'free';
+                
+                // Check for expired subscription
+                if (data.requires_renewal || data.subscription_expired) {
+                    currentPlanType = 'expired';
+                }
+                
+                currentAnalysesRemaining = data.analyses_remaining || 0;
+                currentDaysRemaining = data.days_remaining || 0;
+                currentSubscriptionCancelled = data.subscription_cancelled || false;
+                
                 loadPros();
+                updateUserStageDisplay();
             
                 const pricingSection = document.getElementById('pricing-section');
                 if (!pricingSection) return;
             
-                if (!data.is_premium && data.analyses_remaining <= 0) {
+                // Show pricing if: demo used up, expired, or free with no analyses
+                const shouldShowPricing = 
+                    (data.requires_renewal || data.subscription_expired) ||
+                    (!data.is_premium && data.analyses_remaining <= 0) ||
+                    data.account_type === 'free';
+                
+                if (shouldShowPricing) {
                     pricingSection.style.display = 'block';
-                    await loadPricing();
-                } else if (data.requires_renewal || data.subscription_expired) {
-                    pricingSection.style.display = 'block';
-                    pricingSection.querySelector('h2').textContent = '🔄 Renew Your Subscription';
+                    // Update the heading based on reason
+                    const heading = pricingSection.querySelector('h2');
+                    if (data.requires_renewal || data.subscription_expired) {
+                        heading.textContent = '🔄 Renew Your Subscription';
+                    } else {
+                        heading.textContent = '🏌️ Upgrade to Premium';
+                    }
                     await loadPricing();
                 } else {
                     pricingSection.style.display = 'none';
