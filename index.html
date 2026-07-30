@@ -1197,9 +1197,9 @@
                     <h3 style="margin-top: 20px;">🔄 Free vs Premium</h3>
                     <ul style="margin-left: 20px; line-height: 1.8;">
                         <li><strong>Free Account:</strong> <strong>1 free demo</strong> to try the service</li>
-                        <li><strong>Starter (£4.99/month):</strong> 10 analyses per month, compare with 10 pros, basic metrics</li>
-                        <li><strong>Premium (£9.99/month):</strong> Unlimited analyses, all 20 pros, advanced metrics</li>
-                        <li><strong>Lifetime (£99.99):</strong> Unlimited analyses forever, no recurring charges</li>
+                        <li><strong>Starter ($4.99/month):</strong> 10 analyses per month, compare with 10 pros, basic metrics</li>
+                        <li><strong>Premium ($9.99/month):</strong> Unlimited analyses, all 20 pros, advanced metrics</li>
+                        <li><strong>Lifetime ($99.99):</strong> Unlimited analyses forever, no recurring charges</li>
                     </ul>
                 </div>
             </div>
@@ -1343,7 +1343,7 @@
                 pros: 2,
                 metrics: ['Tempo', 'Spine Angle', 'Shoulder Rotation'],
                 metricsCount: 3,
-                price: '£0',
+                price: '$0',
                 period: 'one-time',
                 description: '1 free analysis to try the service'
             },
@@ -1355,7 +1355,7 @@
                 pros: 2,
                 metrics: ['Tempo', 'Spine Angle', 'Shoulder Rotation'],
                 metricsCount: 3,
-                price: '£0',
+                price: '$0',
                 period: 'forever',
                 description: 'Limited access after demo expires'
             },
@@ -1367,7 +1367,7 @@
                 pros: 10,
                 metrics: ['Tempo', 'Spine Angle', 'Shoulder Rotation'],
                 metricsCount: 3,
-                price: '£4.99',
+                price: '$4.99',
                 period: '/month',
                 description: 'Unlimited analyses, 10 pros'
             },
@@ -1379,7 +1379,7 @@
                 pros: 'All 20+',
                 metrics: ['Tempo', 'Spine Angle', 'Shoulder Rotation', 'Hip Rotation', 'X-Factor', 'Club Angle', 'Lead Arm Angle', 'Swing Path'],
                 metricsCount: 8,
-                price: '£9.99',
+                price: '$9.99',
                 period: '/month',
                 description: 'Unlimited analyses, all pros, all metrics'
             },
@@ -1391,7 +1391,7 @@
                 pros: 'All 20+',
                 metrics: ['Tempo', 'Spine Angle', 'Shoulder Rotation', 'Hip Rotation', 'X-Factor', 'Club Angle', 'Lead Arm Angle', 'Swing Path'],
                 metricsCount: 8,
-                price: '£99.99',
+                price: '$99.99',
                 period: 'one-time',
                 description: 'Unlimited forever, no recurring charges'
             },
@@ -1403,7 +1403,7 @@
                 pros: 2,
                 metrics: ['Tempo', 'Spine Angle', 'Shoulder Rotation'],
                 metricsCount: 3,
-                price: '£0',
+                price: '$0',
                 period: 'expired',
                 description: 'Subscription expired - renew to continue'
             }
@@ -2369,7 +2369,7 @@
                     const isLifetime = key === 'lifetime';
                     const isCurrent = key === currentPlanType;
                     
-                    const priceDisplay = `£${plan.price}`;
+                    const priceDisplay = `$${plan.price}`;
                     const periodDisplay = isLifetime ? 'one-time' : '/month';
                     const btnText = isCurrent ? '✓ Current Plan' : (isLifetime ? 'Buy Lifetime' : 'Subscribe Monthly');
                     const btnClass = isCurrent ? 'current-plan-btn' : (isLifetime ? 'lifetime-btn' : (isPopular ? 'premium-btn' : 'monthly-btn'));
@@ -2422,7 +2422,7 @@
                     const isLifetime = key === 'lifetime';
                     const isCurrent = key === currentPlanType;
                     
-                    const priceDisplay = `£${plan.price}`;
+                    const priceDisplay = `$${plan.price}`;
                     const periodDisplay = isLifetime ? 'one-time' : '/month';
                     const btnText = isCurrent ? '✓ Current Plan' : (isLifetime ? 'Buy Lifetime' : 'Subscribe Monthly');
                     const btnClass = isCurrent ? 'current-plan-btn' : (isLifetime ? 'lifetime-btn' : (isPopular ? 'premium-btn' : 'monthly-btn'));
