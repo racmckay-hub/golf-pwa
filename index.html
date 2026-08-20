@@ -1063,9 +1063,25 @@
                     </div>
                 </div>
                 
-                <!-- Step 2: Upload Video -->
+                <!-- Step 2: Select Swing Hand -->
                 <div class="card">
-                    <h2><span class="step-icon">2</span> Upload Your Swing</h2>
+                    <h2><span class="step-icon">2</span> Your Swing Hand</h2>
+                    <p style="font-size:14px; color:#4a6a4a; margin-bottom:12px;">
+                        Select the side you normally play golf from. This is your handedness,
+                        not the professional golfer's handedness.
+                    </p>
+                    <select id="handednessSelect" aria-label="Your swing handedness">
+                        <option value="right" selected>🏌️ Right-handed</option>
+                        <option value="left">🏌️ Left-handed</option>
+                    </select>
+                    <div style="font-size:12px; color:#7a9a7a; margin-top:8px;">
+                        Lead-arm and trail-arm measurements will be mapped correctly for your swing.
+                    </div>
+                </div>
+
+                <!-- Step 3: Upload Video -->
+                <div class="card">
+                    <h2><span class="step-icon">3</span> Upload Your Swing</h2>
                     
                     <!-- ===== ENHANCED VIDEO REQUIREMENTS BOX ===== -->
                     <div class="video-requirements">
@@ -1329,6 +1345,24 @@
         let currentAnalysesRemaining = 1;
         let currentDaysRemaining = 0;
         let currentSubscriptionCancelled = false;
+
+        // V27 handedness support: remember the user's own swing hand on this device.
+        function loadSavedHandedness() {
+            const select = document.getElementById('handednessSelect');
+            if (!select) return;
+            const saved = localStorage.getItem('swingHandedness');
+            if (saved === 'left' || saved === 'right') {
+                select.value = saved;
+            }
+        }
+
+        function saveHandedness() {
+            const select = document.getElementById('handednessSelect');
+            if (!select) return;
+            if (select.value === 'left' || select.value === 'right') {
+                localStorage.setItem('swingHandedness', select.value);
+            }
+        }
         
         // ============================================
         // PLAN DEFINITIONS
@@ -1931,6 +1965,12 @@
         const uploadArea = document.getElementById('uploadArea');
         const videoInput = document.getElementById('videoInput');
         let selectedFile = null;
+
+        const handednessSelect = document.getElementById('handednessSelect');
+        if (handednessSelect) {
+            handednessSelect.addEventListener('change', saveHandedness);
+            loadSavedHandedness();
+        }
         
         uploadArea.addEventListener('click', () => {
             videoInput.click();
@@ -2039,9 +2079,22 @@
             }
     
             const pro = document.getElementById('proSelect').value;
+            const handedness = document.getElementById('handednessSelect').value;
+
+            if (!pro) {
+                showStatus('Please select a professional first', 'error');
+                return;
+            }
+
+            if (handedness !== 'right' && handedness !== 'left') {
+                showStatus('Please select your swing hand', 'error');
+                return;
+            }
+
             const formData = new FormData();
             formData.append('video', selectedFile);
             formData.append('pro', pro);
+            formData.append('handedness', handedness);
     
             document.getElementById('loader').style.display = 'block';
             document.getElementById('results').style.display = 'none';
