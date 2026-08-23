@@ -1443,7 +1443,7 @@
                 <div class="loader" id="loader">
                     <div class="spinner"></div>
                     <p style="color:#4a6a4a; font-weight:500;">Analyzing your swing with AI...</p>
-                    <p style="font-size:14px; color:#7a9a7a;">Analysis may take up to 5 minutes approx. Please wait.</p>
+                    <p style="font-size:14px; color:#7a9a7a;">Analysis may take up to 2 minutes approx.</p>
                 </div>
                 
                 <!-- Results -->
@@ -1525,7 +1525,7 @@
                     </ul>
                     
                     <h3 style="margin-top: 20px;">⏱️ How Long It Takes</h3>
-                    <p>After you upload your video, the analysis may take up to 5 minutes approx. Your results will appear as soon as it finishes.</p>
+                    <p>After you upload your video, the analysis may take up to 2 minutes approx. Your results will appear as soon as it finishes.</p>
                     
                     <h3 style="margin-top: 20px;">🔄 Free vs Premium</h3>
                     <ul style="margin-left: 20px; line-height: 1.8;">
@@ -2449,9 +2449,19 @@
                     'Your hands or swing repeatedly leave the frame.'
             };
 
-            const reasons = Array.isArray(quality.reasons)
-                ? quality.reasons.map(r => reasonLabels[r] || String(r).replaceAll('_', ' '))
+            const backendIssues = Array.isArray(data.detected_issues)
+                ? data.detected_issues
+                    .map(issue => issue && issue.description ? issue.description : null)
+                    .filter(Boolean)
                 : [];
+
+            const reasons = backendIssues.length
+                ? backendIssues
+                : (
+                    Array.isArray(quality.reasons)
+                        ? quality.reasons.map(r => reasonLabels[r] || String(r).replaceAll('_', ' '))
+                        : []
+                  );
 
             const guidance = Array.isArray(data.recording_guidance)
                 ? data.recording_guidance
@@ -2479,7 +2489,7 @@
                     </div>
 
                     <p style="margin:0 0 14px 0; line-height:1.6;">
-                        ${data.message || 'We cannot reliably analyze this swing because the full body is not sufficiently visible.'}
+                        ${data.message || 'We cannot reliably analyze this swing because the video is incomplete or insufficiently framed.'}
                     </p>
 
                     ${reasons.length ? `
