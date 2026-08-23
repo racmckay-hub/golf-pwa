@@ -2520,7 +2520,60 @@
                 }
             
                 if (!response.ok) {
-                    const errorMsg = data.error || data.message || `Error ${response.status}`;
+                    // V37.5: show a persistent, user-friendly recording-quality failure.
+                    if (data.error === 'video_quality_failed') {
+                        const quality = data.video_quality || {};
+                        const reasonLabels = {
+                            golfer_not_reliably_detected: 'The golfer could not be reliably detected throughout the video.',
+                            full_body_not_reliably_visible: 'Your full body is not reliably visible throughout the swing.',
+                            lower_legs_or_feet_cropped: 'Your lower legs or feet are cropped or outside the frame.',
+                            hands_or_swing_leave_frame: 'Your hands or swing repeatedly leave the frame.'
+                        };
+
+                        const reasons = Array.isArray(quality.reasons)
+                            ? quality.reasons.map(r => reasonLabels[r] || r.replaceAll('_', ' '))
+                            : [];
+
+                        const guidance = Array.isArray(data.recording_guidance)
+                            ? data.recording_guidance
+                            : [
+                                'Keep your full body visible from head to feet.',
+                                'Move the camera far enough back to capture the entire swing.',
+                                'Keep both feet visible throughout the recording.',
+                                'Keep your hands and club inside the frame as much as possible.',
+                                'Record one complete swing from setup through finish.',
+                                'Landscape video is recommended.'
+                            ];
+
+                        const resultsDiv = document.getElementById('results');
+                        resultsDiv.innerHTML = `
+                            <div class="card" style="border:2px solid #c62828;">
+                                <h2 style="color:#c62828;">📹 Your video needs to be re-recorded</h2>
+                                <p>${data.message || 'We cannot reliably analyze this swing because the framing is insufficient.'}</p>
+
+                                ${reasons.length ? `
+                                    <h3>Detected issues</h3>
+                                    <ul style="line-height:1.7;">
+                                        ${reasons.map(reason => `<li>${reason}</li>`).join('')}
+                                    </ul>
+                                ` : ''}
+
+                                <h3>Please record again</h3>
+                                <ul style="line-height:1.7;">
+                                    ${guidance.map(item => `<li>${item}</li>`).join('')}
+                                </ul>
+
+                                <p style="margin-top:16px;"><strong>No swing score was generated from this video.</strong></p>
+                            </div>
+                        `;
+                        resultsDiv.style.display = 'block';
+                        resultsDiv.scrollIntoView({ behavior: 'smooth', block: 'start' });
+
+                        showStatus('📹 Video framing check failed — please see the recording guidance below.', 'error');
+                        return;
+                    }
+
+                    const errorMsg = data.message || data.error || `Error ${response.status}`;
                     showStatus(errorMsg, 'error');
                     return;
                 }
