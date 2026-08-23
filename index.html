@@ -1421,6 +1421,9 @@
                     </div>
                     <div id="videoPreview" class="video-preview"></div>
 
+                    <!-- Persistent video quality warning -->
+                    <div id="videoQualityWarning" style="display:none; margin-top:16px;"></div>
+
                     <!-- Analysis limit warning -->
                     <div id="analysisLimitWarning" style="display:none; background:#fff3e0; padding:12px 16px; border-radius:12px; margin-top:12px; border-left:4px solid #e65100;">
                         <strong>⚠️ Demo Limit:</strong> You have <span id="remainingAnalysesDisplay">1</span> free analysis remaining. 
@@ -1440,7 +1443,7 @@
                 <div class="loader" id="loader">
                     <div class="spinner"></div>
                     <p style="color:#4a6a4a; font-weight:500;">Analyzing your swing with AI...</p>
-                    <p style="font-size:14px; color:#7a9a7a;">Analysis may take up to 2 minutes approx.</p>
+                    <p style="font-size:14px; color:#7a9a7a;">Analysis may take up to 5 minutes approx. Please wait.</p>
                 </div>
                 
                 <!-- Results -->
@@ -1522,7 +1525,7 @@
                     </ul>
                     
                     <h3 style="margin-top: 20px;">⏱️ How Long It Takes</h3>
-                    <p>After you upload your video, the analysis may take up to 2 minutes approx. Your results will appear as soon as it finishes.</p>
+                    <p>After you upload your video, the analysis may take up to 5 minutes approx. Your results will appear as soon as it finishes.</p>
                     
                     <h3 style="margin-top: 20px;">🔄 Free vs Premium</h3>
                     <ul style="margin-left: 20px; line-height: 1.8;">
@@ -2373,6 +2376,7 @@
         });
         
         function handleFile(file) {
+            clearVideoQualityWarning();
             selectedFile = file;
             const preview = document.getElementById('videoPreview');
             preview.innerHTML = `
@@ -2419,6 +2423,93 @@
             }
         }
         
+
+        // ===== V37.5.1 PERSISTENT VIDEO QUALITY WARNING =====
+        function clearVideoQualityWarning() {
+            const box = document.getElementById('videoQualityWarning');
+            if (box) {
+                box.style.display = 'none';
+                box.innerHTML = '';
+            }
+        }
+
+        function showVideoQualityWarning(data) {
+            const box = document.getElementById('videoQualityWarning');
+            if (!box) return;
+
+            const quality = data.video_quality || {};
+            const reasonLabels = {
+                golfer_not_reliably_detected:
+                    'The golfer could not be reliably detected throughout the video.',
+                full_body_not_reliably_visible:
+                    'Your full body is not reliably visible throughout the swing.',
+                lower_legs_or_feet_cropped:
+                    'Your lower legs or feet appear to be cropped or outside the frame.',
+                hands_or_swing_leave_frame:
+                    'Your hands or swing repeatedly leave the frame.'
+            };
+
+            const reasons = Array.isArray(quality.reasons)
+                ? quality.reasons.map(r => reasonLabels[r] || String(r).replaceAll('_', ' '))
+                : [];
+
+            const guidance = Array.isArray(data.recording_guidance)
+                ? data.recording_guidance
+                : [
+                    'Keep your full body visible from head to feet.',
+                    'Move the camera far enough back to capture the entire swing.',
+                    'Keep both feet visible throughout the recording.',
+                    'Keep your hands and club inside the frame as much as possible.',
+                    'Record one complete swing from setup through finish.',
+                    'Use landscape orientation.'
+                ];
+
+            box.innerHTML = `
+                <div style="
+                    background:#fff7f7;
+                    border:2px solid #c62828;
+                    border-left:6px solid #c62828;
+                    border-radius:14px;
+                    padding:18px;
+                    color:#4a2020;
+                    box-shadow:0 6px 20px rgba(198,40,40,.10);
+                ">
+                    <div style="font-size:19px; font-weight:800; color:#a51f1f; margin-bottom:8px;">
+                        📹 Please re-record your swing video
+                    </div>
+
+                    <p style="margin:0 0 14px 0; line-height:1.6;">
+                        ${data.message || 'We cannot reliably analyze this swing because the full body is not sufficiently visible.'}
+                    </p>
+
+                    ${reasons.length ? `
+                        <div style="font-weight:750; margin-bottom:5px;">Detected issue${reasons.length > 1 ? 's' : ''}</div>
+                        <ul style="margin:0 0 14px 20px; line-height:1.7;">
+                            ${reasons.map(reason => `<li>${reason}</li>`).join('')}
+                        </ul>
+                    ` : ''}
+
+                    <div style="font-weight:750; margin-bottom:5px;">For the best analysis</div>
+                    <ul style="margin:0 0 14px 20px; line-height:1.7;">
+                        ${guidance.map(item => `<li>${item}</li>`).join('')}
+                    </ul>
+
+                    <div style="
+                        background:#fdeaea;
+                        border-radius:9px;
+                        padding:10px 12px;
+                        font-weight:700;
+                        color:#8f1f1f;
+                    ">
+                        No score was generated from this video. Select a better-framed video and try again.
+                    </div>
+                </div>
+            `;
+
+            box.style.display = 'block';
+            box.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+
         // ***** ANALYZE FUNCTION *****
         
         async function analyze() {
@@ -2520,56 +2611,10 @@
                 }
             
                 if (!response.ok) {
-                    // V37.5: show a persistent, user-friendly recording-quality failure.
+                    // V37.5.1: quality failures stay visible until a new video is selected.
                     if (data.error === 'video_quality_failed') {
-                        const quality = data.video_quality || {};
-                        const reasonLabels = {
-                            golfer_not_reliably_detected: 'The golfer could not be reliably detected throughout the video.',
-                            full_body_not_reliably_visible: 'Your full body is not reliably visible throughout the swing.',
-                            lower_legs_or_feet_cropped: 'Your lower legs or feet are cropped or outside the frame.',
-                            hands_or_swing_leave_frame: 'Your hands or swing repeatedly leave the frame.'
-                        };
-
-                        const reasons = Array.isArray(quality.reasons)
-                            ? quality.reasons.map(r => reasonLabels[r] || r.replaceAll('_', ' '))
-                            : [];
-
-                        const guidance = Array.isArray(data.recording_guidance)
-                            ? data.recording_guidance
-                            : [
-                                'Keep your full body visible from head to feet.',
-                                'Move the camera far enough back to capture the entire swing.',
-                                'Keep both feet visible throughout the recording.',
-                                'Keep your hands and club inside the frame as much as possible.',
-                                'Record one complete swing from setup through finish.',
-                                'Landscape video is recommended.'
-                            ];
-
-                        const resultsDiv = document.getElementById('results');
-                        resultsDiv.innerHTML = `
-                            <div class="card" style="border:2px solid #c62828;">
-                                <h2 style="color:#c62828;">📹 Your video needs to be re-recorded</h2>
-                                <p>${data.message || 'We cannot reliably analyze this swing because the framing is insufficient.'}</p>
-
-                                ${reasons.length ? `
-                                    <h3>Detected issues</h3>
-                                    <ul style="line-height:1.7;">
-                                        ${reasons.map(reason => `<li>${reason}</li>`).join('')}
-                                    </ul>
-                                ` : ''}
-
-                                <h3>Please record again</h3>
-                                <ul style="line-height:1.7;">
-                                    ${guidance.map(item => `<li>${item}</li>`).join('')}
-                                </ul>
-
-                                <p style="margin-top:16px;"><strong>No swing score was generated from this video.</strong></p>
-                            </div>
-                        `;
-                        resultsDiv.style.display = 'block';
-                        resultsDiv.scrollIntoView({ behavior: 'smooth', block: 'start' });
-
-                        showStatus('📹 Video framing check failed — please see the recording guidance below.', 'error');
+                        showVideoQualityWarning(data);
+                        showStatus('📹 Video quality check failed — see the recording guidance below.', 'error');
                         return;
                     }
 
