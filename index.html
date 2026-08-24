@@ -8,7 +8,7 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black">
     <meta name="apple-mobile-web-app-title" content="Golf Analyzer">
     <title>Golf Swing Analyzer</title>
-    <!-- VERSION: 37.7.1 - GBP LAUNCH PRICING -->
+    <!-- VERSION: 37.7.2 - DAY-1 CONVERSION FUNNEL FIXES -->
     <link rel="manifest" href="manifest.json">
     <link rel="apple-touch-icon" href="icon.png">
     <style>
@@ -1867,6 +1867,32 @@
         <div id="appSection" style="display: none;">
             
             <!-- ===== USER STAGE BANNER ===== -->
+            <div id="registrationSuccessNotice" style="display:none; margin-bottom:16px;">
+                <div style="
+                    background:#edf8f1;
+                    border:1px solid #b9d8c4;
+                    border-left:5px solid #1d7953;
+                    border-radius:14px;
+                    padding:16px 18px;
+                    color:#183d2d;
+                    box-shadow:0 5px 18px rgba(29,121,83,.08);
+                ">
+                    <div style="display:flex; align-items:flex-start; justify-content:space-between; gap:16px;">
+                        <div>
+                            <div style="font-size:17px; font-weight:800; margin-bottom:5px;">
+                                ✅ Account created — you're signed in
+                            </div>
+                            <div style="font-size:13px; line-height:1.55; color:#456257;">
+                                Your first complete swing analysis is free. Choose any professional,
+                                upload a well-framed swing video and start your analysis.
+                            </div>
+                        </div>
+                        <button type="button" onclick="dismissRegistrationSuccess()" aria-label="Dismiss"
+                            style="border:0;background:transparent;color:#456257;font-size:20px;cursor:pointer;padding:0 2px;">×</button>
+                    </div>
+                </div>
+            </div>
+
             <div class="user-stage-banner" id="userStageBanner">
                 <div class="stage-header">
                     <div class="user-info">
@@ -1877,13 +1903,13 @@
                     </div>
                     <div class="stage-details" id="stageDetails">
                         <span id="analysesDisplay">🎯 <strong>1</strong> analysis remaining</span>
-                        <span id="prosDisplay">🏆 <strong>2</strong> pros available</span>
+                        <span id="prosDisplay">🏆 <strong>All 20 Pros</strong></span>
                         <span id="expiryDisplay" style="display:none;">⏱️ <strong>30</strong> days remaining</span>
                         <span id="autoRenewDisplay" style="display:none; font-size:12px;"></span>
                     </div>
                 </div>
                 <div class="stage-features" id="stageFeatures">
-                    📊 Metrics: Tempo, Spine Angle, Shoulder Rotation
+                    📊 Metrics: All available swing metrics
                 </div>
                 <div id="stageUpgradeLink" style="margin-top:8px; font-size:13px;">
                     <a href="#" onclick="showSection('plans'); return false;" style="color:#1a3c2a; font-weight:600;">📈 Upgrade your plan →</a>
@@ -1969,7 +1995,7 @@
                     <!-- Analysis limit warning -->
                     <div id="analysisLimitWarning" style="display:none; background:#fff3e0; padding:12px 16px; border-radius:12px; margin-top:12px; border-left:4px solid #e65100;">
                         <strong>⚠️ Demo Limit:</strong> You have <span id="remainingAnalysesDisplay">1</span> free analysis remaining. 
-                        <a href="#" onclick="showSection('plans'); return false;" style="color:#1a3c2a; font-weight:600;">Upgrade for unlimited →</a>
+                        <a href="#" onclick="openUpgradePlans(); return false;" style="color:#1a3c2a; font-weight:600;">Upgrade for unlimited →</a>
                     </div>
 
                     <!-- Expired subscription warning -->
@@ -2673,17 +2699,47 @@
             if (currentPlanType === 'expired') {
                 analyzeBtn.textContent = '🔄 Renew Subscription to Analyze';
                 analyzeBtn.style.background = '#c62828';
+                analyzeBtn.style.color = '#ffffff';
+                analyzeBtn.onclick = openUpgradePlans;
             } else if (isFree && currentAnalysesRemaining <= 0) {
                 analyzeBtn.textContent = '📈 Upgrade to Analyze More';
                 analyzeBtn.style.background = '#d4af37';
                 analyzeBtn.style.color = '#1a3c2a';
+                analyzeBtn.onclick = openUpgradePlans;
             } else {
                 analyzeBtn.textContent = '🚀 Analyze Swing';
                 analyzeBtn.style.background = '';
                 analyzeBtn.style.color = '';
+                analyzeBtn.onclick = analyze;
             }
         }
         
+
+        // ===== V37.7.2 CONVERSION FUNNEL HELPERS =====
+        function showRegistrationSuccess() {
+            const notice = document.getElementById('registrationSuccessNotice');
+            if (notice) {
+                notice.style.display = 'block';
+                notice.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
+        }
+
+        function dismissRegistrationSuccess() {
+            const notice = document.getElementById('registrationSuccessNotice');
+            if (notice) notice.style.display = 'none';
+        }
+
+        function openUpgradePlans() {
+            showSection('plans');
+            setTimeout(() => {
+                const pricing = document.getElementById('pricing-section');
+                if (pricing) {
+                    pricing.style.display = 'block';
+                    pricing.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }
+                loadPricing();
+            }, 80);
+        }
 
         // ===== PUBLIC LANDING AUTH CONTROLS =====
         function setLandingAuthMode(mode) {
@@ -2809,7 +2865,7 @@
         
                 const hasSeenWelcome = sessionStorage.getItem('hasSeenWelcome');
                 if (!hasSeenWelcome && data.analyses_remaining > 0) {
-                    const message = `👋 Welcome! You have ${data.analyses_remaining} free demo${data.analyses_remaining > 1 ? 's' : ''} remaining.`;
+                    const message = `👋 Welcome! You have ${data.analyses_remaining} free analysis remaining.`;
                     showStatus(message, 'success');
                     sessionStorage.setItem('hasSeenWelcome', 'true');
                 }
@@ -2844,8 +2900,15 @@
                     authToken = data.token;
                     localStorage.setItem('authToken', authToken);
                     localStorage.setItem('userId', data.user_id);
-                    showStatus('Account created! Logged in.', 'success');
-                    checkAuth();
+
+                    // Explicitly enter the app immediately after successful signup.
+                    document.getElementById('loginSection').style.display = 'none';
+                    document.getElementById('appSection').style.display = 'block';
+                    showSection('home');
+
+                    await loadUserPlan();
+                    showRegistrationSuccess();
+                    showStatus('✅ Account created successfully — you are now signed in.', 'success');
                 } else {
                     showStatus(data.error || 'Registration failed', 'error');
                 }
