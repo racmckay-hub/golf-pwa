@@ -8,6 +8,7 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black">
     <meta name="apple-mobile-web-app-title" content="Golf Analyzer">
     <title>Golf Swing Analyzer</title>
+    <!-- VERSION: 37.7.1 - GBP LAUNCH PRICING -->
     <link rel="manifest" href="manifest.json">
     <link rel="apple-touch-icon" href="icon.png">
     <style>
@@ -1760,6 +1761,9 @@
                             <span>Video quality validation</span>
                             <span>Metric-by-metric feedback</span>
                         </div>
+                        <p style="margin-top:18px;color:rgba(255,255,255,.9);font-size:14px;font-weight:700;">
+                            Try one complete analysis free · Premium £9.99/month or £79.99/year
+                        </p>
                     </div>
 
                     <div class="landing-auth-panel" id="landingAuthPanel">
@@ -1994,7 +1998,7 @@
                 <div id="pricing-section" style="display: none;">
                     <div class="card">
                         <h2>🏌️ Upgrade to Premium</h2>
-                        <p style="text-align: center; color: #4a6a4a; margin-bottom: 20px;">🎯 You've used all your free demos! Unlock unlimited analyses with one of our premium plans.</p>
+                        <p style="text-align: center; color: #4a6a4a; margin-bottom: 20px;">🎯 You've used your free analysis! Continue with Premium — choose flexible monthly billing or save with annual billing.</p>
                         
                         <div style="display: flex; flex-wrap: wrap; gap: 20px; justify-content: center;" id="pricingGrid">
                             <!-- Plans will be loaded here dynamically -->
@@ -2298,76 +2302,88 @@
         
         const PLAN_DEFINITIONS = {
             'demo': {
-                label: 'Demo',
-                badgeClass: 'demo',
-                icon: '📊',
+                label: 'Free',
+                badgeClass: 'free',
+                icon: '🎯',
                 analyses: 1,
-                pros: 2,
-                metrics: ['Tempo', 'Spine Angle', 'Shoulder Rotation'],
-                metricsCount: 3,
+                pros: 'All 20+',
+                metrics: ['Club Angle at Top', 'Hip Rotation', 'Hip Rotation at Top', 'Knee Flexion', 'Lateral Movement', 'Lead Arm Angle at Top', 'Lead Elbow Angle', 'Posture Score', 'Shoulder Rotation', 'Shoulder Rotation at Impact', 'Spine Angle', 'Tempo Ratio', 'Trail Elbow Angle', 'X Factor'],
+                metricsCount: 14,
                 price: '$0',
-                period: 'one-time',
-                description: '1 free analysis to try the service'
+                period: 'first analysis',
+                description: 'One complete swing analysis with all available metrics'
             },
             'free': {
                 label: 'Free',
                 badgeClass: 'free',
                 icon: '🆓',
                 analyses: 0,
-                pros: 2,
-                metrics: ['Tempo', 'Spine Angle', 'Shoulder Rotation'],
-                metricsCount: 3,
+                pros: 'All 20+',
+                metrics: ['Club Angle at Top', 'Hip Rotation', 'Hip Rotation at Top', 'Knee Flexion', 'Lateral Movement', 'Lead Arm Angle at Top', 'Lead Elbow Angle', 'Posture Score', 'Shoulder Rotation', 'Shoulder Rotation at Impact', 'Spine Angle', 'Tempo Ratio', 'Trail Elbow Angle', 'X Factor'],
+                metricsCount: 14,
                 price: '$0',
-                period: 'forever',
-                description: 'Limited access after demo expires'
+                period: 'after free analysis',
+                description: 'Upgrade to continue analysing swings'
+            },
+            'premium': {
+                label: 'Premium Monthly',
+                badgeClass: 'premium',
+                icon: '⭐',
+                analyses: 'Unlimited',
+                pros: 'All 20+',
+                metrics: ['Club Angle at Top', 'Hip Rotation', 'Hip Rotation at Top', 'Knee Flexion', 'Lateral Movement', 'Lead Arm Angle at Top', 'Lead Elbow Angle', 'Posture Score', 'Shoulder Rotation', 'Shoulder Rotation at Impact', 'Spine Angle', 'Tempo Ratio', 'Trail Elbow Angle', 'X Factor'],
+                metricsCount: 14,
+                price: '£9.99',
+                period: '/month',
+                description: 'All pros, all available metrics and recommendations'
+            },
+            'premium_annual': {
+                label: 'Premium Annual',
+                badgeClass: 'premium',
+                icon: '🏆',
+                analyses: 'Unlimited',
+                pros: 'All 20+',
+                metrics: ['Club Angle at Top', 'Hip Rotation', 'Hip Rotation at Top', 'Knee Flexion', 'Lateral Movement', 'Lead Arm Angle at Top', 'Lead Elbow Angle', 'Posture Score', 'Shoulder Rotation', 'Shoulder Rotation at Impact', 'Spine Angle', 'Tempo Ratio', 'Trail Elbow Angle', 'X Factor'],
+                metricsCount: 14,
+                price: '£79.99',
+                period: '/year',
+                description: 'All Premium features — save about 33% versus monthly'
             },
             'starter': {
-                label: 'Starter',
+                label: 'Starter (Legacy)',
                 badgeClass: 'starter',
                 icon: '📈',
                 analyses: 'Unlimited',
                 pros: 10,
                 metrics: ['Tempo', 'Spine Angle', 'Shoulder Rotation'],
                 metricsCount: 3,
-                price: '$4.99',
+                price: '£4.99',
                 period: '/month',
-                description: 'Unlimited analyses, 10 pros'
-            },
-            'premium': {
-                label: 'Premium',
-                badgeClass: 'premium',
-                icon: '⭐',
-                analyses: 'Unlimited',
-                pros: 'All 20+',
-                metrics: ['Tempo', 'Spine Angle', 'Shoulder Rotation', 'Hip Rotation', 'X-Factor', 'Club Angle', 'Lead Arm Angle', 'Swing Path'],
-                metricsCount: 8,
-                price: '$9.99',
-                period: '/month',
-                description: 'Unlimited analyses, all pros, all metrics'
+                description: 'Legacy plan — no longer offered to new customers'
             },
             'lifetime': {
-                label: 'Lifetime',
+                label: 'Lifetime (Legacy)',
                 badgeClass: 'lifetime',
                 icon: '👑',
                 analyses: 'Unlimited',
                 pros: 'All 20+',
-                metrics: ['Tempo', 'Spine Angle', 'Shoulder Rotation', 'Hip Rotation', 'X-Factor', 'Club Angle', 'Lead Arm Angle', 'Swing Path'],
-                metricsCount: 8,
-                price: '$99.99',
+                metrics: ['Club Angle at Top', 'Hip Rotation', 'Hip Rotation at Top', 'Knee Flexion', 'Lateral Movement', 'Lead Arm Angle at Top', 'Lead Elbow Angle', 'Posture Score', 'Shoulder Rotation', 'Shoulder Rotation at Impact', 'Spine Angle', 'Tempo Ratio', 'Trail Elbow Angle', 'X Factor'],
+                metricsCount: 14,
+                price: '£99.99',
                 period: 'one-time',
-                description: 'Unlimited forever, no recurring charges'
+                description: 'Legacy plan — no longer offered to new customers'
             },
             'expired': {
                 label: 'Expired',
                 badgeClass: 'expired',
                 icon: '❌',
                 analyses: 0,
-                pros: 2,
-                metrics: ['Tempo', 'Spine Angle', 'Shoulder Rotation'],
-                metricsCount: 3,
+                pros: 'All 20+',
+                metrics: ['Club Angle at Top', 'Hip Rotation', 'Hip Rotation at Top', 'Knee Flexion', 'Lateral Movement', 'Lead Arm Angle at Top', 'Lead Elbow Angle', 'Posture Score', 'Shoulder Rotation', 'Shoulder Rotation at Impact', 'Spine Angle', 'Tempo Ratio', 'Trail Elbow Angle', 'X Factor'],
+                metricsCount: 14,
                 price: '$0',
                 period: 'expired',
-                description: 'Subscription expired - renew to continue'
+                description: 'Subscription expired — renew to continue'
             }
         };
         
@@ -2496,7 +2512,7 @@
                 { key: 'description', label: 'Description' }
             ];
             
-            const planKeys = ['demo', 'starter', 'premium', 'lifetime'];
+            const planKeys = ['demo', 'premium', 'premium_annual'];
             
             let html = '';
             features.forEach(feature => {
@@ -2570,7 +2586,7 @@
             
             // Update expiry display
             const expiryDisplay = document.getElementById('expiryDisplay');
-            if (currentPlanType === 'starter' || currentPlanType === 'premium') {
+            if (currentPlanType === 'starter' || currentPlanType === 'premium' || currentPlanType === 'premium_annual') {
                 expiryDisplay.style.display = 'inline';
                 if (currentDaysRemaining > 7) {
                     expiryDisplay.innerHTML = `⏱️ <strong>${currentDaysRemaining}</strong> days remaining`;
@@ -2595,7 +2611,7 @@
                     autoRenewDisplay.textContent = '👑 Never expires';
                     autoRenewDisplay.style.display = 'inline';
                     autoRenewDisplay.style.color = '#2e7d32';
-                } else if (currentPlanType === 'starter' || currentPlanType === 'premium') {
+                } else if (currentPlanType === 'starter' || currentPlanType === 'premium' || currentPlanType === 'premium_annual') {
                     if (currentSubscriptionCancelled) {
                         autoRenewDisplay.textContent = '⛔ Cancelled (ends at period)';
                         autoRenewDisplay.style.color = '#c62828';
@@ -2616,7 +2632,7 @@
             
             // Update upgrade link
             const upgradeLink = document.getElementById('stageUpgradeLink');
-            if (currentPlanType === 'premium' || currentPlanType === 'lifetime') {
+            if (currentPlanType === 'premium' || currentPlanType === 'premium_annual' || currentPlanType === 'lifetime') {
                 upgradeLink.innerHTML = `✅ You're on the <strong>${plan.label}</strong> plan - all features unlocked!`;
             } else if (currentPlanType === 'starter') {
                 upgradeLink.innerHTML = `📈 You're on the <strong>${plan.label}</strong> plan. <a href="#" onclick="showSection('plans'); return false;" style="color:#1a3c2a; font-weight:600;">Upgrade to Premium for more →</a>`;
@@ -3310,7 +3326,7 @@
                             <a href="#" onclick="showSection('plans'); return false;" style="color:#1a3c2a; font-weight:600;">Renew or upgrade →</a>
                         </div>
                     ` : ''}
-                    ${currentPlanType === 'premium' && currentDaysRemaining < 7 && currentDaysRemaining > 0 ? `
+                    ${(currentPlanType === 'premium' || currentPlanType === 'premium_annual') && currentDaysRemaining < 7 && currentDaysRemaining > 0 ? `
                         <div style="background:#fff3e0; padding:12px 16px; border-radius:12px; margin-top:12px; border-left:4px solid #e65100; font-size:14px;">
                             ⏱️ Your Premium plan expires in <strong>${currentDaysRemaining}</strong> days. 
                             <a href="#" onclick="showSection('plans'); return false;" style="color:#1a3c2a; font-weight:600;">Renew →</a>
@@ -3352,7 +3368,7 @@
                 for (const [key, value] of Object.entries(data.metrics)) {
                     const isAllowed = availableMetricKeys.some(ak => key.includes(ak) || ak.includes(key));
                     
-                    if (!isAllowed && currentPlanType !== 'premium' && currentPlanType !== 'lifetime') {
+                    if (!isAllowed && currentPlanType !== 'premium' && currentPlanType !== 'premium_annual' && currentPlanType !== 'lifetime') {
                         lockedCount++;
                         continue;
                     }
@@ -3391,7 +3407,7 @@
                     }
                 }
                 
-                if (lockedCount > 0 && (currentPlanType === 'demo' || currentPlanType === 'free' || currentPlanType === 'starter')) {
+                if (lockedCount > 0 && currentPlanType === 'starter') {
                     metricsHtml += `
                         <div style="background:#fdf8ee; padding:12px 16px; border-radius:8px; margin-top:12px; border-left:4px solid #d4af37; font-size:14px;">
                             🔒 <strong>${lockedCount}</strong> advanced metrics are locked. 
@@ -3492,34 +3508,36 @@
                 const plans = data.plans;
                 
                 // Order: starter, premium, lifetime
-                const planOrder = ['starter', 'premium', 'lifetime'];
+                const planOrder = ['premium', 'premium_annual'];
                 let html = '';
                 
                 planOrder.forEach(key => {
                     const plan = plans[key];
                     if (!plan) return;
                     
-                    const isPopular = key === 'premium';
-                    const isLifetime = key === 'lifetime';
+                    const isPopular = key === 'premium_annual';
+                    const isAnnual = key === 'premium_annual';
                     const isCurrent = key === currentPlanType;
                     
                     const priceDisplay = `$${plan.price}`;
-                    const periodDisplay = isLifetime ? 'one-time' : '/month';
-                    const btnText = isCurrent ? '✓ Current Plan' : (isLifetime ? 'Buy Lifetime' : 'Subscribe Monthly');
-                    const btnClass = isCurrent ? 'current-plan-btn' : (isLifetime ? 'lifetime-btn' : (isPopular ? 'premium-btn' : 'monthly-btn'));
-                    const cardClass = isLifetime ? 'lifetime' : (isPopular ? 'premium' : 'monthly');
+                    const periodDisplay = isAnnual ? '/year' : '/month';
+                    const btnText = isCurrent ? '✓ Current Plan' : (isAnnual ? 'Choose Annual' : 'Choose Monthly');
+                    const btnClass = isCurrent ? 'current-plan-btn' : (isPopular ? 'premium-btn' : 'monthly-btn');
+                    const cardClass = isPopular ? 'premium' : 'monthly';
                     
                     html += `
                         <div class="pricing-card ${cardClass} ${isCurrent ? 'current-plan' : ''}">
-                            ${isPopular && !isCurrent ? '<span class="best-value-badge">Most Popular</span>' : ''}
+                            ${isPopular && !isCurrent ? '<span class="best-value-badge">Best Value · Save 33%</span>' : ''}
                             ${isCurrent ? '<span style="position:absolute;top:-10px;left:16px;background:#2e7d32;color:white;padding:2px 14px;border-radius:20px;font-size:12px;font-weight:bold;">CURRENT PLAN</span>' : ''}
                             <h3>${plan.name}</h3>
-                            <p class="price ${isLifetime ? 'lifetime-price' : (isPopular ? 'premium-price' : 'monthly-price')}">${priceDisplay}</p>
+                            <p class="price ${isPopular ? 'premium-price' : 'monthly-price'}">${priceDisplay}</p>
                             <p class="period">${periodDisplay}</p>
                             <ul>
-                                <li>✅ ${plan.features.analyses === 'unlimited' ? 'Unlimited' : plan.features.analyses} analyses</li>
+                                <li>✅ ${plan.features.analyses === 'unlimited' ? 'Unlimited*' : plan.features.analyses} analyses</li>
                                 <li>✅ Compare with ${plan.features.pro_comparisons} pros</li>
-                                <li>✅ Metrics: ${plan.features.metrics.join(', ')}</li>
+                                <li>✅ All available swing metrics</li>
+                                <li>✅ Recommendations and comparison feedback</li>
+                                <li style="font-size:11px;color:#7a9a7a;">*Subject to reasonable fair use</li>
                             </ul>
                             ${!isCurrent ? `<button class="btn-subscribe ${btnClass}" onclick="handleSubscribe('${key}')">${btnText}</button>` : 
                             `<button class="btn-subscribe ${btnClass}" disabled>✓ Active</button>`}
@@ -3545,34 +3563,36 @@
                 const data = await response.json();
                 const plans = data.plans;
                 
-                const planOrder = ['starter', 'premium', 'lifetime'];
+                const planOrder = ['premium', 'premium_annual'];
                 let html = '';
                 
                 planOrder.forEach(key => {
                     const plan = plans[key];
                     if (!plan) return;
                     
-                    const isPopular = key === 'premium';
-                    const isLifetime = key === 'lifetime';
+                    const isPopular = key === 'premium_annual';
+                    const isAnnual = key === 'premium_annual';
                     const isCurrent = key === currentPlanType;
                     
                     const priceDisplay = `$${plan.price}`;
-                    const periodDisplay = isLifetime ? 'one-time' : '/month';
-                    const btnText = isCurrent ? '✓ Current Plan' : (isLifetime ? 'Buy Lifetime' : 'Subscribe Monthly');
-                    const btnClass = isCurrent ? 'current-plan-btn' : (isLifetime ? 'lifetime-btn' : (isPopular ? 'premium-btn' : 'monthly-btn'));
-                    const cardClass = isLifetime ? 'lifetime' : (isPopular ? 'premium' : 'monthly');
+                    const periodDisplay = isAnnual ? '/year' : '/month';
+                    const btnText = isCurrent ? '✓ Current Plan' : (isAnnual ? 'Choose Annual' : 'Choose Monthly');
+                    const btnClass = isCurrent ? 'current-plan-btn' : (isPopular ? 'premium-btn' : 'monthly-btn');
+                    const cardClass = isPopular ? 'premium' : 'monthly';
                     
                     html += `
                         <div class="pricing-card ${cardClass} ${isCurrent ? 'current-plan' : ''}">
-                            ${isPopular && !isCurrent ? '<span class="best-value-badge">Most Popular</span>' : ''}
+                            ${isPopular && !isCurrent ? '<span class="best-value-badge">Best Value · Save 33%</span>' : ''}
                             ${isCurrent ? '<span style="position:absolute;top:-10px;left:16px;background:#2e7d32;color:white;padding:2px 14px;border-radius:20px;font-size:12px;font-weight:bold;">CURRENT PLAN</span>' : ''}
                             <h3>${plan.name}</h3>
-                            <p class="price ${isLifetime ? 'lifetime-price' : (isPopular ? 'premium-price' : 'monthly-price')}">${priceDisplay}</p>
+                            <p class="price ${isPopular ? 'premium-price' : 'monthly-price'}">${priceDisplay}</p>
                             <p class="period">${periodDisplay}</p>
                             <ul>
-                                <li>✅ ${plan.features.analyses === 'unlimited' ? 'Unlimited' : plan.features.analyses} analyses</li>
+                                <li>✅ ${plan.features.analyses === 'unlimited' ? 'Unlimited*' : plan.features.analyses} analyses</li>
                                 <li>✅ Compare with ${plan.features.pro_comparisons} pros</li>
-                                <li>✅ Metrics: ${plan.features.metrics.join(', ')}</li>
+                                <li>✅ All available swing metrics</li>
+                                <li>✅ Recommendations and comparison feedback</li>
+                                <li style="font-size:11px;color:#7a9a7a;">*Subject to reasonable fair use</li>
                             </ul>
                             ${!isCurrent ? `<button class="btn-subscribe ${btnClass}" onclick="handleSubscribe('${key}')">${btnText}</button>` : 
                             `<button class="btn-subscribe ${btnClass}" disabled>✓ Active</button>`}
@@ -3611,7 +3631,7 @@
                     return;
                 }
                 
-                const mode = planKey === 'lifetime' ? 'payment' : 'subscription';
+                const mode = 'subscription';
                 
                 showStatus('Redirecting to payment...', 'success');
                 
