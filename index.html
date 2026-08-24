@@ -1288,6 +1288,440 @@
             .metric-values { flex-wrap: wrap; gap: 6px 14px; }
         }
 
+
+        /* ===== PROFESSIONAL PUBLIC LANDING / AUTH PAGE ===== */
+        .landing-page {
+            display: block;
+        }
+
+        .landing-shell {
+            overflow: hidden;
+            border: 1px solid rgba(255,255,255,.10);
+            border-radius: 28px;
+            background: #fff;
+            box-shadow: 0 30px 90px rgba(0,0,0,.34);
+        }
+
+        .landing-topbar {
+            position: absolute;
+            z-index: 8;
+            top: 20px;
+            left: 24px;
+            right: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 18px;
+        }
+
+        .landing-brand {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            color: #fff;
+            font-size: 15px;
+            font-weight: 800;
+            letter-spacing: -.01em;
+            text-decoration: none;
+        }
+
+        .landing-brand-mark {
+            width: 38px;
+            height: 38px;
+            display: grid;
+            place-items: center;
+            border-radius: 12px;
+            color: var(--forest-950);
+            background: var(--lime);
+            box-shadow: 0 8px 24px rgba(0,0,0,.16);
+        }
+
+        .landing-nav {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .landing-nav a,
+        .landing-nav button {
+            min-height: 40px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 8px 14px;
+            border: 1px solid rgba(255,255,255,.16);
+            border-radius: 10px;
+            background: rgba(4,20,14,.34);
+            color: rgba(255,255,255,.90);
+            font: inherit;
+            font-size: 13px;
+            font-weight: 700;
+            text-decoration: none;
+            cursor: pointer;
+            backdrop-filter: blur(12px);
+        }
+
+        .landing-nav button.primary {
+            border-color: var(--lime);
+            background: var(--lime);
+            color: var(--forest-950);
+        }
+
+        .landing-hero {
+            position: relative;
+            min-height: 610px;
+            display: grid;
+            grid-template-columns: minmax(0, 1.2fr) minmax(330px, .8fr);
+            align-items: center;
+            gap: 40px;
+            padding: 110px 64px 62px;
+            isolation: isolate;
+            overflow: hidden;
+            background:
+                linear-gradient(90deg, rgba(5,24,17,.97) 0%, rgba(5,24,17,.90) 48%, rgba(5,24,17,.55) 100%),
+                url('https://images.unsplash.com/photo-1587174486073-ae5e5cff23aa?w=1600&h=1000&fit=crop&crop=center') center/cover;
+        }
+
+        .landing-hero::after {
+            content: "";
+            position: absolute;
+            inset: auto 0 0;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, rgba(185,231,105,.78), transparent);
+        }
+
+        .landing-copy {
+            position: relative;
+            z-index: 2;
+            max-width: 690px;
+        }
+
+        .landing-eyebrow {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 18px;
+            padding: 7px 11px;
+            border: 1px solid rgba(185,231,105,.28);
+            border-radius: 999px;
+            color: var(--lime);
+            background: rgba(185,231,105,.08);
+            font-size: 11px;
+            font-weight: 800;
+            letter-spacing: .13em;
+            text-transform: uppercase;
+        }
+
+        .landing-copy h1 {
+            max-width: 650px;
+            margin: 0 0 22px;
+            color: #fff;
+            font-size: clamp(42px, 6vw, 70px);
+            line-height: .98;
+            letter-spacing: -.055em;
+        }
+
+        .landing-copy > p {
+            max-width: 610px;
+            margin: 0;
+            color: rgba(255,255,255,.78);
+            font-size: 18px;
+            line-height: 1.65;
+        }
+
+        .landing-proof {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 9px;
+            margin-top: 28px;
+        }
+
+        .landing-proof span {
+            padding: 8px 11px;
+            border: 1px solid rgba(255,255,255,.12);
+            border-radius: 10px;
+            color: rgba(255,255,255,.82);
+            background: rgba(255,255,255,.06);
+            font-size: 12px;
+            font-weight: 650;
+        }
+
+        .landing-auth-panel {
+            position: relative;
+            z-index: 3;
+            padding: 28px;
+            border: 1px solid rgba(255,255,255,.15);
+            border-radius: 20px;
+            background: rgba(255,255,255,.96);
+            box-shadow: 0 24px 70px rgba(0,0,0,.26);
+            backdrop-filter: blur(16px);
+        }
+
+        .landing-auth-panel h2 {
+            margin: 0 0 8px;
+            color: var(--ink);
+            font-size: 23px;
+            letter-spacing: -.03em;
+        }
+
+        .landing-auth-panel > p {
+            margin: 0 0 18px;
+            color: var(--muted);
+            font-size: 13px;
+        }
+
+        .auth-mode-tabs {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 6px;
+            margin-bottom: 16px;
+            padding: 4px;
+            border-radius: 11px;
+            background: #edf3ef;
+        }
+
+        .auth-mode-tabs button {
+            min-height: 38px;
+            border: 0;
+            border-radius: 8px;
+            background: transparent;
+            color: #61736a;
+            font: inherit;
+            font-size: 13px;
+            font-weight: 750;
+            cursor: pointer;
+        }
+
+        .auth-mode-tabs button.active {
+            color: #fff;
+            background: var(--forest-800);
+            box-shadow: 0 4px 12px rgba(18,61,45,.16);
+        }
+
+        .landing-auth-panel input {
+            width: 100%;
+            min-height: 49px;
+            margin-bottom: 10px;
+            padding: 12px 14px;
+            border: 1px solid #cfdbd4;
+            border-radius: 11px;
+            background: #fff;
+            color: var(--ink);
+            font-size: 15px;
+        }
+
+        .landing-auth-panel input:focus {
+            outline: none;
+            border-color: var(--forest-600);
+            box-shadow: 0 0 0 4px rgba(29,121,83,.12);
+        }
+
+        .landing-auth-action {
+            width: 100%;
+            min-height: 48px;
+            border: 0;
+            border-radius: 11px;
+            color: #fff;
+            background: linear-gradient(180deg, var(--forest-600), var(--forest-800));
+            font: inherit;
+            font-size: 15px;
+            font-weight: 800;
+            cursor: pointer;
+        }
+
+        .landing-auth-foot {
+            margin-top: 13px;
+            color: #7b8d84;
+            font-size: 11px;
+            line-height: 1.5;
+            text-align: center;
+        }
+
+        .landing-section {
+            padding: 64px;
+            background: #fff;
+        }
+
+        .landing-section.soft {
+            background: #f4f7f5;
+        }
+
+        .landing-section-head {
+            max-width: 690px;
+            margin-bottom: 30px;
+        }
+
+        .landing-section-head small {
+            color: var(--forest-600);
+            font-size: 11px;
+            font-weight: 800;
+            letter-spacing: .12em;
+            text-transform: uppercase;
+        }
+
+        .landing-section-head h2 {
+            margin: 7px 0 10px;
+            color: var(--ink);
+            font-size: clamp(28px, 4vw, 42px);
+            line-height: 1.06;
+            letter-spacing: -.04em;
+        }
+
+        .landing-section-head p {
+            margin: 0;
+            color: var(--muted);
+            font-size: 15px;
+        }
+
+        .landing-feature-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 14px;
+        }
+
+        .landing-feature {
+            padding: 22px;
+            border: 1px solid var(--line);
+            border-radius: 16px;
+            background: #fff;
+        }
+
+        .landing-feature-icon {
+            width: 42px;
+            height: 42px;
+            display: grid;
+            place-items: center;
+            margin-bottom: 15px;
+            border-radius: 12px;
+            background: #eaf3ee;
+            font-size: 20px;
+        }
+
+        .landing-feature h3 {
+            margin: 0 0 7px;
+            color: var(--ink);
+            font-size: 16px;
+        }
+
+        .landing-feature p {
+            margin: 0;
+            color: var(--muted);
+            font-size: 13px;
+            line-height: 1.55;
+        }
+
+        .landing-how {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 18px;
+            counter-reset: steps;
+        }
+
+        .landing-step {
+            position: relative;
+            padding: 22px 22px 22px 64px;
+            border-top: 1px solid var(--line);
+        }
+
+        .landing-step::before {
+            counter-increment: steps;
+            content: counter(steps);
+            position: absolute;
+            left: 0;
+            top: 18px;
+            width: 42px;
+            height: 42px;
+            display: grid;
+            place-items: center;
+            border-radius: 50%;
+            color: #fff;
+            background: var(--forest-800);
+            font-weight: 800;
+        }
+
+        .landing-step h3 {
+            margin: 0 0 6px;
+            color: var(--ink);
+            font-size: 15px;
+        }
+
+        .landing-step p {
+            margin: 0;
+            color: var(--muted);
+            font-size: 13px;
+        }
+
+        .landing-cta {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 24px;
+            padding: 34px;
+            border-radius: 18px;
+            color: #fff;
+            background: linear-gradient(135deg, var(--forest-900), var(--forest-700));
+        }
+
+        .landing-cta h2 {
+            margin: 0 0 6px;
+            color: #fff;
+            font-size: 26px;
+            letter-spacing: -.03em;
+        }
+
+        .landing-cta p {
+            margin: 0;
+            color: rgba(255,255,255,.72);
+            font-size: 14px;
+        }
+
+        .landing-cta button {
+            flex: 0 0 auto;
+            min-height: 46px;
+            padding: 11px 18px;
+            border: 0;
+            border-radius: 11px;
+            color: var(--forest-950);
+            background: var(--lime);
+            font: inherit;
+            font-weight: 800;
+            cursor: pointer;
+        }
+
+        .landing-footer {
+            padding: 26px 64px;
+            color: #7d8e85;
+            background: #fff;
+            border-top: 1px solid var(--line);
+            font-size: 12px;
+            text-align: center;
+        }
+
+        @media (max-width: 860px) {
+            .landing-topbar { top: 14px; left: 16px; right: 16px; }
+            .landing-nav a { display: none; }
+            .landing-hero {
+                grid-template-columns: 1fr;
+                min-height: auto;
+                padding: 104px 24px 32px;
+                gap: 30px;
+            }
+            .landing-copy h1 { font-size: 46px; }
+            .landing-auth-panel { max-width: 560px; }
+            .landing-section { padding: 44px 24px; }
+            .landing-feature-grid, .landing-how { grid-template-columns: 1fr; }
+            .landing-cta { align-items: flex-start; flex-direction: column; }
+            .landing-footer { padding: 24px; }
+        }
+
+        @media (max-width: 480px) {
+            .landing-brand-text { display: none; }
+            .landing-nav button { padding-inline: 11px; }
+            .landing-copy h1 { font-size: 40px; }
+            .landing-copy > p { font-size: 16px; }
+            .landing-auth-panel { padding: 20px; }
+        }
+
         @media (prefers-reduced-motion: reduce) {
             *, *::before, *::after { scroll-behavior: auto !important; transition-duration: .01ms !important; animation-duration: .01ms !important; }
         }
@@ -1295,32 +1729,136 @@
 </head>
 <body>
     <div class="container">
-        <!-- ===== HERO SECTION ===== -->
-        <section class="hero">
-            <div class="hero-gallery">
-                <img src="https://images.unsplash.com/photo-1587174486073-ae5e5cff23aa?w=1200&h=600&fit=crop&crop=center" alt="St Andrews Old Course" loading="lazy">
-            </div>
-            <div class="hero-overlay"></div>
-            <div class="hero-content">
-                <h1>🏌️ <span>Golf Swing Analyzer</span></h1>
-                <p>Compare your swing to the pros • Powered by AI</p>
-                <div class="hero-stats">
-                    <span>📊 20 Pro Comparisons</span>
-                    <span>⚡ Instant AI Analysis</span>
-                    <span>🏌️ 1000+ Swings Analyzed</span>
-                </div>
-            </div>
-        </section>
+        <!-- ===== PUBLIC LANDING / AUTH PAGE ===== -->
+        <div id="loginSection" class="landing-page">
+            <div class="landing-shell">
+                <section class="landing-hero" id="landingTop">
+                    <div class="landing-topbar">
+                        <a href="#landingTop" class="landing-brand">
+                            <span class="landing-brand-mark">🏌️</span>
+                            <span class="landing-brand-text">Golf Swing Analyzer</span>
+                        </a>
+                        <nav class="landing-nav" aria-label="Public navigation">
+                            <a href="#howItWorks">How it works</a>
+                            <a href="#features">Features</a>
+                            <button type="button" onclick="showLandingAuth('login')">Log in</button>
+                            <button type="button" class="primary" onclick="showLandingAuth('signup')">Sign up</button>
+                        </nav>
+                    </div>
 
-        <!-- Auth Section - Smaller -->
-        <div class="auth-card" id="loginSection">
-            <h2>🔐 Access Your Account</h2>
-            <input type="email" id="email" placeholder="Email address" autocomplete="email">
-            <input type="password" id="password" placeholder="Password" autocomplete="current-password">
-            <button class="btn btn-primary" onclick="login()">Login</button>
-            <button class="btn btn-secondary" onclick="register()">Create Free Account</button>
+                    <div class="landing-copy">
+                        <div class="landing-eyebrow">AI-powered golf swing analysis</div>
+                        <h1>Understand your swing. Compare it with the professionals.</h1>
+                        <p>
+                            Upload a golf swing video and receive a detailed comparison against professional benchmarks.
+                            The analyzer measures key positions, body rotation, posture, arm and elbow geometry, impact
+                            characteristics and other swing metrics to help you understand where your motion differs.
+                        </p>
+                        <div class="landing-proof">
+                            <span>20 professional benchmarks</span>
+                            <span>Left- and right-handed analysis</span>
+                            <span>Video quality validation</span>
+                            <span>Metric-by-metric feedback</span>
+                        </div>
+                    </div>
+
+                    <div class="landing-auth-panel" id="landingAuthPanel">
+                        <h2 id="landingAuthTitle">Welcome back</h2>
+                        <p id="landingAuthSubtitle">Log in to analyze your swing and access your account.</p>
+
+                        <div class="auth-mode-tabs">
+                            <button type="button" id="landingLoginTab" class="active" onclick="setLandingAuthMode('login')">Log in</button>
+                            <button type="button" id="landingSignupTab" onclick="setLandingAuthMode('signup')">Sign up</button>
+                        </div>
+
+                        <input type="email" id="email" placeholder="Email address" autocomplete="email">
+                        <input type="password" id="password" placeholder="Password" autocomplete="current-password">
+
+                        <button class="landing-auth-action" id="landingAuthAction" onclick="login()">Log in</button>
+                        <div class="landing-auth-foot" id="landingAuthFoot">
+                            Secure account access. Your uploaded swing is used to perform your requested analysis.
+                        </div>
+                    </div>
+                </section>
+
+                <section class="landing-section" id="features">
+                    <div class="landing-section-head">
+                        <small>What the analyzer does</small>
+                        <h2>Turn a swing video into practical measurements.</h2>
+                        <p>
+                            Instead of relying only on visual impressions, the app extracts measurable swing characteristics
+                            and compares them with the professional you select.
+                        </p>
+                    </div>
+                    <div class="landing-feature-grid">
+                        <article class="landing-feature">
+                            <div class="landing-feature-icon">📐</div>
+                            <h3>Detailed swing metrics</h3>
+                            <p>Review rotation, X-factor, spine angle, knee flexion, arm positions, elbow geometry, lateral movement and other measured characteristics.</p>
+                        </article>
+                        <article class="landing-feature">
+                            <div class="landing-feature-icon">🏆</div>
+                            <h3>Professional comparison</h3>
+                            <p>Select from the available professional benchmarks and see your measured values alongside the professional's values.</p>
+                        </article>
+                        <article class="landing-feature">
+                            <div class="landing-feature-icon">↔️</div>
+                            <h3>Handedness-aware analysis</h3>
+                            <p>Left- and right-handed swings are normalized internally, so you can compare with any professional regardless of handedness.</p>
+                        </article>
+                        <article class="landing-feature">
+                            <div class="landing-feature-icon">🎥</div>
+                            <h3>Video quality checks</h3>
+                            <p>The analyzer checks whether the golfer is sufficiently visible and whether the recording contains enough of the swing for reliable analysis.</p>
+                        </article>
+                        <article class="landing-feature">
+                            <div class="landing-feature-icon">📊</div>
+                            <h3>Clear scoring</h3>
+                            <p>See an overall comparison score together with the individual measurements that contribute useful evidence to the analysis.</p>
+                        </article>
+                        <article class="landing-feature">
+                            <div class="landing-feature-icon">📝</div>
+                            <h3>Actionable feedback</h3>
+                            <p>Use the measured differences, recommendations and swing thoughts to focus practice on the areas that matter most.</p>
+                        </article>
+                    </div>
+                </section>
+
+                <section class="landing-section soft" id="howItWorks">
+                    <div class="landing-section-head">
+                        <small>Simple workflow</small>
+                        <h2>From video to comparison in three steps.</h2>
+                    </div>
+                    <div class="landing-how">
+                        <article class="landing-step">
+                            <h3>Choose a professional</h3>
+                            <p>Select the professional benchmark you want to use for the comparison.</p>
+                        </article>
+                        <article class="landing-step">
+                            <h3>Upload your swing</h3>
+                            <p>Record a complete landscape video with your full body and club visible from setup through finish.</p>
+                        </article>
+                        <article class="landing-step">
+                            <h3>Review your analysis</h3>
+                            <p>Explore your score, measured metrics and feedback to understand how your swing compares.</p>
+                        </article>
+                    </div>
+
+                    <div class="landing-cta" style="margin-top:36px;">
+                        <div>
+                            <h2>Ready to analyze your swing?</h2>
+                            <p>Create an account or log in to get started.</p>
+                        </div>
+                        <button type="button" onclick="showLandingAuth('signup')">Create an account</button>
+                    </div>
+                </section>
+
+                <footer class="landing-footer">
+                    Golf Swing Analyzer • AI-assisted swing comparison and performance feedback
+                </footer>
+            </div>
         </div>
-        
+
         <!-- Main App -->
         <div id="appSection" style="display: none;">
             
@@ -2130,6 +2668,49 @@
             }
         }
         
+
+        // ===== PUBLIC LANDING AUTH CONTROLS =====
+        function setLandingAuthMode(mode) {
+            const isSignup = mode === 'signup';
+            const loginTab = document.getElementById('landingLoginTab');
+            const signupTab = document.getElementById('landingSignupTab');
+            const title = document.getElementById('landingAuthTitle');
+            const subtitle = document.getElementById('landingAuthSubtitle');
+            const action = document.getElementById('landingAuthAction');
+            const password = document.getElementById('password');
+
+            if (!loginTab || !signupTab || !title || !subtitle || !action) return;
+
+            loginTab.classList.toggle('active', !isSignup);
+            signupTab.classList.toggle('active', isSignup);
+
+            if (isSignup) {
+                title.textContent = 'Create your account';
+                subtitle.textContent = 'Sign up to upload your swing and start comparing your metrics.';
+                action.textContent = 'Create free account';
+                action.onclick = register;
+                if (password) password.setAttribute('autocomplete', 'new-password');
+            } else {
+                title.textContent = 'Welcome back';
+                subtitle.textContent = 'Log in to analyze your swing and access your account.';
+                action.textContent = 'Log in';
+                action.onclick = login;
+                if (password) password.setAttribute('autocomplete', 'current-password');
+            }
+        }
+
+        function showLandingAuth(mode) {
+            setLandingAuthMode(mode || 'login');
+            const panel = document.getElementById('landingAuthPanel');
+            if (panel) {
+                panel.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                setTimeout(() => {
+                    const emailInput = document.getElementById('email');
+                    if (emailInput) emailInput.focus();
+                }, 350);
+            }
+        }
+
         // Check if user is logged in
         function checkAuth() {
             // Handle payment redirect first
