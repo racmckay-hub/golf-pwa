@@ -8,7 +8,7 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black">
     <meta name="apple-mobile-web-app-title" content="Golf Analyzer">
     <title>Golf Swing Analyzer</title>
-    <!-- VERSION: 37.7.4 - GBP DISPLAY CONSISTENCY -->
+    <!-- VERSION: 37.7.5 - STRIPE CANCELLATION STATE SYNC -->
     <link rel="manifest" href="manifest.json">
     <link rel="apple-touch-icon" href="icon.png">
     <style>
@@ -2304,6 +2304,7 @@
         let currentAnalysesRemaining = 1;
         let currentDaysRemaining = 0;
         let currentSubscriptionCancelled = false;
+        let currentSubscriptionExpiryDate = null;
 
         // V27 handedness support: remember the user's own swing hand on this device.
         function loadSavedHandedness() {
@@ -2640,7 +2641,17 @@
                     autoRenewDisplay.style.color = '#2e7d32';
                 } else if (currentPlanType === 'starter' || currentPlanType === 'premium' || currentPlanType === 'premium_annual') {
                     if (currentSubscriptionCancelled) {
-                        autoRenewDisplay.textContent = '⛔ Cancelled (ends at period)';
+                        let cancelText = '⛔ Cancels at period end';
+                        if (currentSubscriptionExpiryDate) {
+                            const endDate = new Date(currentSubscriptionExpiryDate);
+                            if (!Number.isNaN(endDate.getTime())) {
+                                cancelText = `⛔ Cancels ${endDate.toLocaleDateString(undefined, {
+                                    day: 'numeric',
+                                    month: 'short'
+                                })}`;
+                            }
+                        }
+                        autoRenewDisplay.textContent = cancelText;
                         autoRenewDisplay.style.color = '#c62828';
                         autoRenewDisplay.style.display = 'inline';
                     } else {
@@ -2871,6 +2882,7 @@
                 currentUserEmail = data.email || 'User';
                 currentDaysRemaining = data.days_remaining || 0;
                 currentSubscriptionCancelled = data.subscription_cancelled || false;
+                currentSubscriptionExpiryDate = data.expiry_date || null;
                 
                 // Update display
                 updateUserStageDisplay();
@@ -3785,6 +3797,7 @@
                 currentAnalysesRemaining = data.analyses_remaining || 0;
                 currentDaysRemaining = data.days_remaining || 0;
                 currentSubscriptionCancelled = data.subscription_cancelled || false;
+                currentSubscriptionExpiryDate = data.expiry_date || null;
                 
                 loadPros();
                 updateUserStageDisplay();
