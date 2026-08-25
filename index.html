@@ -8,7 +8,7 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black">
     <meta name="apple-mobile-web-app-title" content="Golf Analyzer">
     <title>Golf Swing Analyzer</title>
-    <!-- VERSION: 37.7.3 - STRIPE CUSTOMER PORTAL -->
+    <!-- VERSION: 37.7.4 - GBP DISPLAY CONSISTENCY -->
     <link rel="manifest" href="manifest.json">
     <link rel="apple-touch-icon" href="icon.png">
     <style>
@@ -1762,7 +1762,7 @@
                             <span>Metric-by-metric feedback</span>
                         </div>
                         <p style="margin-top:18px;color:rgba(255,255,255,.9);font-size:14px;font-weight:700;">
-                            Try one complete analysis free · Premium £9.99/month or £79.99/year
+                            Try one complete analysis free · Premium £9.99/month or £79.99/year<br><span style="font-weight:500;opacity:.82;">Stripe may offer local-currency checkout depending on your location.</span>
                         </p>
                     </div>
 
@@ -2011,7 +2011,7 @@
                 <div class="loader" id="loader">
                     <div class="spinner"></div>
                     <p style="color:#4a6a4a; font-weight:500;">Analyzing your swing with AI...</p>
-                    <p style="font-size:14px; color:#7a9a7a;">Analysis may take up to 5 minutes approx.</p>
+                    <p style="font-size:14px; color:#7a9a7a;">Analysis may take up to 2 minutes approx.</p>
                 </div>
                 
                 <!-- Results -->
@@ -2093,14 +2093,14 @@
                     </ul>
                     
                     <h3 style="margin-top: 20px;">⏱️ How Long It Takes</h3>
-                    <p>After you upload your video, the analysis may take up to 5 minutes approx. Your results will appear as soon as it finishes.</p>
+                    <p>After you upload your video, the analysis may take up to 2 minutes approx. Your results will appear as soon as it finishes.</p>
                     
                     <h3 style="margin-top: 20px;">🔄 Free vs Premium</h3>
                     <ul style="margin-left: 20px; line-height: 1.8;">
                         <li><strong>Free Account:</strong> <strong>1 free demo</strong> to try the service</li>
-                        <li><strong>Starter ($4.99/month):</strong> 10 analyses per month, compare with 10 pros, basic metrics</li>
-                        <li><strong>Premium ($9.99/month):</strong> Unlimited analyses, all 20 pros, advanced metrics</li>
-                        <li><strong>Lifetime ($99.99):</strong> Unlimited analyses forever, no recurring charges</li>
+                        <li><strong>Starter (£4.99/month):</strong> 10 analyses per month, compare with 10 pros, basic metrics</li>
+                        <li><strong>Premium (£9.99/month):</strong> Unlimited analyses, all 20 pros, advanced metrics</li>
+                        <li><strong>Lifetime (£99.99):</strong> Unlimited analyses forever, no recurring charges</li>
                     </ul>
                 </div>
             </div>
@@ -3614,7 +3614,7 @@
                     const isAnnual = key === 'premium_annual';
                     const isCurrent = key === currentPlanType;
                     
-                    const priceDisplay = `$${plan.price}`;
+                    const priceDisplay = `£${plan.price}`;
                     const periodDisplay = isAnnual ? '/year' : '/month';
                     const btnText = isCurrent ? '✓ Current Plan' : (isAnnual ? 'Choose Annual' : 'Choose Monthly');
                     const btnClass = isCurrent ? 'current-plan-btn' : (isPopular ? 'premium-btn' : 'monthly-btn');
@@ -3669,7 +3669,7 @@
                     const isAnnual = key === 'premium_annual';
                     const isCurrent = key === currentPlanType;
                     
-                    const priceDisplay = `$${plan.price}`;
+                    const priceDisplay = `£${plan.price}`;
                     const periodDisplay = isAnnual ? '/year' : '/month';
                     const btnText = isCurrent ? '✓ Current Plan' : (isAnnual ? 'Choose Annual' : 'Choose Monthly');
                     const btnClass = isCurrent ? 'current-plan-btn' : (isPopular ? 'premium-btn' : 'monthly-btn');
