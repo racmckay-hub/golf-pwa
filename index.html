@@ -3033,11 +3033,44 @@
         // Show status message
         function showStatus(message, type) {
             const statusDiv = document.getElementById('status');
-            statusDiv.innerHTML = message;
-            statusDiv.className = `status ${type}`;
-            setTimeout(() => {
-                statusDiv.className = 'status';
-            }, 5000);
+
+            if (statusDiv) {
+                statusDiv.innerHTML = message;
+                statusDiv.className = `status ${type}`;
+
+                setTimeout(() => {
+                    statusDiv.className = 'status';
+                }, 5000);
+            }
+
+            // Also show authentication messages inside the public login/signup panel
+            const loginSection = document.getElementById('loginSection');
+            const landingAuthFoot = document.getElementById('landingAuthFoot');
+
+            if (
+                landingAuthFoot &&
+                loginSection &&
+                loginSection.style.display !== 'none'
+            ) {
+                landingAuthFoot.textContent = message;
+
+                if (type === 'error') {
+                    landingAuthFoot.style.color = '#8c2e2e';
+                    landingAuthFoot.style.background = '#fce8e8';
+                    landingAuthFoot.style.border = '1px solid #f0d0d0';
+                } else if (type === 'success') {
+                    landingAuthFoot.style.color = '#1a5a2a';
+                    landingAuthFoot.style.background = '#e4f4e4';
+                    landingAuthFoot.style.border = '1px solid #c0e0c0';
+                } else {
+                    landingAuthFoot.style.color = '#0d47a1';
+                    landingAuthFoot.style.background = '#e3f2fd';
+                    landingAuthFoot.style.border = '1px solid #90caf9';
+                }
+
+                landingAuthFoot.style.padding = '10px 12px';
+                landingAuthFoot.style.borderRadius = '9px';
+            }
         }
         
         // File upload handling
