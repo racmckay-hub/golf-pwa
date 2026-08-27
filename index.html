@@ -8,7 +8,7 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black">
     <meta name="apple-mobile-web-app-title" content="Golf Analyzer">
     <title>Golf Swing Analyzer</title>
-    <!-- VERSION: 37.7.6 - STRIPE CANCEL_AT COMPATIBILITY -->
+    <!-- VERSION: 37.8.0 - PRIORITY FOCUS + PROGRESS TRACKING -->
     <link rel="manifest" href="manifest.json">
     <link rel="apple-touch-icon" href="icon.png">
     <style>
@@ -1726,6 +1726,38 @@
         @media (prefers-reduced-motion: reduce) {
             *, *::before, *::after { scroll-behavior: auto !important; transition-duration: .01ms !important; animation-duration: .01ms !important; }
         }
+    
+        /* ===== V37.8 PRIORITY + PROGRESS ===== */
+        .priority-focus-card {
+            border: 1px solid #d7e5dc;
+            border-left: 5px solid var(--forest-600, #1d7953);
+            border-radius: 16px;
+            padding: 18px 20px;
+            margin-bottom: 20px;
+            background: linear-gradient(135deg, #f3faf6, #ffffff);
+        }
+        .priority-focus-card h3 { margin: 0 0 8px; color: #123d2d; font-size: 18px; }
+        .priority-focus-values { display:flex; gap:14px; flex-wrap:wrap; margin-top:10px; font-size:13px; color:#52665d; }
+        .priority-focus-values span { padding:6px 10px; background:#eef5f1; border-radius:9px; }
+        .progress-summary-grid { display:grid; grid-template-columns:repeat(3, minmax(0,1fr)); gap:12px; margin-bottom:18px; }
+        .progress-summary-box { padding:16px; border:1px solid var(--line, #dce5e0); border-radius:14px; background:#fff; }
+        .progress-summary-box small { display:block; color:#71837a; font-size:11px; text-transform:uppercase; letter-spacing:.06em; margin-bottom:5px; }
+        .progress-summary-box strong { color:#123d2d; font-size:23px; }
+        .progress-history-list { display:grid; gap:10px; margin-top:14px; }
+        .progress-history-row { display:grid; grid-template-columns:1.2fr .8fr .6fr; gap:10px; align-items:center; padding:13px 14px; border:1px solid var(--line, #dce5e0); border-radius:12px; background:#fafcfb; font-size:13px; }
+        .progress-history-row strong { color:#123d2d; }
+        .comparison-controls { display:grid; grid-template-columns:1fr 1fr; gap:12px; margin:12px 0; }
+        .comparison-table { width:100%; border-collapse:collapse; margin-top:14px; font-size:13px; }
+        .comparison-table th, .comparison-table td { padding:10px 8px; border-bottom:1px solid #e5ece8; text-align:left; }
+        .comparison-table th { color:#52665d; font-size:11px; text-transform:uppercase; letter-spacing:.05em; }
+        .change-good { color:#1a6e4a; font-weight:700; }
+        .change-neutral { color:#66776f; }
+        @media (max-width: 700px) {
+            .progress-summary-grid { grid-template-columns:1fr; }
+            .progress-history-row { grid-template-columns:1fr; }
+            .comparison-controls { grid-template-columns:1fr; }
+        }
+
     </style>
 </head>
 <body>
@@ -1921,6 +1953,7 @@
                 <a href="#" class="nav-btn active" id="nav-home" onclick="showSection('home')">🏠 Home</a>
                 <a href="#" class="nav-btn" id="nav-instructions" onclick="showSection('instructions')">📖 Instructions</a>
                 <a href="#" class="nav-btn" id="nav-metrics" onclick="showSection('metrics')">📐 Metrics Guide</a>
+                <a href="#" class="nav-btn" id="nav-progress" onclick="showSection('progress')">📈 Progress</a>
                 <a href="#" class="nav-btn" id="nav-contact" onclick="showSection('contact')">📧 Contact</a>
                 <a href="#" class="nav-btn" id="nav-plans" onclick="showSection('plans')">📊 Plans</a>
             </div>
@@ -2040,6 +2073,36 @@
                 </div>
             </div>
 
+            <!-- PROGRESS SECTION -->
+            <div id="section-progress" class="section-content" style="display: none;">
+                <div class="card">
+                    <h2>📈 Your Swing Progress</h2>
+                    <p style="color:#52665d; margin-bottom:16px;">Track your scores and measured swing changes over time. For the cleanest comparison, use the same professional benchmark and camera setup.</p>
+                    <div id="progressSummary"><p style="color:#7a9a7a;">Open this section to load your analysis history.</p></div>
+                </div>
+
+                <div class="card">
+                    <h2>↔️ Before & After</h2>
+                    <p style="color:#52665d;">Choose any two saved analyses to see how your measured values changed.</p>
+                    <div class="comparison-controls">
+                        <div>
+                            <label for="compareBefore" style="font-size:12px;font-weight:700;color:#52665d;">BEFORE</label>
+                            <select id="compareBefore" onchange="renderProgressComparison()"></select>
+                        </div>
+                        <div>
+                            <label for="compareAfter" style="font-size:12px;font-weight:700;color:#52665d;">AFTER</label>
+                            <select id="compareAfter" onchange="renderProgressComparison()"></select>
+                        </div>
+                    </div>
+                    <div id="progressComparison"><p style="color:#7a9a7a;">Complete at least two analyses to unlock before/after comparison.</p></div>
+                </div>
+
+                <div class="card">
+                    <h2>🗂️ Recent Analyses</h2>
+                    <div id="progressHistory"><p style="color:#7a9a7a;">No history loaded yet.</p></div>
+                </div>
+            </div>
+
             <!-- INSTRUCTIONS SECTION -->
             <div id="section-instructions" class="section-content" style="display: none;">
                 <div class="card">
@@ -2088,6 +2151,9 @@
                         <li><strong>Overall Score:</strong> 0-100 rating of your swing</li>
                         <li><strong>Key Metrics:</strong> Spine angle, hip rotation, X-factor, and more</li>
                         <li><strong>Pro Comparison:</strong> See how you compare to Rory McIlroy, Tiger Woods, and others</li>
+                        <li><strong>#1 Priority:</strong> One clear measured difference to work on first</li>
+                        <li><strong>Progress Tracking:</strong> Review saved scores and metric changes over time</li>
+                        <li><strong>Before & After:</strong> Compare two completed analyses metric by metric</li>
                         <li><strong>Personalized Recommendations:</strong> Specific drills and swing thoughts</li>
                         <li><strong>Grade:</strong> A+ to D based on your performance</li>
                     </ul>
@@ -2496,6 +2562,145 @@
             return Math.abs(hash).toString(36);
         }
         
+        // V37.8 progress history cache
+        let progressAnalyses = [];
+
+        function formatMetricValue(value) {
+            const n = Number(value);
+            return Number.isFinite(n) ? n.toFixed(1) + '°' : 'N/A';
+        }
+
+        function progressAnalysisLabel(item) {
+            const d = item.date ? new Date(item.date) : null;
+            const dateText = d && !Number.isNaN(d.getTime()) ? d.toLocaleDateString() : 'Unknown date';
+            const scoreText = item.score !== null && item.score !== undefined ? Number(item.score).toFixed(1) : 'N/A';
+            return `${dateText} · ${item.pro || 'Unknown pro'} · ${scoreText}/100`;
+        }
+
+        async function loadProgress() {
+            const token = localStorage.getItem('authToken');
+            const summary = document.getElementById('progressSummary');
+            const history = document.getElementById('progressHistory');
+            if (!token) {
+                if (summary) summary.innerHTML = '<p>Please log in to view progress.</p>';
+                return;
+            }
+
+            if (summary) summary.innerHTML = '<p style="color:#7a9a7a;">Loading progress…</p>';
+            try {
+                const response = await fetch(`${API_URL}/api/user/progress?limit=25`, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                const data = await response.json();
+                if (!response.ok) throw new Error(data.error || 'Unable to load progress');
+
+                progressAnalyses = data.analyses || [];
+                renderProgressSummary(data);
+                renderProgressHistory();
+                populateProgressComparisonSelectors();
+                renderProgressComparison();
+            } catch (error) {
+                console.error('Progress load error:', error);
+                if (summary) summary.innerHTML = `<p style="color:#8c2e2e;">${error.message}</p>`;
+                if (history) history.innerHTML = '<p style="color:#7a9a7a;">Unable to load analysis history.</p>';
+            }
+        }
+
+        function renderProgressSummary(data) {
+            const el = document.getElementById('progressSummary');
+            if (!el) return;
+            if (!progressAnalyses.length) {
+                el.innerHTML = '<p style="color:#7a9a7a;">Your completed analyses will appear here.</p>';
+                return;
+            }
+
+            const latest = progressAnalyses[0];
+            const previous = progressAnalyses.length > 1 ? progressAnalyses[1] : null;
+            const change = data.latest_score_change;
+            const changeText = change === null || change === undefined
+                ? 'First saved analysis'
+                : `${change >= 0 ? '+' : ''}${Number(change).toFixed(1)} points`;
+            const priority = latest.priority_focus;
+
+            el.innerHTML = `
+                <div class="progress-summary-grid">
+                    <div class="progress-summary-box"><small>Latest score</small><strong>${latest.score !== null ? Number(latest.score).toFixed(1) : 'N/A'}</strong></div>
+                    <div class="progress-summary-box"><small>Change vs previous</small><strong>${changeText}</strong></div>
+                    <div class="progress-summary-box"><small>Saved analyses</small><strong>${progressAnalyses.length}</strong></div>
+                </div>
+                ${priority ? `<div class="priority-focus-card" style="margin-bottom:0;"><h3>🎯 Current #1 priority: ${priority.metric_name}</h3><p style="margin:0;color:#52665d;">Largest normalized difference in your latest analysis.</p></div>` : ''}
+            `;
+        }
+
+        function renderProgressHistory() {
+            const el = document.getElementById('progressHistory');
+            if (!el) return;
+            if (!progressAnalyses.length) {
+                el.innerHTML = '<p style="color:#7a9a7a;">No saved analyses yet.</p>';
+                return;
+            }
+            el.innerHTML = `<div class="progress-history-list">${progressAnalyses.map((item, index) => {
+                const date = item.date ? new Date(item.date).toLocaleString() : 'Unknown date';
+                const score = item.score !== null && item.score !== undefined ? Number(item.score).toFixed(1) : 'N/A';
+                const priority = item.priority_focus ? item.priority_focus.metric_name : '—';
+                return `<div class="progress-history-row"><div><strong>${date}</strong><br><span style="color:#71837a;">${item.pro || 'Unknown pro'} · ${item.handedness || 'right'}-handed</span></div><div><strong>${score}/100</strong><br><span style="color:#71837a;">Grade ${item.grade || '—'}</span></div><div><span style="color:#71837a;">Priority</span><br><strong>${priority}</strong></div></div>`;
+            }).join('')}</div>`;
+        }
+
+        function populateProgressComparisonSelectors() {
+            const before = document.getElementById('compareBefore');
+            const after = document.getElementById('compareAfter');
+            if (!before || !after) return;
+
+            const options = progressAnalyses.map((item, index) => `<option value="${index}">${progressAnalysisLabel(item)}</option>`).join('');
+            before.innerHTML = options || '<option value="">No analyses</option>';
+            after.innerHTML = options || '<option value="">No analyses</option>';
+
+            if (progressAnalyses.length >= 2) {
+                before.value = '1';
+                after.value = '0';
+            }
+        }
+
+        function renderProgressComparison() {
+            const el = document.getElementById('progressComparison');
+            const beforeSelect = document.getElementById('compareBefore');
+            const afterSelect = document.getElementById('compareAfter');
+            if (!el || !beforeSelect || !afterSelect) return;
+            if (progressAnalyses.length < 2) {
+                el.innerHTML = '<p style="color:#7a9a7a;">Complete at least two analyses to compare them.</p>';
+                return;
+            }
+
+            const before = progressAnalyses[Number(beforeSelect.value)];
+            const after = progressAnalyses[Number(afterSelect.value)];
+            if (!before || !after) return;
+
+            const scoreBefore = Number(before.score);
+            const scoreAfter = Number(after.score);
+            const scoreChange = Number.isFinite(scoreBefore) && Number.isFinite(scoreAfter) ? scoreAfter - scoreBefore : null;
+            const samePro = before.pro === after.pro;
+
+            const commonKeys = Object.keys(before.metrics || {}).filter(key => after.metrics && after.metrics[key]);
+            const rows = commonKeys.map(key => {
+                const b = Number(before.metrics[key].your_value);
+                const a = Number(after.metrics[key].your_value);
+                if (!Number.isFinite(b) || !Number.isFinite(a)) return '';
+                const delta = a - b;
+                const name = key.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
+                return `<tr><td>${name}</td><td>${b.toFixed(1)}°</td><td>${a.toFixed(1)}°</td><td class="change-neutral">${delta >= 0 ? '+' : ''}${delta.toFixed(1)}°</td></tr>`;
+            }).join('');
+
+            el.innerHTML = `
+                <div style="padding:14px 16px;border-radius:12px;background:#f4f8f6;border:1px solid #dce5e0;">
+                    <strong>Score: ${Number.isFinite(scoreBefore) ? scoreBefore.toFixed(1) : 'N/A'} → ${Number.isFinite(scoreAfter) ? scoreAfter.toFixed(1) : 'N/A'}</strong>
+                    ${scoreChange !== null ? `<span class="${scoreChange >= 0 ? 'change-good' : 'change-neutral'}" style="margin-left:10px;">${scoreChange >= 0 ? '+' : ''}${scoreChange.toFixed(1)} points</span>` : ''}
+                    ${!samePro ? '<div style="margin-top:8px;color:#8a6a1f;font-size:12px;">⚠️ These analyses used different professional benchmarks. Score changes are most meaningful when the same pro is used.</div>' : ''}
+                </div>
+                <table class="comparison-table"><thead><tr><th>Metric</th><th>Before</th><th>After</th><th>Change</th></tr></thead><tbody>${rows || '<tr><td colspan="4">No common numeric metrics available.</td></tr>'}</tbody></table>
+            `;
+        }
+
         // ============================================
         // NAVIGATION FUNCTIONS
         // ============================================
@@ -2512,6 +2717,9 @@
                     buildPlanComparison();
                     loadPricingForSection('pricingGridPlans');
                     loadSubscriptionManagement();
+                }
+                if (section === 'progress') {
+                    loadProgress();
                 }
             }
     
@@ -3424,6 +3632,20 @@
                     <p>${data.overall_assessment || data.message || 'Analysis complete'}</p>
                 </div>
             `;
+
+            let priorityHtml = '';
+            if (data.priority_focus) {
+                const p = data.priority_focus;
+                const yourText = Number.isFinite(Number(p.your_value)) ? Number(p.your_value).toFixed(1) + '°' : 'N/A';
+                const proText = Number.isFinite(Number(p.pro_value)) ? Number(p.pro_value).toFixed(1) + '°' : 'N/A';
+                priorityHtml = `
+                    <div class="priority-focus-card">
+                        <h3>🎯 Your #1 thing to work on: ${p.metric_name || String(p.metric_key || '').replace(/_/g, ' ')}</h3>
+                        <p style="margin:0;color:#52665d;">This is the largest normalized difference from your selected professional benchmark. Work on this first, then reassess.</p>
+                        <div class="priority-focus-values"><span>You: <strong>${yourText}</strong></span><span>Benchmark: <strong>${proText}</strong></span></div>
+                    </div>
+                `;
+            }
             
             // Plan info
             let planInfoHtml = `
@@ -3615,6 +3837,7 @@
             
             resultsDiv.innerHTML = `
                 ${scoreHtml}
+                ${priorityHtml}
                 ${assessmentHtml}
                 ${metricsHtml}
                 ${recommendationsHtml}
