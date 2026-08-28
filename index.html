@@ -2003,10 +2003,11 @@
                         <strong>📹 Video Requirements for Best Results</strong>
                         <ul>
                             <li><span class="warning">📱 LANDSCAPE MODE REQUIRED</span> – Hold your phone horizontally and keep your full body and club visible</li>
-                            <li><span class="success">⏱️ Around 4-8 seconds</span> – Record one complete swing at normal, real-time speed</li>
+                            <li><span class="success">⏱️ Use the original playback speed</span> – Normal-speed and original slow-motion recordings are supported; do not speed up, slow down, or re-time the swing</li>
                             <li><span class="success">🎯 "Down the Line"</span> – Camera behind the golfer, facing the target</li>
                             <li><span class="success">👤 Full Body Visible</span> – Head to toes, with the club in frame</li>
                             <li><span class="success">☀️ Good Lighting</span> – Outdoor or bright indoor lighting</li>
+                            <li><span class="success">✂️ Trimming is OK</span> – You may trim unused footage before or after the swing, but keep the swing itself at its original speed</li>
                             <li><span class="success">📹 30fps or 60fps</span> – Higher frame rate = better analysis</li>
                         </ul>
                         <div class="tip-box">
@@ -2017,7 +2018,7 @@
                     <div class="upload-area" id="uploadArea">
                         <span class="icon-large">🎥</span>
                         <div style="font-weight:500; margin-bottom:4px;">Tap to select or drag your video here</div>
-                        <div style="font-size:13px; color:#7a9a7a;">MP4, MOV, or AVI • Max 100MB • Landscape • 4-8 seconds recommended</div>
+                        <div style="font-size:13px; color:#7a9a7a;">MP4, MOV, or AVI • Max 100MB • Landscape • Original playback speed • Slow-motion supported</div>
                         <input type="file" id="videoInput" accept="video/*" style="display: none;">
                     </div>
                     <div id="videoPreview" class="video-preview"></div>
@@ -2113,8 +2114,8 @@
                         <h3>🎯 Before You Start</h3>
                         <p style="margin-bottom: 8px;"><strong>The quality of your video directly affects the analysis accuracy.</strong></p>
                         <ul>
-                            <li><span class="success">✅ Record at normal, real-time speed</span> – Avoid slow motion, time-lapse, or edited clips</li>
-                            <li><span class="success">✅ Around 4-8 seconds is ideal</span> – Include one complete swing from setup through finish</li>
+                            <li><span class="success">✅ Keep the original playback speed</span> – Normal-speed and original slow-motion recordings are supported; avoid speeding up, slowing down, or re-timing the swing</li>
+                            <li><span class="success">✅ Include one complete swing</span> – Keep setup, impact, follow-through and finish; slow-motion clips may naturally be longer</li>
                             <li><span class="success">✅ Landscape video is required</span> – Hold your phone horizontally, not vertically</li>
                             <li><span class="warning">⚠️ Keep the full swing in frame</span> – Do not crop the golfer, feet, hands, or club</li>
                         </ul>
@@ -2127,7 +2128,8 @@
                     <ul style="margin-left: 20px; line-height: 1.8;">
                         <li><strong>Camera Position:</strong> Film from "Down the Line" (behind the golfer, facing the target)</li>
                         <li><strong>Orientation:</strong> <span style="color: #c62828; font-weight: bold;">LANDSCAPE REQUIRED</span> – hold your phone horizontally</li>
-                        <li><strong>Duration:</strong> Approximately <strong>4-8 seconds</strong>, recorded at normal, real-time speed</li>
+                        <li><strong>Playback speed:</strong> Use the <strong>original recording speed</strong>. Original slow-motion is supported; do not convert it to normal speed or otherwise re-time the swing.</li>
+                        <li><strong>Trimming:</strong> You may remove unused footage before or after the swing, but keep the complete swing sequence intact.</li>
                         <li><strong>Full Body:</strong> Ensure your entire body and the club are visible</li>
                         <li><strong>Lighting:</strong> Use good lighting (outdoor or bright indoor)</li>
                         <li><strong>Frame Rate:</strong> 30fps or 60fps recommended</li>
@@ -2138,7 +2140,8 @@
                         <h4>✅ Example of a Good Video:</h4>
                         <ul>
                             <li>Landscape (wide) orientation, with your full body and club visible</li>
-                            <li>Approximately 4-8 seconds at real-time speed</li>
+                            <li>Original playback speed preserved (normal speed or original slow motion)</li>
+                            <li>Complete swing visible from setup through finish</li>
                             <li>Full body visible from head to toes</li>
                             <li>Club visible throughout the swing</li>
                             <li>Good lighting, no shadows on the golfer</li>
@@ -2239,7 +2242,7 @@
                     </details>
                     <details class="metric-guide-card">
                         <summary><span class="metric-guide-icon">⏱️</span><span class="metric-guide-title"><strong>Tempo Ratio</strong><small>Full swing · Ratio</small></span></summary>
-                        <div class="metric-guide-body"><p><strong>What it measures:</strong> Backswing duration divided by downswing duration.</p><p><strong>How to read it:</strong> A value of 3.0 means the backswing took three times as long as the downswing. Use real-time video; slow motion or edited playback makes tempo unreliable.</p></div>
+                        <div class="metric-guide-body"><p><strong>What it measures:</strong> Backswing duration divided by downswing duration.</p><p><strong>How to read it:</strong> A value of 3.0 means the backswing took three times as long as the downswing. Original slow-motion footage is supported, but edited, variable-speed, or re-timed playback can make tempo unreliable and may cause it to be excluded.</p></div>
                     </details>
                 </div>
             </div>
@@ -3626,6 +3629,17 @@
                 </div>
             `;
             
+            let timingWarningHtml = '';
+            if (data.video_timing_warning && data.video_timing_warning.show) {
+                const warning = data.video_timing_warning;
+                timingWarningHtml = `
+                    <div class="card" style="background:#fff8e6;border-left:5px solid #e6a100;">
+                        <h2 style="margin-bottom:8px;">⚠️ ${warning.title || 'Video timing warning'}</h2>
+                        <p style="margin:0;color:#5f5538;line-height:1.55;">${warning.message || 'This video may contain timing changes that can reduce the reliability of phase-specific measurements.'}</p>
+                    </div>
+                `;
+            }
+
             const assessmentHtml = `
                 <div class="card">
                     <h2>📝 Overall Assessment</h2>
@@ -3837,6 +3851,7 @@
             
             resultsDiv.innerHTML = `
                 ${scoreHtml}
+                ${timingWarningHtml}
                 ${priorityHtml}
                 ${assessmentHtml}
                 ${metricsHtml}
