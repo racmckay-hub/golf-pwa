@@ -1,4 +1,4 @@
-<!DOCTYPE html> 
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -19,7 +19,11 @@
         .container { max-width: 640px; margin: 0 auto; }
         .header { text-align: center; color: white; margin-bottom: 20px; padding-top: 10px; }
         .header h1 { font-size: 32px; font-weight: 700; }
-        .header h1 span { background: linear-gradient(135deg, #d4af37, #f5d76e); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .header h1 span {
+            background: linear-gradient(135deg, #d4af37, #f5d76e);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
         .header p { font-size: 15px; opacity: 0.85; font-weight: 300; margin-top: 4px; }
         .back-btn {
             display: inline-block;
@@ -35,12 +39,40 @@
             text-decoration: none;
             margin-bottom: 20px;
         }
-        .back-btn:hover { background: rgba(255,255,255,0.2); border-color: rgba(255,255,255,0.4); transform: translateY(-2px); }
-        .card { background: #ffffff; border-radius: 24px; padding: 24px; margin-bottom: 20px; box-shadow: 0 8px 30px rgba(0,0,0,0.12); }
-        .card h2 { color: #1a3c2a; margin-bottom: 16px; font-size: 18px; font-weight: 700; border-bottom: 2px solid #e8f0e8; padding-bottom: 12px; }
+        .back-btn:hover {
+            background: rgba(255,255,255,0.2);
+            border-color: rgba(255,255,255,0.4);
+            transform: translateY(-2px);
+        }
+        .card {
+            background: #ffffff;
+            border-radius: 24px;
+            padding: 24px;
+            margin-bottom: 20px;
+            box-shadow: 0 8px 30px rgba(0,0,0,0.12);
+        }
+        .card h2 {
+            color: #1a3c2a;
+            margin-bottom: 16px;
+            font-size: 18px;
+            font-weight: 700;
+            border-bottom: 2px solid #e8f0e8;
+            padding-bottom: 12px;
+        }
         .card h3 { color: #1a3c2a; margin-top: 20px; font-size: 16px; }
         .card ul { margin-left: 20px; line-height: 1.8; color: #2a4a3a; }
         .card p { color: #2a4a3a; line-height: 1.6; }
+
+        .timing-note {
+            background: #eef7f1;
+            border-left: 4px solid #1f7a55;
+            padding: 14px 16px;
+            border-radius: 8px;
+            margin-top: 12px;
+            color: #2a4a3a;
+            line-height: 1.6;
+        }
+
         .pricing-highlight {
             background: #fdf8ee;
             border-left: 4px solid #d4af37;
@@ -55,22 +87,23 @@
         .pricing-highlight strong {
             color: #1a3c2a;
         }
-        .pricing-highlight .starter {
-            color: #1a3c2a;
-        }
         .pricing-highlight .premium {
-            color: #d4af37;
-            font-weight: 600;
-        }
-        .pricing-highlight .lifetime {
             color: #b8860b;
-            font-weight: 600;
+            font-weight: 700;
         }
-        .pricing-highlight .advanced {
-            color: #c62828;
-            font-weight: 500;
+        .pricing-note {
+            margin-top: 10px;
+            font-size: 12px;
+            color: #6a7d73;
         }
-        .footer-note { text-align: center; color: #a0b8a0; font-size: 13px; margin-top: 30px; border-top: 1px solid #2a4a3a; padding-top: 20px; }
+        .footer-note {
+            text-align: center;
+            color: #a0b8a0;
+            font-size: 13px;
+            margin-top: 30px;
+            border-top: 1px solid #2a4a3a;
+            padding-top: 20px;
+        }
         .footer-note a { color: #d4af37; text-decoration: underline; }
     </style>
 </head>
@@ -85,49 +118,62 @@
 
         <div class="card">
             <h2>📖 How to Use the Golf Swing Analyzer</h2>
-            
+
             <h3>🎯 What This Tool Does</h3>
             <p>Our AI-powered analyzer compares your golf swing to professional golfers and provides detailed feedback to help you improve.</p>
-            
+
             <h3>📹 Video Requirements</h3>
             <ul>
                 <li><strong>Camera Position:</strong> Film from "Down the Line" (behind the golfer, facing the target)</li>
                 <li><strong>Orientation:</strong> <span style="color: #c62828; font-weight: bold;">LANDSCAPE ONLY</span> – hold your phone horizontally</li>
-                <li><strong>Duration:</strong> At least <strong>8-10 seconds</strong> to capture the full swing</li>
+                <li><strong>Complete Swing:</strong> Include the swing from setup/address through impact, follow-through and finish</li>
+                <li><strong>Original Playback Speed:</strong> Use the original recording where possible. Do not speed up, slow down, or re-time the swing before uploading</li>
+                <li><strong>Slow Motion:</strong> Original slow-motion recordings are supported. Keep them at their original recorded playback speed</li>
+                <li><strong>Trimming:</strong> You may trim unused footage before or after the swing, but do not alter the speed of the swing itself</li>
                 <li><strong>Full Body:</strong> Ensure your entire body and the club are visible</li>
                 <li><strong>Lighting:</strong> Use good lighting (outdoor or bright indoor)</li>
                 <li><strong>Frame Rate:</strong> 30fps or 60fps recommended</li>
                 <li><strong>Format:</strong> MP4, MOV, or AVI (max 100MB)</li>
             </ul>
-            
+
+            <div class="timing-note">
+                <strong>Why original video timing matters:</strong> The analyzer identifies key swing phases such as the top of the backswing and impact. Re-timed or speed-converted footage can change where those phases are detected and may reduce the reliability of phase-specific measurements.
+            </div>
+
             <h3>📊 What You'll Get</h3>
             <ul>
-                <li><strong>Overall Score:</strong> 0-100 rating of your swing</li>
-                <li><strong>Key Metrics:</strong> Spine angle, hip rotation, X-factor, and more</li>
-                <li><strong>Pro Comparison:</strong> See how you compare to Rory McIlroy, Tiger Woods, and others</li>
-                <li><strong>Personalized Recommendations:</strong> Specific drills and swing thoughts</li>
-                <li><strong>Grade:</strong> A+ to D based on your performance</li>
+                <li><strong>Overall Score:</strong> 0-100 similarity score against your selected professional benchmark</li>
+                <li><strong>Key Metrics:</strong> Spine angle, hip rotation, X-factor, elbow angles, and more</li>
+                <li><strong>Pro Comparison:</strong> Compare your measured swing metrics with any available professional benchmark</li>
+                <li><strong>Personalized Recommendations:</strong> Specific drills and swing thoughts based on measured differences</li>
+                <li><strong>Priority Focus:</strong> A clear #1 area to work on first</li>
+                <li><strong>Progress Tracking:</strong> Review previous analyses and compare changes over time</li>
+                <li><strong>Grade:</strong> A+ to D based on your analysis score</li>
             </ul>
-            
+
             <h3>⏱️ How Long It Takes</h3>
-            <p>The analysis takes about 30 seconds after you upload your video. You'll see results immediately.</p>
-            
+            <p>Analysis time varies with video length and server load, but results normally appear shortly after your upload has finished processing.</p>
+
             <h3>🔄 Free vs Premium</h3>
             <div class="pricing-highlight">
                 <ul>
-                    <li><strong>Free Account:</strong> <strong>1 free demo</strong> to try the service</li>
-                    <li><strong class="starter">Starter ($4.99/month):</strong> Unlimited analyses, compare with 10 pros, <strong>basic metrics only</strong></li>
-                    <li><strong class="premium">Premium ($9.99/month):</strong> Unlimited analyses, all 20+ pros, <span class="advanced">advanced metrics (X-Factor, Hip Rotation, Swing Path)</span></li>
-                    <li><strong class="lifetime">Lifetime ($99.99):</strong> Unlimited analyses forever, no recurring charges</li>
+                    <li><strong>Free Account:</strong> <strong>1 complete free analysis</strong> with all available metrics and any professional benchmark</li>
+                    <li><strong class="premium">Premium Monthly (£9.99/month):</strong> Unlimited analyses*, all 20 professional benchmarks, all available swing metrics, recommendations and comparison feedback</li>
+                    <li><strong class="premium">Premium Annual (£79.99/year):</strong> Unlimited analyses*, all 20 professional benchmarks, all available swing metrics, recommendations and comparison feedback</li>
                 </ul>
+                <div class="pricing-note">
+                    *Unlimited analyses are subject to reasonable fair use. Current pricing and plan details are also shown in the Plans section of the app.
+                </div>
             </div>
-            
+
             <h3>💡 Tips for Best Results</h3>
             <ul>
-                <li>Record multiple swings and upload the best one</li>
-                <li>Use a tripod for a steady camera</li>
-                <li>Ensure the club is clearly visible throughout the swing</li>
-                <li>Compare against different pros to see what works for you</li>
+                <li>Use the original camera file whenever possible</li>
+                <li>Use a tripod or stable support for a steady camera</li>
+                <li>Ensure the club and full body remain visible throughout the swing</li>
+                <li>Avoid clips downloaded from social media if they have been sped up, slowed down, or re-encoded at a different playback speed</li>
+                <li>For progress tracking, use a similar camera position and recording setup each time</li>
+                <li>Compare against different pros to explore which benchmark best matches your swing style</li>
             </ul>
         </div>
 
