@@ -16,8 +16,26 @@
       function gtag(){dataLayer.push(arguments);}
       gtag('js', new Date());
       gtag('config', 'G-B6N7BWSGKG');
+
+      // V37.8.2: privacy-safe GA4 funnel tracking.
+      // Never send names, email addresses, user IDs, filenames or other personal data.
+      function trackGAEvent(eventName, params = {}) {
+        try {
+          if (typeof gtag !== 'function') return;
+          const safeParams = {};
+          Object.entries(params || {}).forEach(([key, value]) => {
+            if (value === undefined || value === null || value === '') return;
+            if (['email', 'name', 'user_id', 'userId', 'filename', 'file_name'].includes(key)) return;
+            safeParams[key] = value;
+          });
+          gtag('event', eventName, safeParams);
+          console.log(`GA4 event: ${eventName}`, safeParams);
+        } catch (error) {
+          console.warn('GA4 event tracking skipped:', error);
+        }
+      }
     </script>
-    <!-- VERSION: 37.8.0 - PRIORITY FOCUS + PROGRESS TRACKING -->
+    <!-- VERSION: 37.8.2 - GA4 FUNNEL TRACKING + PRIORITY/PROGRESS -->
     <link rel="manifest" href="manifest.json">
     <link rel="apple-touch-icon" href="icon.png">
     <style>
@@ -2504,6 +2522,18 @@
             
             // Check if this is a payment success redirect
             if (sessionId) {
+                // Fire once per successful Stripe Checkout return, even if the page is refreshed.
+                const completionKey = `ga4SubscriptionCompleted:${sessionId}`;
+                if (!localStorage.getItem(completionKey)) {
+                    const completedPlan = sessionStorage.getItem('ga4CheckoutPlan') || 'premium';
+                    trackGAEvent('subscription_completed', {
+                        plan: completedPlan,
+                        currency: 'GBP'
+                    });
+                    localStorage.setItem(completionKey, '1');
+                    sessionStorage.removeItem('ga4CheckoutPlan');
+                }
+
                 // Show success message
                 const resultsDiv = document.getElementById('results');
                 if (resultsDiv) {
@@ -3148,6 +3178,8 @@
                 showStatus('Please enter email and password', 'error');
                 return;
             }
+
+            trackGAEvent('signup_started', { method: 'email' });
             
             showStatus('Creating account...', 'success');
             
@@ -3161,6 +3193,7 @@
                 const data = await response.json();
                 
                 if (data.success) {
+                    trackGAEvent('signup_completed', { method: 'email' });
                     authToken = data.token;
                     localStorage.setItem('authToken', authToken);
                     localStorage.setItem('userId', data.user_id);
@@ -3521,6 +3554,12 @@
                 return;
             }
 
+            trackGAEvent('analysis_started', {
+                benchmark: pro,
+                handedness: handedness,
+                plan: currentPlanType
+            });
+
             const formData = new FormData();
             formData.append('video', selectedFile);
             formData.append('pro', pro);
@@ -3591,6 +3630,11 @@
                 }
             
                 if (data && (data.score !== undefined || data.success === true || data.overall_score !== undefined)) {
+                    trackGAEvent('analysis_completed', {
+                        benchmark: pro,
+                        handedness: handedness,
+                        plan: currentPlanType
+                    });
                     displayResults(data);
                     showStatus('Analysis complete!', 'success');
                     
@@ -4038,6 +4082,14 @@
                 const session = await checkoutResponse.json();
                 
                 // ✅ FIX: Properly redirect to Stripe Checkout
+                if (session.url || session.sessionId) {
+                    sessionStorage.setItem('ga4CheckoutPlan', planKey);
+                    trackGAEvent('checkout_started', {
+                        plan: planKey,
+                        currency: 'GBP'
+                    });
+                }
+
                 if (session.url) {
                     // Redirect to Stripe Checkout page
                     window.location.href = session.url;
