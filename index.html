@@ -35,7 +35,7 @@
         }
       }
     </script>
-    <!-- VERSION: 37.8.2 - GA4 FUNNEL TRACKING + PRIORITY/PROGRESS -->
+    <!-- VERSION: 37.8.3 - ENHANCED COACHING UI + GA4 FUNNEL + PRIORITY/PROGRESS -->
     <link rel="manifest" href="manifest.json">
     <link rel="apple-touch-icon" href="icon.png">
     <style>
@@ -1766,6 +1766,82 @@
         .priority-focus-card h3 { margin: 0 0 8px; color: #123d2d; font-size: 18px; }
         .priority-focus-values { display:flex; gap:14px; flex-wrap:wrap; margin-top:10px; font-size:13px; color:#52665d; }
         .priority-focus-values span { padding:6px 10px; background:#eef5f1; border-radius:9px; }
+
+        /* ===== V37.8.3 ENHANCED COACHING RESULTS ===== */
+        .coaching-summary-card {
+            border: 1px solid #cfe0d7;
+            border-left: 5px solid var(--forest-600, #1d7953);
+            background: linear-gradient(135deg, #f8fbf9, #eef6f1);
+        }
+        .coaching-summary-card p { margin: 0; color: #40584d; line-height: 1.65; }
+
+        .priority-focus-card.enhanced {
+            padding: 24px;
+            border: 1px solid #d7c372;
+            border-left: 6px solid var(--gold, #d7b85b);
+            border-radius: 18px;
+            background: linear-gradient(135deg, #fffdf6, #f8f3df);
+            box-shadow: var(--shadow-sm, 0 8px 24px rgba(7,30,21,.07));
+        }
+        .priority-kicker {
+            display: inline-flex;
+            margin-bottom: 8px;
+            color: #7b6420;
+            font-size: 11px;
+            font-weight: 800;
+            letter-spacing: .11em;
+            text-transform: uppercase;
+        }
+        .priority-focus-card.enhanced h3 { margin: 0 0 8px; color: #123d2d; font-size: 21px; }
+        .priority-focus-card.enhanced .priority-lead { margin: 0; color: #53665d; line-height: 1.6; }
+        .priority-detail-grid {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 10px;
+            margin-top: 16px;
+        }
+        .priority-detail {
+            padding: 13px 14px;
+            border: 1px solid #e0e8e3;
+            border-radius: 12px;
+            background: rgba(255,255,255,.72);
+        }
+        .priority-detail strong { display:block; margin-bottom:4px; color:#183b2d; font-size:12px; text-transform:uppercase; letter-spacing:.05em; }
+        .priority-detail span { color:#52665d; font-size:13px; line-height:1.5; }
+        .benchmark-note { margin-top: 12px; color:#718279; font-size:11.5px; line-height:1.5; }
+
+        .focus-plan-grid { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:12px; }
+        .focus-plan-item { padding:17px; border:1px solid var(--line,#dce5e0); border-radius:14px; background:#fafcfb; }
+        .focus-rank { width:30px; height:30px; display:grid; place-items:center; margin-bottom:10px; border-radius:50%; background:#163d2d; color:#fff; font-size:12px; font-weight:800; }
+        .focus-plan-item h3 { margin:0 0 8px; color:#163d2d; font-size:15px; }
+        .focus-plan-item p { margin:7px 0; color:#566a60; font-size:12.5px; line-height:1.55; }
+        .focus-plan-item .focus-label { color:#183b2d; font-weight:750; }
+
+        .recommendation.enhanced-rec { padding:17px; }
+        .rec-head { display:flex; justify-content:space-between; gap:12px; align-items:flex-start; margin-bottom:10px; }
+        .rec-title { color:#173c2d; font-weight:800; font-size:15px; }
+        .rec-priority { flex:0 0 auto; padding:4px 8px; border-radius:999px; background:#efe6c4; color:#765f18; font-size:10px; font-weight:800; }
+        .rec-comparison { margin:0 0 10px; color:#445c51; line-height:1.55; }
+        .rec-extra { display:grid; grid-template-columns:1fr 1fr; gap:9px; }
+        .rec-extra div { padding:10px 11px; border-radius:10px; background:rgba(255,255,255,.72); font-size:12.5px; color:#566a60; }
+        .rec-extra strong { display:block; margin-bottom:3px; color:#183b2d; }
+
+        .metric-status-row { display:flex; gap:8px; flex-wrap:wrap; margin-top:8px; }
+        .metric-chip { display:inline-flex; padding:4px 8px; border-radius:999px; font-size:10.5px; font-weight:750; }
+        .metric-chip.good { background:#e7f5eb; color:#23613f; }
+        .metric-chip.watch { background:#fff2d7; color:#835d10; }
+        .metric-chip.neutral { background:#edf2ef; color:#60746a; }
+
+        .practice-steps { margin:10px 0 0 20px; color:#52665d; line-height:1.7; }
+        .practice-steps li { margin-bottom:5px; }
+        .quick-fix-list { display:grid; gap:8px; }
+        .quick-fix-item { padding:11px 13px; border-radius:10px; background:#f3f7f4; color:#42594e; font-size:13px; }
+
+        @media (max-width: 760px) {
+            .priority-detail-grid, .rec-extra { grid-template-columns:1fr; }
+            .focus-plan-grid { grid-template-columns:1fr; }
+        }
+
         .progress-summary-grid { display:grid; grid-template-columns:repeat(3, minmax(0,1fr)); gap:12px; margin-bottom:18px; }
         .progress-summary-box { padding:16px; border:1px solid var(--line, #dce5e0); border-radius:14px; background:#fff; }
         .progress-summary-box small { display:block; color:#71837a; font-size:11px; text-transform:uppercase; letter-spacing:.06em; margin-bottom:5px; }
@@ -3667,104 +3743,142 @@
             console.log('📊 Displaying results:', data);
             const resultsDiv = document.getElementById('results');
             resultsDiv.innerHTML = '';
-            
-            // Add plan to data for filtering
+
             data.plan_type = currentPlanType;
-            
             const plan = PLAN_DEFINITIONS[currentPlanType] || PLAN_DEFINITIONS['demo'];
-            
-            const score = data.score || data.overall_score || 'N/A';
+
+            const escapeHtml = (value) => String(value ?? '')
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;')
+                .replace(/'/g, '&#039;');
+
+            const metricLabel = (key) => String(key || '').replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
+            const metricUnit = (key) => {
+                if (key === 'tempo_ratio') return ':1';
+                if (key === 'lateral_movement' || key === 'posture_score') return '%';
+                return '°';
+            };
+            const formatMetricValue = (key, value, decimals = 1) => {
+                const n = Number(value);
+                if (!Number.isFinite(n)) return 'N/A';
+                if (key === 'tempo_ratio') return `${n.toFixed(2)}:1`;
+                return `${n.toFixed(decimals)}${metricUnit(key)}`;
+            };
+
+            const score = data.score ?? data.overall_score ?? 'N/A';
             const grade = data.grade || 'N/A';
             const scoreHtml = `
                 <div class="score">
-                    <div class="score-number">${score}/100</div>
-                    <div class="grade">Grade: ${grade}</div>
+                    <div class="score-number">${escapeHtml(score)}/100</div>
+                    <div class="grade">Grade: ${escapeHtml(grade)}</div>
                 </div>
             `;
-            
+
             let timingWarningHtml = '';
             if (data.video_timing_warning && data.video_timing_warning.show) {
                 const warning = data.video_timing_warning;
                 timingWarningHtml = `
                     <div class="card" style="background:#fff8e6;border-left:5px solid #e6a100;">
-                        <h2 style="margin-bottom:8px;">⚠️ ${warning.title || 'Video timing warning'}</h2>
-                        <p style="margin:0;color:#5f5538;line-height:1.55;">${warning.message || 'This video may contain timing changes that can reduce the reliability of phase-specific measurements.'}</p>
+                        <h2 style="margin-bottom:8px;">⚠️ ${escapeHtml(warning.title || 'Video timing warning')}</h2>
+                        <p style="margin:0;color:#5f5538;line-height:1.55;">${escapeHtml(warning.message || 'This video may contain timing changes that can reduce the reliability of phase-specific measurements.')}</p>
                     </div>
                 `;
             }
-
-            const assessmentHtml = `
-                <div class="card">
-                    <h2>📝 Overall Assessment</h2>
-                    <p>${data.overall_assessment || data.message || 'Analysis complete'}</p>
-                </div>
-            `;
 
             let priorityHtml = '';
             if (data.priority_focus) {
                 const p = data.priority_focus;
-                const yourText = Number.isFinite(Number(p.your_value)) ? Number(p.your_value).toFixed(1) + '°' : 'N/A';
-                const proText = Number.isFinite(Number(p.pro_value)) ? Number(p.pro_value).toFixed(1) + '°' : 'N/A';
+                const key = p.metric_key || p.metric || '';
+                const statusText = p.status === 'maintenance' ? 'Closest area to monitor' : 'Your #1 priority';
+                const band = p.target_band && Number.isFinite(Number(p.target_band.low)) && Number.isFinite(Number(p.target_band.high))
+                    ? `${formatMetricValue(key, p.target_band.low)} – ${formatMetricValue(key, p.target_band.high)}`
+                    : '';
                 priorityHtml = `
-                    <div class="priority-focus-card">
-                        <h3>🎯 Your #1 thing to work on: ${p.metric_name || String(p.metric_key || '').replace(/_/g, ' ')}</h3>
-                        <p style="margin:0;color:#52665d;">This is the largest normalized difference from your selected professional benchmark. Work on this first, then reassess.</p>
-                        <div class="priority-focus-values"><span>You: <strong>${yourText}</strong></span><span>Benchmark: <strong>${proText}</strong></span></div>
+                    <div class="priority-focus-card enhanced">
+                        <div class="priority-kicker">🎯 ${escapeHtml(statusText)}</div>
+                        <h3>${escapeHtml(p.metric_name || metricLabel(key))}</h3>
+                        <p class="priority-lead">${escapeHtml(p.what_to_work_on || 'This is the most useful measured difference to address first, then re-analyze.')}</p>
+                        <div class="priority-focus-values">
+                            <span>You: <strong>${formatMetricValue(key, p.your_value)}</strong></span>
+                            <span>Benchmark: <strong>${formatMetricValue(key, p.pro_value)}</strong></span>
+                            ${Number.isFinite(Number(p.metric_similarity_score)) ? `<span>Similarity: <strong>${Number(p.metric_similarity_score).toFixed(0)}%</strong></span>` : ''}
+                        </div>
+                        <div class="priority-detail-grid">
+                            ${p.why_it_matters ? `<div class="priority-detail"><strong>Why it matters</strong><span>${escapeHtml(p.why_it_matters)}</span></div>` : ''}
+                            ${p.drill_hint ? `<div class="priority-detail"><strong>Try this</strong><span>${escapeHtml(p.drill_hint)}</span></div>` : ''}
+                            ${p.swing_thought ? `<div class="priority-detail"><strong>Swing thought</strong><span>${escapeHtml(p.swing_thought)}</span></div>` : ''}
+                            ${band ? `<div class="priority-detail"><strong>Comparison band</strong><span>${escapeHtml(band)}</span></div>` : ''}
+                        </div>
+                        <div class="benchmark-note">${escapeHtml(p.coaching_note || 'Use the professional value as a comparison reference, not a number to force.')}</div>
                     </div>
                 `;
             }
-            
-            // Plan info
+
+            const coachingSummary = data.coaching_summary || '';
+            const coachingSummaryHtml = coachingSummary ? `
+                <div class="card coaching-summary-card">
+                    <h2>🧭 Coaching Summary</h2>
+                    <p>${escapeHtml(coachingSummary)}</p>
+                </div>
+            ` : '';
+
+            const assessmentHtml = `
+                <div class="card">
+                    <h2>📝 Overall Assessment</h2>
+                    <p>${escapeHtml(data.overall_assessment || data.message || 'Analysis complete')}</p>
+                </div>
+            `;
+
+            let focusPlanHtml = '';
+            if (Array.isArray(data.focus_plan) && data.focus_plan.length > 0) {
+                focusPlanHtml = `
+                    <div class="card">
+                        <h2>🎯 Your Focus Plan</h2>
+                        <p style="margin:-4px 0 16px;color:#63756d;font-size:13px;">Work through these in order. Avoid trying to change several swing pieces at once.</p>
+                        <div class="focus-plan-grid">
+                            ${data.focus_plan.map((item, index) => {
+                                const drill = item.drill || {};
+                                return `
+                                    <div class="focus-plan-item">
+                                        <div class="focus-rank">${escapeHtml(item.rank || index + 1)}</div>
+                                        <h3>${escapeHtml(item.focus_area || metricLabel(item.metric))}</h3>
+                                        ${item.why_it_matters ? `<p><span class="focus-label">Why:</span> ${escapeHtml(item.why_it_matters)}</p>` : ''}
+                                        ${item.what_to_work_on ? `<p><span class="focus-label">Work on:</span> ${escapeHtml(item.what_to_work_on)}</p>` : ''}
+                                        ${drill.name ? `<p><span class="focus-label">Drill:</span> ${escapeHtml(drill.name)}</p>` : ''}
+                                        ${item.swing_thought ? `<p><span class="focus-label">Feel:</span> “${escapeHtml(item.swing_thought)}”</p>` : ''}
+                                    </div>
+                                `;
+                            }).join('')}
+                        </div>
+                    </div>
+                `;
+            }
+
             let planInfoHtml = `
                 <div class="card">
                     <h2>📊 Your Plan</h2>
                     <div class="stage-info-box">
-                        <div>
-                            <span class="stage-badge ${plan.badgeClass}" style="font-size:14px; padding:6px 18px;">
-                                <span class="stage-status-icon">${plan.icon}</span> ${plan.label.toUpperCase()}
-                            </span>
-                        </div>
-                        <div>
-                            <span style="font-size:14px; color:#4a6a4a;">
-                                ${plan.analyses === 'Unlimited' ? '∞ Unlimited analyses' : `${currentAnalysesRemaining} analyses remaining`}
-                            </span>
-                        </div>
-                        <div>
-                            <span style="font-size:14px; color:#4a6a4a;">
-                                ${plan.pros} pros available
-                            </span>
-                        </div>
+                        <div><span class="stage-badge ${escapeHtml(plan.badgeClass)}" style="font-size:14px; padding:6px 18px;"><span class="stage-status-icon">${escapeHtml(plan.icon)}</span> ${escapeHtml(plan.label.toUpperCase())}</span></div>
+                        <div><span style="font-size:14px; color:#4a6a4a;">${plan.analyses === 'Unlimited' ? '∞ Unlimited analyses' : `${currentAnalysesRemaining} analyses remaining`}</span></div>
+                        <div><span style="font-size:14px; color:#4a6a4a;">${escapeHtml(plan.pros)} pros available</span></div>
                     </div>
                     ${(currentPlanType === 'demo' || currentPlanType === 'free') && currentAnalysesRemaining <= 0 ? `
-                        <div class="upgrade-reminder">
-                            <h4>🎯 Upgrade to Continue</h4>
-                            <p>You've used all your free analyses. Upgrade to Premium for unlimited access.</p>
-                            <button class="btn btn-primary" onclick="showSection('plans')" style="margin-top:8px;">📊 View Plans</button>
-                        </div>
+                        <div class="upgrade-reminder"><h4>🎯 Upgrade to Continue</h4><p>You've used all your free analyses. Upgrade to Premium for unlimited access.</p><button class="btn btn-primary" onclick="showSection('plans')" style="margin-top:8px;">📊 View Plans</button></div>
                     ` : ''}
                     ${currentPlanType === 'expired' ? `
-                        <div class="upgrade-reminder" style="border-color:#c62828;">
-                            <h4>❌ Subscription Expired</h4>
-                            <p>Your subscription has expired. Renew to continue analyzing.</p>
-                            <button class="btn btn-primary" onclick="showSection('plans')" style="margin-top:8px;">🔄 Renew Now</button>
-                        </div>
+                        <div class="upgrade-reminder" style="border-color:#c62828;"><h4>❌ Subscription Expired</h4><p>Your subscription has expired. Renew to continue analyzing.</p><button class="btn btn-primary" onclick="showSection('plans')" style="margin-top:8px;">🔄 Renew Now</button></div>
                     ` : ''}
                     ${currentPlanType === 'starter' && currentDaysRemaining < 7 && currentDaysRemaining > 0 ? `
-                        <div style="background:#fff3e0; padding:12px 16px; border-radius:12px; margin-top:12px; border-left:4px solid #e65100; font-size:14px;">
-                            ⏱️ Your Starter plan expires in <strong>${currentDaysRemaining}</strong> days. 
-                            <a href="#" onclick="showSection('plans'); return false;" style="color:#1a3c2a; font-weight:600;">Renew or upgrade →</a>
-                        </div>
+                        <div style="background:#fff3e0; padding:12px 16px; border-radius:12px; margin-top:12px; border-left:4px solid #e65100; font-size:14px;">⏱️ Your Starter plan expires in <strong>${currentDaysRemaining}</strong> days. <a href="#" onclick="showSection('plans'); return false;" style="color:#1a3c2a; font-weight:600;">Renew or upgrade →</a></div>
                     ` : ''}
                     ${(currentPlanType === 'premium' || currentPlanType === 'premium_annual') && currentDaysRemaining < 7 && currentDaysRemaining > 0 ? `
-                        <div style="background:#fff3e0; padding:12px 16px; border-radius:12px; margin-top:12px; border-left:4px solid #e65100; font-size:14px;">
-                            ⏱️ Your Premium plan expires in <strong>${currentDaysRemaining}</strong> days. 
-                            <a href="#" onclick="showSection('plans'); return false;" style="color:#1a3c2a; font-weight:600;">Renew →</a>
-                        </div>
+                        <div style="background:#fff3e0; padding:12px 16px; border-radius:12px; margin-top:12px; border-left:4px solid #e65100; font-size:14px;">⏱️ Your Premium plan expires in <strong>${currentDaysRemaining}</strong> days. <a href="#" onclick="showSection('plans'); return false;" style="color:#1a3c2a; font-weight:600;">Renew →</a></div>
                     ` : ''}
                 </div>
             `;
-            
-            // METRIC DESCRIPTIONS
+
             const metricDescriptions = {
                 'club_angle_at_top': 'Shaft angle to the image horizontal at the top of the backswing.',
                 'hip_rotation': 'How much your hips have rotated from address at impact.',
@@ -3782,148 +3896,155 @@
                 'trail_elbow_angle': 'Trail elbow joint angle around impact.',
                 'swing_path': 'Club path: on plane, laid off, or over the top.'
             };
-            
-            // Define which metrics are available for each plan
-            const availableMetricKeys = plan.metrics.map(m => 
-                m.toLowerCase().replace(/ /g, '_').replace(/[^a-z_]/g, '')
-            );
-            
+
+            const availableMetricKeys = plan.metrics.map(m => m.toLowerCase().replace(/ /g, '_').replace(/[^a-z_]/g, ''));
             let metricsHtml = '';
             if (data.metrics && Object.keys(data.metrics).length > 0) {
                 metricsHtml = '<div class="card"><h2>📊 Key Metrics</h2>';
-                
                 let lockedCount = 0;
-                
+
                 for (const [key, value] of Object.entries(data.metrics)) {
                     const isAllowed = availableMetricKeys.some(ak => key.includes(ak) || ak.includes(key));
-                    
                     if (!isAllowed && currentPlanType !== 'premium' && currentPlanType !== 'premium_annual' && currentPlanType !== 'lifetime') {
                         lockedCount++;
                         continue;
                     }
-                    
-                    if (typeof value === 'object' && value !== null) {
-                        const description = metricDescriptions[key] || '';
-                        if (key === 'swing_path') {
-                            const status = value.over_the_top ? '⚠️ Over the top' : '✅ On plane';
-                            const pathDeviation = value.path_deviation || 0;
-                            const severity = value.severity || 'none';
-                            metricsHtml += `
-                                <div class="metric">
-                                    <div class="metric-name">${key.replace(/_/g, ' ').toUpperCase()}</div>
-                                    <div class="metric-description">${description}</div>
-                                    <div class="metric-values">
-                                        <span class="your-value">${status}</span>
-                                        <span class="pro-value">Deviation: ${pathDeviation.toFixed(1)}°</span>
-                                    </div>
-                                    ${severity === 'high' ? '<div style="color:#c62828;font-size:12px;margin-top:5px;">⚠️ Your swing is significantly over the top</div>' : ''}
+                    if (typeof value !== 'object' || value === null) continue;
+
+                    const description = metricDescriptions[key] || '';
+                    if (key === 'swing_path') {
+                        const status = value.over_the_top ? '⚠️ Over the top' : '✅ On plane';
+                        const pathDeviation = Number(value.path_deviation || 0);
+                        const severity = value.severity || 'none';
+                        metricsHtml += `
+                            <div class="metric">
+                                <div class="metric-name">${escapeHtml(metricLabel(key).toUpperCase())}</div>
+                                <div class="metric-description">${escapeHtml(description)}</div>
+                                <div class="metric-values"><span class="your-value">${escapeHtml(status)}</span><span class="pro-value">Deviation: ${pathDeviation.toFixed(1)}°</span></div>
+                                ${severity === 'high' ? '<div style="color:#c62828;font-size:12px;margin-top:5px;">⚠️ Your swing is significantly over the top</div>' : ''}
+                            </div>`;
+                    } else {
+                        const within = value.within_tolerance === true;
+                        const similarity = Number(value.metric_similarity_score);
+                        const normalized = Number(value.normalized_deviation);
+                        metricsHtml += `
+                            <div class="metric">
+                                <div class="metric-name">${escapeHtml(metricLabel(key).toUpperCase())}</div>
+                                <div class="metric-description">${escapeHtml(description)}</div>
+                                <div class="metric-values">
+                                    <span class="your-value">You: ${formatMetricValue(key, value.your_value)}</span>
+                                    <span class="pro-value">Benchmark: ${formatMetricValue(key, value.pro_value)}</span>
                                 </div>
-                            `;
-                        } else {
-                            const yourVal = value.your_value !== undefined ? value.your_value : 'N/A';
-                            const proVal = value.pro_value !== undefined ? value.pro_value : 'N/A';
-                            metricsHtml += `
-                                <div class="metric">
-                                    <div class="metric-name">${key.replace(/_/g, ' ').toUpperCase()}</div>
-                                    <div class="metric-description">${description}</div>
-                                    <div class="metric-values">
-                                        <span class="your-value">You: ${yourVal}°</span>
-                                        <span class="pro-value">Pro: ${proVal}°</span>
-                                    </div>
+                                <div class="metric-status-row">
+                                    ${value.within_tolerance !== undefined && value.within_tolerance !== null ? `<span class="metric-chip ${within ? 'good' : 'watch'}">${within ? 'Within comparison tolerance' : 'Worth reviewing'}</span>` : ''}
+                                    ${Number.isFinite(similarity) ? `<span class="metric-chip neutral">Similarity ${similarity.toFixed(0)}%</span>` : ''}
+                                    ${Number.isFinite(normalized) ? `<span class="metric-chip neutral">Gap ${normalized.toFixed(1)}× tolerance</span>` : ''}
                                 </div>
-                            `;
-                        }
+                            </div>`;
                     }
                 }
-                
+
                 if (lockedCount > 0 && currentPlanType === 'starter') {
-                    metricsHtml += `
-                        <div style="background:#fdf8ee; padding:12px 16px; border-radius:8px; margin-top:12px; border-left:4px solid #d4af37; font-size:14px;">
-                            🔒 <strong>${lockedCount}</strong> advanced metrics are locked. 
-                            <a href="#" onclick="showSection('plans'); return false;" style="color:#1a3c2a; font-weight:600;">Upgrade to unlock →</a>
-                        </div>
-                    `;
+                    metricsHtml += `<div style="background:#fdf8ee; padding:12px 16px; border-radius:8px; margin-top:12px; border-left:4px solid #d4af37; font-size:14px;">🔒 <strong>${lockedCount}</strong> advanced metrics are locked. <a href="#" onclick="showSection('plans'); return false;" style="color:#1a3c2a; font-weight:600;">Upgrade to unlock →</a></div>`;
                 }
-                
                 metricsHtml += '</div>';
             }
-            
+
             let recommendationsHtml = '';
-            if (data.recommendations && data.recommendations.length > 0) {
+            if (Array.isArray(data.recommendations) && data.recommendations.length > 0) {
                 recommendationsHtml = `
                     <div class="card">
-                        <h2>📋 Recommendations</h2>
+                        <h2>📋 Measured Recommendations</h2>
                         ${data.recommendations.map(rec => {
-                            const text = typeof rec === 'string' ? rec : (rec.text || JSON.stringify(rec));
-                            return `<div class="recommendation">${text}</div>`;
-                        }).join('')}
-                    </div>
-                `;
-            }
-            
-            let drillsHtml = '';
-            if (data.drills && data.drills.length > 0) {
-                drillsHtml = `
-                    <div class="card">
-                        <h2>🏋️ Recommended Drills</h2>
-                        ${data.drills.map(drill => {
-                            const name = drill.focus_area || drill.name || 'Drill';
-                            const desc = drill.drill?.description || drill.description || '';
-                            const duration = drill.drill?.duration || drill.duration || '10 min';
+                            if (typeof rec === 'string') return `<div class="recommendation">${escapeHtml(rec)}</div>`;
+                            const name = rec.metric_name || metricLabel(rec.metric);
                             return `
-                                <div class="metric">
-                                    <div class="metric-name">${name}</div>
-                                    <p>${desc}</p>
-                                    <small>Duration: ${duration}</small>
-                                </div>
-                            `;
+                                <div class="recommendation enhanced-rec">
+                                    <div class="rec-head"><div class="rec-title">${escapeHtml(name)}</div>${rec.priority ? `<span class="rec-priority">Priority ${escapeHtml(rec.priority)}/7</span>` : ''}</div>
+                                    <p class="rec-comparison">${escapeHtml(rec.text || '')}</p>
+                                    <div class="rec-extra">
+                                        ${rec.why_it_matters ? `<div><strong>Why it matters</strong>${escapeHtml(rec.why_it_matters)}</div>` : ''}
+                                        ${rec.what_to_work_on ? `<div><strong>What to work on</strong>${escapeHtml(rec.what_to_work_on)}</div>` : ''}
+                                        ${rec.drill_hint ? `<div><strong>Drill</strong>${escapeHtml(rec.drill_hint)}</div>` : ''}
+                                        ${rec.swing_thought ? `<div><strong>Swing thought</strong>${escapeHtml(rec.swing_thought)}</div>` : ''}
+                                    </div>
+                                </div>`;
                         }).join('')}
-                    </div>
-                `;
+                    </div>`;
             }
-            
-            let thoughtsHtml = '';
-            if (data.swing_thoughts && data.swing_thoughts.length > 0) {
-                thoughtsHtml = `
+
+            let practicePlanHtml = '';
+            if (data.practice_plan && (Array.isArray(data.practice_plan.steps) || data.practice_plan.focus_areas)) {
+                const pp = data.practice_plan;
+                practicePlanHtml = `
                     <div class="card">
-                        <h2>💭 Swing Thoughts</h2>
-                        ${data.swing_thoughts.map(thought => `<p>${thought}</p>`).join('')}
-                    </div>
-                `;
+                        <h2>🗓️ Practice Plan</h2>
+                        <p style="margin:0;color:#52665d;"><strong>Focus:</strong> ${escapeHtml(pp.focus_areas || 'Consistency')} ${pp.session_length ? `• <strong>Session:</strong> ${escapeHtml(pp.session_length)}` : ''}</p>
+                        ${Array.isArray(pp.steps) && pp.steps.length ? `<ol class="practice-steps">${pp.steps.map(step => `<li>${escapeHtml(step)}</li>`).join('')}</ol>` : ''}
+                    </div>`;
             }
-            
+
+            let drillsHtml = '';
+            if (Array.isArray(data.drills) && data.drills.length > 0) {
+                drillsHtml = `
+                    <div class="card"><h2>🏋️ Recommended Drills</h2>
+                        ${data.drills.map(drill => {
+                            const d = drill.drill || drill;
+                            const name = drill.focus_area || d.name || 'Drill';
+                            const desc = d.description || '';
+                            const duration = d.duration || drill.estimated_time || '5 minutes';
+                            const difficulty = d.difficulty || '';
+                            return `<div class="metric"><div class="metric-name">${escapeHtml(name)}</div>${d.name && d.name !== name ? `<div style="font-weight:750;color:#173c2d;margin-bottom:5px;">${escapeHtml(d.name)}</div>` : ''}<p>${escapeHtml(desc)}</p><small>${difficulty ? `${escapeHtml(difficulty)} • ` : ''}${escapeHtml(duration)}</small></div>`;
+                        }).join('')}
+                    </div>`;
+            }
+
+            let thoughtsHtml = '';
+            if (Array.isArray(data.swing_thoughts) && data.swing_thoughts.length > 0) {
+                thoughtsHtml = `<div class="card"><h2>💭 Swing Thoughts</h2>${data.swing_thoughts.map(thought => `<p style="margin:7px 0;">${escapeHtml(thought)}</p>`).join('')}</div>`;
+            }
+
+            let quickFixesHtml = '';
+            if (Array.isArray(data.quick_fixes) && data.quick_fixes.length > 0) {
+                quickFixesHtml = `<div class="card"><h2>⚡ Quick Practice Cues</h2><div class="quick-fix-list">${data.quick_fixes.map(item => `<div class="quick-fix-item">${escapeHtml(item)}</div>`).join('')}</div></div>`;
+            }
+
+            let trackingHtml = '';
+            if (Array.isArray(data.metrics_to_track) && data.metrics_to_track.length > 0) {
+                trackingHtml = `<div class="card"><h2>📈 What to Track Next</h2><p style="margin:0;color:#52665d;">On your next recording, keep the camera position consistent and watch: <strong>${data.metrics_to_track.map(escapeHtml).join(', ')}</strong>.</p></div>`;
+            }
+
             let motivationalHtml = '';
             if (data.motivational_message) {
-                motivationalHtml = `
-                    <div class="card">
-                        <h2>✨ Motivation</h2>
-                        <p>${data.motivational_message}</p>
-                    </div>
-                `;
+                motivationalHtml = `<div class="card"><h2>✨ Next Step</h2><p>${escapeHtml(data.motivational_message)}</p></div>`;
             }
-            
+
             resultsDiv.innerHTML = `
                 ${scoreHtml}
                 ${timingWarningHtml}
                 ${priorityHtml}
+                ${coachingSummaryHtml}
+                ${focusPlanHtml}
                 ${assessmentHtml}
                 ${metricsHtml}
                 ${recommendationsHtml}
+                ${practicePlanHtml}
                 ${drillsHtml}
                 ${thoughtsHtml}
+                ${quickFixesHtml}
+                ${trackingHtml}
                 ${motivationalHtml}
                 ${planInfoHtml}
             `;
-            
+
             resultsDiv.style.display = 'block';
-            
             if (data.analyses_remaining !== undefined) {
                 showStatus(`Analysis complete! You have ${data.analyses_remaining} analyses remaining`, 'success');
             } else {
                 showStatus('Analysis complete!', 'success');
             }
         }
-        
+
         // ============================================
         // DYNAMIC PRICING FUNCTIONS
         // ============================================
