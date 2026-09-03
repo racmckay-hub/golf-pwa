@@ -35,7 +35,7 @@
         }
       }
     </script>
-    <!-- VERSION: 37.8.3 - ENHANCED COACHING UI + GA4 FUNNEL + PRIORITY/PROGRESS -->
+    <!-- VERSION: 37.8.4 - NO FALSE PRIORITY + CONSISTENCY COACHING UI -->
     <link rel="manifest" href="manifest.json">
     <link rel="apple-touch-icon" href="icon.png">
     <style>
@@ -3791,7 +3791,7 @@
             if (data.priority_focus) {
                 const p = data.priority_focus;
                 const key = p.metric_key || p.metric || '';
-                const statusText = p.status === 'maintenance' ? 'Closest area to monitor' : 'Your #1 priority';
+                const statusText = 'Your #1 priority';
                 const band = p.target_band && Number.isFinite(Number(p.target_band.low)) && Number.isFinite(Number(p.target_band.high))
                     ? `${formatMetricValue(key, p.target_band.low)} – ${formatMetricValue(key, p.target_band.high)}`
                     : '';
@@ -3812,6 +3812,15 @@
                             ${band ? `<div class="priority-detail"><strong>Comparison band</strong><span>${escapeHtml(band)}</span></div>` : ''}
                         </div>
                         <div class="benchmark-note">${escapeHtml(p.coaching_note || 'Use the professional value as a comparison reference, not a number to force.')}</div>
+                    </div>
+                `;
+            } else if (Array.isArray(data.recommendations) && data.recommendations.length === 0) {
+                priorityHtml = `
+                    <div class="priority-focus-card enhanced">
+                        <div class="priority-kicker">✅ No priority correction identified</div>
+                        <h3>Consistency &amp; Repeatability</h3>
+                        <p class="priority-lead">Your measured swing is already very close to the selected benchmark across the scored metrics. There is no single metric that needs correcting first.</p>
+                        <div class="benchmark-note">Focus on repeating the same movement and use future analyses to track consistency. Professional values are comparison references, not numbers to force.</div>
                     </div>
                 `;
             }
@@ -4012,6 +4021,8 @@
             let trackingHtml = '';
             if (Array.isArray(data.metrics_to_track) && data.metrics_to_track.length > 0) {
                 trackingHtml = `<div class="card"><h2>📈 What to Track Next</h2><p style="margin:0;color:#52665d;">On your next recording, keep the camera position consistent and watch: <strong>${data.metrics_to_track.map(escapeHtml).join(', ')}</strong>.</p></div>`;
+            } else if (Array.isArray(data.recommendations) && data.recommendations.length === 0) {
+                trackingHtml = `<div class="card"><h2>📈 What to Track Next</h2><p style="margin:0;color:#52665d;">Record your next 3–5 swings from the same camera position and look for repeatability across the measured metrics rather than trying to move a number toward the benchmark.</p></div>`;
             }
 
             let motivationalHtml = '';
