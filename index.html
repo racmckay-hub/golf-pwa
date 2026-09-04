@@ -35,7 +35,7 @@
         }
       }
     </script>
-    <!-- VERSION: 37.8.4 - NO FALSE PRIORITY + CONSISTENCY COACHING UI -->
+    <!-- VERSION: 37.8.5 - LANDING CONVERSION TEST -->
     <link rel="manifest" href="manifest.json">
     <link rel="apple-touch-icon" href="icon.png">
     <style>
@@ -1474,6 +1474,30 @@
             font-weight: 650;
         }
 
+        .landing-hero-cta {
+            margin-top: 22px;
+            padding: 15px 24px;
+            border: 0;
+            border-radius: 12px;
+            background: var(--lime);
+            color: var(--forest-950);
+            font: inherit;
+            font-size: 17px;
+            font-weight: 800;
+            cursor: pointer;
+            box-shadow: 0 8px 22px rgba(0,0,0,.18);
+            transition: transform .15s ease, box-shadow .15s ease;
+        }
+
+        .landing-hero-cta:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 10px 26px rgba(0,0,0,.22);
+        }
+
+        .landing-hero-cta:active {
+            transform: translateY(0);
+        }
+
         .landing-auth-panel {
             position: relative;
             z-index: 3;
@@ -1884,20 +1908,24 @@
 
                     <div class="landing-copy">
                         <div class="landing-eyebrow">AI-powered golf swing analysis</div>
-                        <h1>Understand your swing. Compare it with the professionals.</h1>
+                        <h1>See what to improve in your golf swing.</h1>
                         <p>
-                            Upload a golf swing video and receive a detailed comparison against professional benchmarks.
-                            The analyzer measures key positions, body rotation, posture, arm and elbow geometry, impact
-                            characteristics and other swing metrics to help you understand where your motion differs.
+                            Upload your swing and compare it with a professional benchmark. X-AI Golf measures your movement,
+                            identifies the areas to focus on first, and gives you personalised coaching recommendations and
+                            practice tips.
                         </p>
                         <div class="landing-proof">
-                            <span>20 professional benchmarks</span>
-                            <span>Left- and right-handed analysis</span>
-                            <span>Video quality validation</span>
-                            <span>Metric-by-metric feedback</span>
+                            <span>🎯 Priority focus areas</span>
+                            <span>🏌️ Professional comparisons</span>
+                            <span>💡 Coaching recommendations</span>
+                            <span>📈 Track your progress</span>
                         </div>
-                        <p style="margin-top:18px;color:rgba(255,255,255,.9);font-size:14px;font-weight:700;">
-                            Try one complete analysis free · Premium £9.99/month or £79.99/year<br><span style="font-weight:500;opacity:.82;">Stripe may offer local-currency checkout depending on your location.</span>
+                        <button type="button" class="landing-hero-cta" onclick="showLandingAuth('signup')">
+                            Analyse My Swing Free
+                        </button>
+                        <p style="margin-top:12px;color:rgba(255,255,255,.9);font-size:14px;font-weight:700;">
+                            1 complete swing analysis free · No credit card required<br>
+                            <span style="font-weight:500;opacity:.82;">Premium £9.99/month or £79.99/year</span>
                         </p>
                     </div>
 
@@ -3119,6 +3147,7 @@
             const subtitle = document.getElementById('landingAuthSubtitle');
             const action = document.getElementById('landingAuthAction');
             const password = document.getElementById('password');
+            const foot = document.getElementById('landingAuthFoot');
 
             if (!loginTab || !signupTab || !title || !subtitle || !action) return;
 
@@ -3126,16 +3155,18 @@
             signupTab.classList.toggle('active', isSignup);
 
             if (isSignup) {
-                title.textContent = 'Create your account';
-                subtitle.textContent = 'Sign up to upload your swing and start comparing your metrics.';
-                action.textContent = 'Create free account';
+                title.textContent = 'Analyse your swing free';
+                subtitle.textContent = 'Create your free account to get your swing comparison, focus areas, recommendations and practice tips.';
+                action.textContent = 'Create account & analyse my swing';
                 action.onclick = register;
+                if (foot) foot.textContent = 'No credit card required. Your first complete swing analysis is free.';
                 if (password) password.setAttribute('autocomplete', 'new-password');
             } else {
                 title.textContent = 'Welcome back';
                 subtitle.textContent = 'Log in to analyze your swing and access your account.';
                 action.textContent = 'Log in';
                 action.onclick = login;
+                if (foot) foot.textContent = 'Secure account access. Your uploaded swing is used to perform your requested analysis.';
                 if (password) password.setAttribute('autocomplete', 'current-password');
             }
         }
