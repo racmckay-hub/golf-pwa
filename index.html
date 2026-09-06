@@ -1498,6 +1498,113 @@
             transform: translateY(0);
         }
 
+        .landing-demo-panel {
+            position: relative;
+            z-index: 3;
+            padding: 28px;
+            border: 1px solid rgba(255,255,255,.15);
+            border-radius: 20px;
+            background: rgba(255,255,255,.97);
+            box-shadow: 0 24px 70px rgba(0,0,0,.26);
+            backdrop-filter: blur(16px);
+        }
+
+        .landing-demo-kicker {
+            color: var(--forest-600);
+            font-size: 11px;
+            font-weight: 850;
+            letter-spacing: .12em;
+            text-transform: uppercase;
+        }
+
+        .landing-demo-panel h2 {
+            margin: 7px 0 7px;
+            color: var(--ink);
+            font-size: 25px;
+            letter-spacing: -.035em;
+        }
+
+        .landing-demo-intro {
+            margin: 0 0 17px;
+            color: var(--muted);
+            font-size: 13px;
+            line-height: 1.5;
+        }
+
+        .landing-demo-focus {
+            padding: 16px;
+            border: 1px solid #dce7df;
+            border-radius: 14px;
+            background: #f7faf8;
+        }
+
+        .landing-demo-focus small {
+            color: #72857b;
+            font-size: 10px;
+            font-weight: 800;
+            letter-spacing: .09em;
+            text-transform: uppercase;
+        }
+
+        .landing-demo-focus h3 {
+            margin: 5px 0 11px;
+            color: var(--forest-800);
+            font-size: 20px;
+        }
+
+        .landing-demo-values {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+            margin-bottom: 12px;
+        }
+
+        .landing-demo-value {
+            padding: 10px;
+            border-radius: 10px;
+            background: #fff;
+            border: 1px solid #e1e9e4;
+            color: var(--muted);
+            font-size: 11px;
+        }
+
+        .landing-demo-value strong {
+            display: block;
+            margin-top: 2px;
+            color: var(--ink);
+            font-size: 18px;
+        }
+
+        .landing-demo-coach {
+            margin: 0;
+            color: #42564c;
+            font-size: 12px;
+            line-height: 1.55;
+        }
+
+        .landing-demo-list {
+            display: grid;
+            gap: 8px;
+            margin: 14px 0 17px;
+        }
+
+        .landing-demo-list div {
+            padding: 9px 11px;
+            border-radius: 10px;
+            background: #eef5f1;
+            color: #365046;
+            font-size: 12px;
+            font-weight: 700;
+        }
+
+        .landing-demo-note {
+            margin-top: 10px;
+            color: #7b8d84;
+            font-size: 11px;
+            line-height: 1.45;
+            text-align: center;
+        }
+
         .landing-auth-panel {
             position: relative;
             z-index: 3;
@@ -1888,6 +1995,7 @@
     </style>
 </head>
 <body>
+    <!-- V37.8.6: show product value before asking cold visitors to create an account -->
     <div class="container">
         <!-- ===== PUBLIC LANDING / AUTH PAGE ===== -->
         <div id="loginSection" class="landing-page">
@@ -1929,7 +2037,40 @@
                         </p>
                     </div>
 
-                    <div class="landing-auth-panel" id="landingAuthPanel">
+                    <div class="landing-demo-panel" id="landingDemoPanel">
+                        <div class="landing-demo-kicker">Example analysis</div>
+                        <h2>See the kind of answer you'll get.</h2>
+                        <p class="landing-demo-intro">
+                            X-AI Golf doesn't just show numbers. It turns measured differences into a clear area to work on next.
+                        </p>
+
+                        <div class="landing-demo-focus">
+                            <small>🎯 Example priority focus</small>
+                            <h3>Hip Rotation at Impact</h3>
+                            <div class="landing-demo-values">
+                                <div class="landing-demo-value">Golfer<strong>27°</strong></div>
+                                <div class="landing-demo-value">Example benchmark<strong>38°</strong></div>
+                            </div>
+                            <p class="landing-demo-coach">
+                                <strong>What to work on:</strong> Explore more lower-body rotation through impact while keeping the movement balanced and controlled.
+                            </p>
+                        </div>
+
+                        <div class="landing-demo-list">
+                            <div>💡 Coaching recommendation</div>
+                            <div>🏌️ Practice drill & swing thought</div>
+                            <div>📈 What to measure on your next swing</div>
+                        </div>
+
+                        <button type="button" class="landing-auth-action" onclick="showLandingAuth('signup')">
+                            Analyse My Swing Free
+                        </button>
+                        <div class="landing-demo-note">
+                            1 complete analysis free · No credit card required
+                        </div>
+                    </div>
+
+                    <div class="landing-auth-panel" id="landingAuthPanel" style="display:none;">
                         <h2 id="landingAuthTitle">Welcome back</h2>
                         <p id="landingAuthSubtitle">Log in to analyze your swing and access your account.</p>
 
@@ -3173,8 +3314,11 @@
 
         function showLandingAuth(mode) {
             setLandingAuthMode(mode || 'login');
+            const demoPanel = document.getElementById('landingDemoPanel');
             const panel = document.getElementById('landingAuthPanel');
+            if (demoPanel) demoPanel.style.display = 'none';
             if (panel) {
+                panel.style.display = 'block';
                 panel.scrollIntoView({ behavior: 'smooth', block: 'center' });
                 setTimeout(() => {
                     const emailInput = document.getElementById('email');
