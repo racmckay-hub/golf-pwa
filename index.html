@@ -35,7 +35,7 @@
         }
       }
     </script>
-    <!-- VERSION: 37.8.7 - UPLOAD-FIRST FUNNEL TEST -->
+    <!-- VERSION: 37.8.9 - UPLOAD-FIRST + PRESCRIPTIVE + LONGITUDINAL COACHING -->
     <link rel="manifest" href="manifest.json">
     <link rel="apple-touch-icon" href="icon.png">
     <style>
@@ -2085,6 +2085,17 @@
             .comparison-controls { grid-template-columns:1fr; }
         }
 
+    
+        .progress-coaching-card{margin-top:14px;padding:18px;border:1px solid #cfe0d7;border-left:5px solid #1d7953;border-radius:14px;background:#f8fbf9}
+        .progress-coaching-card h3{margin:0 0 7px;color:#173c2d;font-size:17px}
+        .progress-coaching-card p{margin:0;color:#53685e;font-size:13px;line-height:1.6}
+        .progress-metric-strip{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin-top:12px}
+        .progress-metric-strip div{padding:10px;border:1px solid #dbe7e0;border-radius:10px;background:#fff;color:#61736a;font-size:11px}
+        .progress-metric-strip strong{display:block;margin-top:3px;color:#173c2d;font-size:15px}
+        .progress-trend-list{display:grid;gap:8px;margin-top:12px}
+        .progress-trend-row{display:grid;grid-template-columns:minmax(0,1.4fr) repeat(3,minmax(75px,.7fr));gap:8px;align-items:center;padding:10px 12px;border:1px solid #e0e8e3;border-radius:10px;background:#fff;font-size:12px}
+        .progress-trend-good{color:#19733f;font-weight:800}.progress-trend-bad{color:#a33d34;font-weight:800}.progress-trend-neutral{color:#6d7d75;font-weight:700}
+        @media(max-width:680px){.progress-metric-strip{grid-template-columns:1fr}.progress-trend-row{grid-template-columns:1fr 1fr}}
     </style>
 </head>
 <body>
@@ -2976,6 +2987,24 @@
             }
         }
 
+        function progressMetricText(value) {
+            const n = Number(value);
+            return Number.isFinite(n) ? `${n.toFixed(1)}°` : 'N/A';
+        }
+
+        function progressStatusClass(status) {
+            if (status === 'improved' || status === 'graduated') return 'progress-trend-good';
+            if (status === 'regressed') return 'progress-trend-bad';
+            return 'progress-trend-neutral';
+        }
+
+        function progressStatusText(status) {
+            if (status === 'graduated') return 'In band';
+            if (status === 'improved') return 'Improved';
+            if (status === 'regressed') return 'Farther';
+            return 'Stable';
+        }
+
         function renderProgressSummary(data) {
             const el = document.getElementById('progressSummary');
             if (!el) return;
@@ -2985,12 +3014,46 @@
             }
 
             const latest = progressAnalyses[0];
-            const previous = progressAnalyses.length > 1 ? progressAnalyses[1] : null;
             const change = data.latest_score_change;
             const changeText = change === null || change === undefined
                 ? 'First saved analysis'
                 : `${change >= 0 ? '+' : ''}${Number(change).toFixed(1)} points`;
             const priority = latest.priority_focus;
+            const longitudinal = data.longitudinal_coaching || {};
+            const fp = longitudinal.focus_progress || null;
+
+            let focusStrip = '';
+            if (fp) {
+                const closer = Number(fp.closer_by);
+                const gapText = Number.isFinite(closer)
+                    ? (closer >= 0 ? `Closer by ${Math.abs(closer).toFixed(1)}°` : `Farther by ${Math.abs(closer).toFixed(1)}°`)
+                    : 'Trend available';
+
+                focusStrip = `
+                    <div class="progress-metric-strip">
+                        <div>Previous<strong>${progressMetricText(fp.before_value)}</strong></div>
+                        <div>Latest<strong>${progressMetricText(fp.after_value)}</strong></div>
+                        <div>${escapeHtml(gapText)}<strong>Benchmark ${progressMetricText(fp.benchmark_value)}</strong></div>
+                    </div>
+                `;
+            }
+
+            const trendRows = Array.isArray(longitudinal.metric_trends)
+                ? longitudinal.metric_trends.slice(0, 5).map(item => {
+                    const closer = Number(item.closer_by);
+                    const changeLabel = Number.isFinite(closer)
+                        ? (closer >= 0 ? `+${Math.abs(closer).toFixed(1)}° closer` : `${Math.abs(closer).toFixed(1)}° farther`)
+                        : '—';
+                    return `
+                        <div class="progress-trend-row">
+                            <strong>${escapeHtml(item.metric_name || '')}</strong>
+                            <span>${progressMetricText(item.before_value)} → ${progressMetricText(item.after_value)}</span>
+                            <span>Target ${progressMetricText(item.benchmark_value)}</span>
+                            <span class="${progressStatusClass(item.status)}">${escapeHtml(changeLabel)}</span>
+                        </div>
+                    `;
+                }).join('')
+                : '';
 
             el.innerHTML = `
                 <div class="progress-summary-grid">
@@ -2998,7 +3061,32 @@
                     <div class="progress-summary-box"><small>Change vs previous</small><strong>${changeText}</strong></div>
                     <div class="progress-summary-box"><small>Saved analyses</small><strong>${progressAnalyses.length}</strong></div>
                 </div>
-                ${priority ? `<div class="priority-focus-card" style="margin-bottom:0;"><h3>🎯 Current #1 priority: ${priority.metric_name}</h3><p style="margin:0;color:#52665d;">Largest normalized difference in your latest analysis.</p></div>` : ''}
+
+                <div class="progress-coaching-card">
+                    <h3>📈 ${escapeHtml(longitudinal.headline || 'Your progress baseline is saved.')}</h3>
+                    <p>${escapeHtml(longitudinal.message || 'Keep the same benchmark and camera position so X-AI Golf can measure your trend.')}</p>
+                    ${focusStrip}
+                    ${longitudinal.comparison_note ? `<p style="margin-top:10px;font-size:11px;color:#718279;">${escapeHtml(longitudinal.comparison_note)}</p>` : ''}
+                </div>
+
+                ${priority ? `
+                    <div class="priority-focus-card" style="margin-top:14px;margin-bottom:0;">
+                        <h3>🎯 Current #1 priority: ${escapeHtml(priority.metric_name || priority.metric_key || '')}</h3>
+                        <p style="margin:0;color:#52665d;">Use this as the next practice focus, then re-test it across 3 comparable swings.</p>
+                    </div>
+                ` : `
+                    <div class="priority-focus-card" style="margin-top:14px;margin-bottom:0;">
+                        <h3>✅ No corrective priority identified</h3>
+                        <p style="margin:0;color:#52665d;">Focus on consistency and repeatability rather than forcing a new benchmark position.</p>
+                    </div>
+                `}
+
+                ${trendRows ? `
+                    <div style="margin-top:16px;">
+                        <strong style="color:#173c2d;">Recent same-benchmark metric trends</strong>
+                        <div class="progress-trend-list">${trendRows}</div>
+                    </div>
+                ` : ''}
             `;
         }
 
@@ -3050,24 +3138,61 @@
             const scoreAfter = Number(after.score);
             const scoreChange = Number.isFinite(scoreBefore) && Number.isFinite(scoreAfter) ? scoreAfter - scoreBefore : null;
             const samePro = before.pro === after.pro;
+            const sameHand = (before.handedness || 'right') === (after.handedness || 'right');
+            const comparable = samePro && sameHand;
 
             const commonKeys = Object.keys(before.metrics || {}).filter(key => after.metrics && after.metrics[key]);
             const rows = commonKeys.map(key => {
-                const b = Number(before.metrics[key].your_value);
-                const a = Number(after.metrics[key].your_value);
+                const bm = before.metrics[key] || {};
+                const am = after.metrics[key] || {};
+                const b = Number(bm.your_value);
+                const a = Number(am.your_value);
                 if (!Number.isFinite(b) || !Number.isFinite(a)) return '';
-                const delta = a - b;
+
+                const bPro = Number(bm.pro_value);
+                const aPro = Number(am.pro_value);
                 const name = key.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
-                return `<tr><td>${name}</td><td>${b.toFixed(1)}°</td><td>${a.toFixed(1)}°</td><td class="change-neutral">${delta >= 0 ? '+' : ''}${delta.toFixed(1)}°</td></tr>`;
+
+                let progressText = 'Raw comparison only';
+                let progressClass = 'change-neutral';
+
+                if (comparable && Number.isFinite(bPro) && Number.isFinite(aPro)) {
+                    const beforeGap = Math.abs(b - bPro);
+                    const afterGap = Math.abs(a - aPro);
+                    const closerBy = beforeGap - afterGap;
+
+                    if (Math.abs(closerBy) < 0.5) {
+                        progressText = 'Broadly unchanged';
+                        progressClass = 'change-neutral';
+                    } else if (closerBy > 0) {
+                        progressText = `${closerBy.toFixed(1)}° closer`;
+                        progressClass = 'change-good';
+                    } else {
+                        progressText = `${Math.abs(closerBy).toFixed(1)}° farther`;
+                        progressClass = 'change-neutral';
+                    }
+                }
+
+                return `
+                    <tr>
+                        <td>${escapeHtml(name)}</td>
+                        <td>${b.toFixed(1)}°</td>
+                        <td>${a.toFixed(1)}°</td>
+                        <td class="${progressClass}">${escapeHtml(progressText)}</td>
+                    </tr>
+                `;
             }).join('');
 
             el.innerHTML = `
                 <div style="padding:14px 16px;border-radius:12px;background:#f4f8f6;border:1px solid #dce5e0;">
                     <strong>Score: ${Number.isFinite(scoreBefore) ? scoreBefore.toFixed(1) : 'N/A'} → ${Number.isFinite(scoreAfter) ? scoreAfter.toFixed(1) : 'N/A'}</strong>
                     ${scoreChange !== null ? `<span class="${scoreChange >= 0 ? 'change-good' : 'change-neutral'}" style="margin-left:10px;">${scoreChange >= 0 ? '+' : ''}${scoreChange.toFixed(1)} points</span>` : ''}
-                    ${!samePro ? '<div style="margin-top:8px;color:#8a6a1f;font-size:12px;">⚠️ These analyses used different professional benchmarks. Score changes are most meaningful when the same pro is used.</div>' : ''}
+                    ${!comparable ? '<div style="margin-top:8px;color:#8a6a1f;font-size:12px;">⚠️ These analyses used a different professional benchmark or swing hand. Metric values are shown, but improvement labels are withheld because the comparison is not like-for-like.</div>' : '<div style="margin-top:8px;color:#5f7569;font-size:12px;">Improvement is judged by movement toward the benchmark, not simply whether the raw number increased or decreased.</div>'}
                 </div>
-                <table class="comparison-table"><thead><tr><th>Metric</th><th>Before</th><th>After</th><th>Change</th></tr></thead><tbody>${rows || '<tr><td colspan="4">No common numeric metrics available.</td></tr>'}</tbody></table>
+                <table class="comparison-table">
+                    <thead><tr><th>Metric</th><th>Before</th><th>After</th><th>Progress</th></tr></thead>
+                    <tbody>${rows || '<tr><td colspan="4">No common numeric metrics available.</td></tr>'}</tbody>
+                </table>
             `;
         }
 
@@ -4196,10 +4321,14 @@
                             ${Number.isFinite(Number(p.metric_similarity_score)) ? `<span>Similarity: <strong>${Number(p.metric_similarity_score).toFixed(0)}%</strong></span>` : ''}
                         </div>
                         <div class="priority-detail-grid">
+                            ${p.diagnosis ? `<div class="priority-detail"><strong>What we found</strong><span>${escapeHtml(p.diagnosis)}</span></div>` : ''}
                             ${p.why_it_matters ? `<div class="priority-detail"><strong>Why it matters</strong><span>${escapeHtml(p.why_it_matters)}</span></div>` : ''}
                             ${p.drill_hint ? `<div class="priority-detail"><strong>Try this</strong><span>${escapeHtml(p.drill_hint)}</span></div>` : ''}
                             ${p.swing_thought ? `<div class="priority-detail"><strong>Swing thought</strong><span>${escapeHtml(p.swing_thought)}</span></div>` : ''}
+                            ${p.watch_out_for ? `<div class="priority-detail"><strong>Do not sacrifice</strong><span>${escapeHtml(p.watch_out_for)}</span></div>` : ''}
+                            ${Array.isArray(p.interaction_notes) && p.interaction_notes.length ? `<div class="priority-detail"><strong>Connected metric</strong><span>${escapeHtml(p.interaction_notes[0])}</span></div>` : ''}
                             ${band ? `<div class="priority-detail"><strong>Comparison band</strong><span>${escapeHtml(band)}</span></div>` : ''}
+                            ${p.success_check ? `<div class="priority-detail"><strong>Success check</strong><span>${escapeHtml(p.success_check)}</span></div>` : ''}
                         </div>
                         <div class="benchmark-note">${escapeHtml(p.coaching_note || 'Use the professional value as a comparison reference, not a number to force.')}</div>
                     </div>
@@ -4243,10 +4372,14 @@
                                     <div class="focus-plan-item">
                                         <div class="focus-rank">${escapeHtml(item.rank || index + 1)}</div>
                                         <h3>${escapeHtml(item.focus_area || metricLabel(item.metric))}</h3>
+                                        ${item.diagnosis ? `<p><span class="focus-label">Found:</span> ${escapeHtml(item.diagnosis)}</p>` : ''}
                                         ${item.why_it_matters ? `<p><span class="focus-label">Why:</span> ${escapeHtml(item.why_it_matters)}</p>` : ''}
                                         ${item.what_to_work_on ? `<p><span class="focus-label">Work on:</span> ${escapeHtml(item.what_to_work_on)}</p>` : ''}
-                                        ${drill.name ? `<p><span class="focus-label">Drill:</span> ${escapeHtml(drill.name)}</p>` : ''}
+                                        ${drill.name ? `<p><span class="focus-label">Drill:</span> ${escapeHtml(drill.name)}${drill.description ? ` — ${escapeHtml(drill.description)}` : ''}</p>` : ''}
                                         ${item.swing_thought ? `<p><span class="focus-label">Feel:</span> “${escapeHtml(item.swing_thought)}”</p>` : ''}
+                                        ${item.watch_out_for ? `<p><span class="focus-label">Guardrail:</span> ${escapeHtml(item.watch_out_for)}</p>` : ''}
+                                        ${Array.isArray(item.interaction_notes) && item.interaction_notes.length ? `<p><span class="focus-label">Connected metric:</span> ${escapeHtml(item.interaction_notes[0])}</p>` : ''}
+                                        ${item.success_check ? `<p><span class="focus-label">Retest:</span> ${escapeHtml(item.success_check)}</p>` : ''}
                                     </div>
                                 `;
                             }).join('')}
