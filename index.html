@@ -35,7 +35,7 @@
         }
       }
     </script>
-    <!-- VERSION: 37.8.5 - LANDING CONVERSION TEST -->
+    <!-- VERSION: 37.8.7 - UPLOAD-FIRST FUNNEL TEST -->
     <link rel="manifest" href="manifest.json">
     <link rel="apple-touch-icon" href="icon.png">
     <style>
@@ -1605,6 +1605,99 @@
             text-align: center;
         }
 
+        .landing-upload-panel {
+            position: relative;
+            z-index: 3;
+            padding: 28px;
+            border: 1px solid rgba(255,255,255,.15);
+            border-radius: 20px;
+            background: rgba(255,255,255,.97);
+            box-shadow: 0 24px 70px rgba(0,0,0,.26);
+            backdrop-filter: blur(16px);
+        }
+
+        .landing-upload-kicker {
+            color: var(--forest-600);
+            font-size: 11px;
+            font-weight: 850;
+            letter-spacing: .12em;
+            text-transform: uppercase;
+        }
+
+        .landing-upload-panel h2 {
+            margin: 7px 0 7px;
+            color: var(--ink);
+            font-size: 25px;
+            letter-spacing: -.035em;
+        }
+
+        .landing-upload-panel > p {
+            margin: 0 0 16px;
+            color: var(--muted);
+            font-size: 13px;
+            line-height: 1.55;
+        }
+
+        .landing-upload-box {
+            min-height: 190px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 7px;
+            padding: 22px;
+            border: 2px dashed #adc3b7;
+            border-radius: 16px;
+            background: #f6faf7;
+            text-align: center;
+            cursor: pointer;
+            transition: .18s ease;
+        }
+
+        .landing-upload-box:hover,
+        .landing-upload-box.drag-over {
+            border-color: var(--forest-600);
+            background: #edf5f0;
+            transform: translateY(-1px);
+        }
+
+        .landing-upload-icon {
+            font-size: 38px;
+            line-height: 1;
+        }
+
+        .landing-upload-box strong {
+            color: var(--forest-900);
+            font-size: 16px;
+        }
+
+        .landing-upload-box span {
+            color: #6f8178;
+            font-size: 11px;
+            line-height: 1.45;
+        }
+
+        .landing-upload-status {
+            display: none;
+            margin-top: 12px;
+            padding: 11px 12px;
+            border-radius: 10px;
+            background: #e8f4ec;
+            border: 1px solid #cde4d5;
+            color: #24553d;
+            font-size: 12px;
+            font-weight: 700;
+            line-height: 1.45;
+        }
+
+        .landing-upload-note {
+            margin-top: 12px;
+            color: #74867d;
+            font-size: 11px;
+            line-height: 1.5;
+            text-align: center;
+        }
+
         .landing-auth-panel {
             position: relative;
             z-index: 3;
@@ -1995,7 +2088,7 @@
     </style>
 </head>
 <body>
-    <!-- V37.8.6: show product value before asking cold visitors to create an account -->
+    <!-- V37.8.7: let cold visitors select a swing before asking them to create an account -->
     <div class="container">
         <!-- ===== PUBLIC LANDING / AUTH PAGE ===== -->
         <div id="loginSection" class="landing-page">
@@ -2028,45 +2121,35 @@
                             <span>💡 Coaching recommendations</span>
                             <span>📈 Track your progress</span>
                         </div>
-                        <button type="button" class="landing-hero-cta" onclick="showLandingAuth('signup')">
-                            Analyse My Swing Free
+                        <button type="button" class="landing-hero-cta" onclick="startLandingUpload()">
+                            Choose My Swing Video
                         </button>
                         <p style="margin-top:12px;color:rgba(255,255,255,.9);font-size:14px;font-weight:700;">
                             1 complete swing analysis free · No credit card required<br>
                             <span style="font-weight:500;opacity:.82;">Premium £9.99/month or £79.99/year</span>
                         </p>
                     </div>
-
-                    <div class="landing-demo-panel" id="landingDemoPanel">
-                        <div class="landing-demo-kicker">Example analysis</div>
-                        <h2>See the kind of answer you'll get.</h2>
-                        <p class="landing-demo-intro">
-                            X-AI Golf doesn't just show numbers. It turns measured differences into a clear area to work on next.
+                    <div class="landing-upload-panel" id="landingUploadPanel">
+                        <div class="landing-upload-kicker">Start with your swing</div>
+                        <h2>Choose a swing video first.</h2>
+                        <p>
+                            No account is needed just to choose your video. We will ask you to create your free account
+                            only after your swing is selected and ready for analysis.
                         </p>
 
-                        <div class="landing-demo-focus">
-                            <small>🎯 Example priority focus</small>
-                            <h3>Hip Rotation at Impact</h3>
-                            <div class="landing-demo-values">
-                                <div class="landing-demo-value">Golfer<strong>27°</strong></div>
-                                <div class="landing-demo-value">Example benchmark<strong>38°</strong></div>
-                            </div>
-                            <p class="landing-demo-coach">
-                                <strong>What to work on:</strong> Explore more lower-body rotation through impact while keeping the movement balanced and controlled.
-                            </p>
+                        <div class="landing-upload-box" id="landingUploadBox" onclick="startLandingUpload()">
+                            <div class="landing-upload-icon">🎥</div>
+                            <strong>Choose your swing video</strong>
+                            <span>MP4, MOV or AVI · Max 100MB · Landscape recommended</span>
+                            <span>Your video is not sent for analysis until after you create or log in to your account.</span>
                         </div>
 
-                        <div class="landing-demo-list">
-                            <div>💡 Coaching recommendation</div>
-                            <div>🏌️ Practice drill & swing thought</div>
-                            <div>📈 What to measure on your next swing</div>
-                        </div>
+                        <input type="file" id="landingVideoInput" accept="video/*" style="display:none;">
 
-                        <button type="button" class="landing-auth-action" onclick="showLandingAuth('signup')">
-                            Analyse My Swing Free
-                        </button>
-                        <div class="landing-demo-note">
-                            1 complete analysis free · No credit card required
+                        <div class="landing-upload-status" id="landingUploadStatus"></div>
+
+                        <div class="landing-upload-note">
+                            First complete analysis free · No credit card required
                         </div>
                     </div>
 
@@ -3296,9 +3379,11 @@
             signupTab.classList.toggle('active', isSignup);
 
             if (isSignup) {
-                title.textContent = 'Analyse your swing free';
-                subtitle.textContent = 'Create your free account to get your swing comparison, focus areas, recommendations and practice tips.';
-                action.textContent = 'Create account & analyse my swing';
+                title.textContent = pendingLandingFile ? 'Your swing is ready' : 'Analyse your swing free';
+                subtitle.textContent = pendingLandingFile
+                    ? 'Create your free account to continue with this swing and receive your comparison, priority focus, recommendations and practice tips.'
+                    : 'Create your free account to get your swing comparison, focus areas, recommendations and practice tips.';
+                action.textContent = pendingLandingFile ? 'Create account & continue' : 'Create account & analyse my swing';
                 action.onclick = register;
                 if (foot) foot.textContent = 'No credit card required. Your first complete swing analysis is free.';
                 if (password) password.setAttribute('autocomplete', 'new-password');
@@ -3314,9 +3399,9 @@
 
         function showLandingAuth(mode) {
             setLandingAuthMode(mode || 'login');
-            const demoPanel = document.getElementById('landingDemoPanel');
+            const uploadPanel = document.getElementById('landingUploadPanel');
             const panel = document.getElementById('landingAuthPanel');
-            if (demoPanel) demoPanel.style.display = 'none';
+            if (uploadPanel) uploadPanel.style.display = 'none';
             if (panel) {
                 panel.style.display = 'block';
                 panel.scrollIntoView({ behavior: 'smooth', block: 'center' });
@@ -3325,6 +3410,116 @@
                     if (emailInput) emailInput.focus();
                 }, 350);
             }
+        }
+
+        // ===== V37.8.7 UPLOAD-FIRST PUBLIC FUNNEL =====
+        let pendingLandingFile = null;
+        let landingSignupShownTracked = false;
+
+        function startLandingUpload() {
+            trackGAEvent('upload_clicked', { funnel_version: 'v37_8_7' });
+            const input = document.getElementById('landingVideoInput');
+            if (input) input.click();
+        }
+
+        function showLandingUploadMessage(message, isError = false) {
+            const status = document.getElementById('landingUploadStatus');
+            if (!status) return;
+            status.style.display = 'block';
+            status.style.background = isError ? '#fdecec' : '#e8f4ec';
+            status.style.borderColor = isError ? '#f0caca' : '#cde4d5';
+            status.style.color = isError ? '#8f2e2e' : '#24553d';
+            status.textContent = message;
+        }
+
+        function acceptLandingVideo(file) {
+            if (!file) return;
+
+            if (!file.type || !file.type.startsWith('video/')) {
+                showLandingUploadMessage('Please choose a video file.', true);
+                return;
+            }
+
+            const maxBytes = 100 * 1024 * 1024;
+            if (file.size > maxBytes) {
+                showLandingUploadMessage('This video is over 100MB. Please choose a smaller file.', true);
+                return;
+            }
+
+            pendingLandingFile = file;
+
+            trackGAEvent('video_selected', {
+                funnel_version: 'v37_8_7',
+                size_bucket: file.size < 20 * 1024 * 1024 ? 'under_20mb'
+                    : file.size < 50 * 1024 * 1024 ? '20_50mb'
+                    : '50_100mb'
+            });
+
+            showLandingUploadMessage('✓ Swing selected. Create your free account to continue to analysis.');
+
+            const input = document.getElementById('landingVideoInput');
+            if (input) input.value = '';
+
+            setTimeout(() => {
+                if (!landingSignupShownTracked) {
+                    trackGAEvent('signup_shown', {
+                        funnel_version: 'v37_8_7',
+                        after_video_selected: true
+                    });
+                    landingSignupShownTracked = true;
+                }
+                showLandingAuth('signup');
+            }, 250);
+        }
+
+        function transferPendingLandingFileToApp() {
+            if (!pendingLandingFile) return false;
+
+            // selectedFile is the existing authenticated-analysis file variable.
+            selectedFile = pendingLandingFile;
+
+            const preview = document.getElementById('videoPreview');
+            if (preview) {
+                preview.innerHTML = `
+                    <video controls>
+                        <source src="${URL.createObjectURL(selectedFile)}" type="${selectedFile.type}">
+                    </video>
+                `;
+            }
+
+            showStatus('✓ Your selected swing is ready. Choose your comparison and swing hand, then analyze.', 'success');
+            pendingLandingFile = null;
+            return true;
+        }
+
+        const landingVideoInput = document.getElementById('landingVideoInput');
+        if (landingVideoInput) {
+            landingVideoInput.addEventListener('change', (event) => {
+                if (event.target.files && event.target.files[0]) {
+                    acceptLandingVideo(event.target.files[0]);
+                }
+            });
+        }
+
+        const landingUploadBox = document.getElementById('landingUploadBox');
+        if (landingUploadBox) {
+            landingUploadBox.addEventListener('dragover', (event) => {
+                event.preventDefault();
+                landingUploadBox.classList.add('drag-over');
+            });
+
+            landingUploadBox.addEventListener('dragleave', () => {
+                landingUploadBox.classList.remove('drag-over');
+            });
+
+            landingUploadBox.addEventListener('drop', (event) => {
+                event.preventDefault();
+                event.stopPropagation();
+                landingUploadBox.classList.remove('drag-over');
+                if (event.dataTransfer.files && event.dataTransfer.files[0]) {
+                    acceptLandingVideo(event.dataTransfer.files[0]);
+                }
+            });
         }
 
         // Check if user is logged in
@@ -3356,6 +3551,11 @@
             } else {
                 document.getElementById('loginSection').style.display = 'block';
                 document.getElementById('appSection').style.display = 'none';
+
+                if (!sessionStorage.getItem('v3787LandingViewTracked')) {
+                    trackGAEvent('landing_view', { funnel_version: 'v37_8_7' });
+                    sessionStorage.setItem('v3787LandingViewTracked', '1');
+                }
             }
         }
 
@@ -3430,7 +3630,7 @@
                 return;
             }
 
-            trackGAEvent('signup_started', { method: 'email' });
+            trackGAEvent('signup_started', { method: 'email', funnel_version: 'v37_8_7', video_preselected: !!pendingLandingFile });
             
             showStatus('Creating account...', 'success');
             
@@ -3444,7 +3644,7 @@
                 const data = await response.json();
                 
                 if (data.success) {
-                    trackGAEvent('signup_completed', { method: 'email' });
+                    trackGAEvent('signup_completed', { method: 'email', funnel_version: 'v37_8_7', video_preselected: !!pendingLandingFile });
                     authToken = data.token;
                     localStorage.setItem('authToken', authToken);
                     localStorage.setItem('userId', data.user_id);
@@ -3456,7 +3656,13 @@
 
                     await loadUserPlan();
                     showRegistrationSuccess();
-                    showStatus('✅ Account created successfully — you are now signed in.', 'success');
+
+                    const carriedVideo = transferPendingLandingFileToApp();
+                    if (carriedVideo) {
+                        trackGAEvent('video_carried_to_app', { funnel_version: 'v37_8_7' });
+                    } else {
+                        showStatus('✅ Account created successfully — you are now signed in.', 'success');
+                    }
                 } else {
                     showStatus(data.error || 'Registration failed', 'error');
                 }
@@ -3492,6 +3698,15 @@
                     localStorage.setItem('userId', data.user_id);
                     showStatus('Logged in successfully!', 'success');
                     checkAuth();
+                    setTimeout(() => {
+                        const carriedVideo = transferPendingLandingFileToApp();
+                        if (carriedVideo) {
+                            trackGAEvent('video_carried_to_app', {
+                                funnel_version: 'v37_8_7',
+                                route: 'login'
+                            });
+                        }
+                    }, 100);
                 } else {
                     showStatus(data.error || 'Login failed', 'error');
                 }
