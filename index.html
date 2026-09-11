@@ -35,7 +35,7 @@
         }
       }
     </script>
-    <!-- VERSION: 37.9.0 - VALUE-FIRST DEMO + UPLOAD-FIRST + PRESCRIPTIVE + LONGITUDINAL COACHING -->
+    <!-- VERSION: 38.1.0 - VIDEO-READY GOLFER UPLOAD TEST -->
     <link rel="manifest" href="manifest.json">
     <link rel="apple-touch-icon" href="icon.png">
     <style>
@@ -2114,43 +2114,40 @@
                             <a href="#howItWorks">How it works</a>
                             <a href="#features">Features</a>
                             <button type="button" onclick="showLandingAuth('login')">Log in</button>
-                            <button type="button" class="primary" onclick="showLandingAuth('signup')">Sign up</button>
+                            <button type="button" class="primary" onclick="startLandingUpload('topbar')">Choose video</button>
                         </nav>
                     </div>
 
                     <div class="landing-copy">
-                        <div class="landing-eyebrow">AI-powered golf swing analysis</div>
-                        <h1>See what to improve in your golf swing.</h1>
+                        <div class="landing-eyebrow">For golfers who already film their swing</div>
+                        <h1>Already have a swing video on your phone?</h1>
                         <p>
-                            Upload your swing and compare it with a professional benchmark. X-AI Golf measures your movement,
-                            identifies the areas to focus on first, and gives you personalised coaching recommendations and
-                            practice tips.
+                            Choose one down-the-line swing. X-AI Golf finds your biggest reliable movement difference and
+                            gives you one personalised drill to practise first.
                         </p>
                         <div class="landing-proof">
-                            <span>🎯 Priority focus areas</span>
-                            <span>🏌️ Professional comparisons</span>
-                            <span>💡 Coaching recommendations</span>
-                            <span>📈 Track your progress</span>
+                            <span>🎯 Your #1 priority</span>
+                            <span>💡 One practical drill</span>
+                            <span>🏌️ Measured against a pro</span>
                         </div>
-                        <button type="button" class="landing-hero-cta" onclick="showLandingValueDemo()">
-                            See What My Swing Needs
+                        <button type="button" class="landing-hero-cta" onclick="startLandingUpload('hero')">
+                            Choose a Video From My Phone
                         </button>
                         <p style="margin-top:12px;color:rgba(255,255,255,.9);font-size:14px;font-weight:700;">
-                            1 complete swing analysis free · No credit card required<br>
-                            <span style="font-weight:500;opacity:.82;">Premium £9.99/month or £79.99/year</span>
+                            First complete analysis free · No credit card required<br>
+                            <span style="font-weight:500;opacity:.82;">Your video is processed for your analysis and removed after processing. Your results are saved to your account.</span>
                         </p>
                     </div>
-                    <!-- V37.9.0 VALUE-FIRST: show the product outcome before asking for a video -->
+                    <!-- V38.0.0: actual outcome and upload action are visible in the first viewport -->
                     <div class="landing-demo-panel" id="landingDemoPanel">
-                        <div class="landing-demo-kicker">Example swing analysis</div>
-                        <h2>Know what to work on first.</h2>
+                        <div class="landing-demo-kicker">One video in · one clear priority out</div>
+                        <h2>Your #1 priority</h2>
                         <p class="landing-demo-intro">
-                            Your report does more than list angles. It identifies the biggest gap, explains what it can
-                            affect, and turns the measurement into a practice priority.
+                            You receive one clear starting point—not a wall of unexplained numbers.
                         </p>
 
                         <div class="landing-demo-focus">
-                            <small>Example priority focus</small>
+                            <small>Example result</small>
                             <h3>Reduce excess lateral movement</h3>
                             <div class="landing-demo-values">
                                 <div class="landing-demo-value">
@@ -2163,38 +2160,35 @@
                                 </div>
                             </div>
                             <p class="landing-demo-coach">
-                                <strong>Why it matters:</strong> too much lateral movement can make low-point and strike
-                                control less repeatable. Your coaching plan would prioritise centred rotation before
-                                smaller differences that are already close to the benchmark.
+                                <strong>Why it matters:</strong> excess lateral movement can make low-point and strike
+                                control less repeatable. Start with centred rotation before working on smaller differences.
                             </p>
                         </div>
 
                         <div class="landing-demo-list">
-                            <div>🎯 Your highest-priority swing issue</div>
-                            <div>🏌️ Side-by-side professional benchmark</div>
-                            <div>💡 Specific coaching recommendation + practice cue</div>
-                            <div>📈 Progress comparison across future swings</div>
+                            <div>💡 Drill: Head-against-wall rotation drill</div>
+                            <div>🧠 Swing thought: Turn around a steady centre</div>
                         </div>
 
-                        <button type="button" class="landing-auth-action" onclick="beginLandingUploadFromDemo()">
-                            Analyse My Swing Free
+                        <button type="button" class="landing-auth-action" onclick="startLandingUpload('result_card')">
+                            Choose a Video From My Phone
                         </button>
                         <div class="landing-demo-note">
-                            1 complete swing analysis free · No credit card required · Choose your video before creating an account
+                            Choose from your camera roll first · Create an account only after selection · No credit card
                         </div>
                     </div>
 
                     <div class="landing-upload-panel" id="landingUploadPanel" style="display:none;">
-                        <div class="landing-upload-kicker">Now use your swing</div>
-                        <h2>Choose your swing video.</h2>
+                        <div class="landing-upload-kicker">Use a video you already have</div>
+                        <h2>Choose from your phone or computer.</h2>
                         <p>
                             No account is needed to choose your video. After it is selected, we will ask you to create
                             your free account so the analysis can run and your results can be saved for progress tracking.
                         </p>
 
-                        <div class="landing-upload-box" id="landingUploadBox" onclick="startLandingUpload()">
+                        <div class="landing-upload-box" id="landingUploadBox" onclick="startLandingUpload('upload_panel')">
                             <div class="landing-upload-icon">🎥</div>
-                            <strong>Choose your swing video</strong>
+                            <strong>Choose a video from my device</strong>
                             <span>MP4, MOV or AVI · Max 100MB · Landscape recommended</span>
                             <span>Your video is not sent for analysis until after you create or log in to your account.</span>
                         </div>
@@ -2204,7 +2198,7 @@
                         <div class="landing-upload-status" id="landingUploadStatus"></div>
 
                         <div class="landing-upload-note">
-                            First complete analysis free · No credit card required
+                            Free first analysis · No credit card · Video removed after processing
                         </div>
                     </div>
 
@@ -2230,17 +2224,17 @@
                 <section class="landing-section" id="features">
                     <div class="landing-section-head">
                         <small>What the analyzer does</small>
-                        <h2>Turn a swing video into practical measurements.</h2>
-                        <p>
-                            Instead of relying only on visual impressions, the app extracts measurable swing characteristics
-                            and compares them with the professional you select.
-                        </p>
+                            <h2>Leave with one thing to practise.</h2>
+                            <p>
+                            The measurements work behind the scenes. Your first result leads with the most useful reliable
+                            difference and the action to take next.
+                            </p>
                     </div>
                     <div class="landing-feature-grid">
                         <article class="landing-feature">
                             <div class="landing-feature-icon">📐</div>
-                            <h3>Detailed swing metrics</h3>
-                            <p>Review rotation, X-factor, spine angle, knee flexion, arm positions, elbow geometry, lateral movement and other measured characteristics.</p>
+                            <h3>Your #1 priority</h3>
+                            <p>See the largest meaningful measured difference first, instead of deciding which angle matters on your own.</p>
                         </article>
                         <article class="landing-feature">
                             <div class="landing-feature-icon">🏆</div>
@@ -2264,8 +2258,8 @@
                         </article>
                         <article class="landing-feature">
                             <div class="landing-feature-icon">📝</div>
-                            <h3>Actionable feedback</h3>
-                            <p>Use the measured differences, recommendations and swing thoughts to focus practice on the areas that matter most.</p>
+                            <h3>One drill and one cue</h3>
+                            <p>Take a specific practice drill and a simple swing thought to your next range session.</p>
                         </article>
                     </div>
                 </section>
@@ -2273,29 +2267,29 @@
                 <section class="landing-section soft" id="howItWorks">
                     <div class="landing-section-head">
                         <small>Simple workflow</small>
-                        <h2>From video to comparison in three steps.</h2>
+                            <h2>From swing video to practice priority.</h2>
                     </div>
                     <div class="landing-how">
                         <article class="landing-step">
-                            <h3>Choose a professional</h3>
-                            <p>Select the professional benchmark you want to use for the comparison.</p>
+                            <h3>Choose your swing video</h3>
+                            <p>Select a complete down-the-line swing with your full body and club visible.</p>
                         </article>
                         <article class="landing-step">
-                            <h3>Upload your swing</h3>
-                            <p>Record a complete landscape video with your full body and club visible from setup through finish.</p>
+                            <h3>Select your comparison</h3>
+                            <p>Create your free account, choose a professional benchmark and confirm your swing hand.</p>
                         </article>
                         <article class="landing-step">
-                            <h3>Review your analysis</h3>
-                            <p>Explore your score, measured metrics and feedback to understand how your swing compares.</p>
+                            <h3>Practise one priority</h3>
+                            <p>Start with your clearest reliable difference, personalised drill and simple practice cue.</p>
                         </article>
                     </div>
 
                     <div class="landing-cta" style="margin-top:36px;">
                         <div>
-                            <h2>Ready to analyze your swing?</h2>
-                            <p>Create an account or log in to get started.</p>
+                            <h2>Already have a swing video?</h2>
+                            <p>Choose it from your phone and get one measured priority and one drill.</p>
                         </div>
-                        <button type="button" onclick="showLandingAuth('signup')">Create an account</button>
+                        <button type="button" onclick="startLandingUpload('bottom_cta')">Choose a video from my phone</button>
                     </div>
                 </section>
 
@@ -3583,9 +3577,9 @@
             }
         }
 
-        // ===== V37.9.0 VALUE-FIRST PUBLIC FUNNEL =====
+        // ===== LEGACY V37.9 PANEL HELPERS (not used by the V38 direct flow) =====
         function showLandingValueDemo() {
-            trackGAEvent('value_demo_viewed', { funnel_version: 'v37_9_0', source: 'hero_cta' });
+            trackGAEvent('value_demo_viewed', { funnel_version: 'v38_1_0', source: 'legacy_helper' });
             const demoPanel = document.getElementById('landingDemoPanel');
             const uploadPanel = document.getElementById('landingUploadPanel');
             const authPanel = document.getElementById('landingAuthPanel');
@@ -3598,7 +3592,7 @@
         }
 
         function beginLandingUploadFromDemo() {
-            trackGAEvent('value_cta_clicked', { funnel_version: 'v37_9_0' });
+            trackGAEvent('value_cta_clicked', { funnel_version: 'v38_1_0', source: 'legacy_helper' });
             const demoPanel = document.getElementById('landingDemoPanel');
             const uploadPanel = document.getElementById('landingUploadPanel');
             const authPanel = document.getElementById('landingAuthPanel');
@@ -3610,12 +3604,12 @@
             }
         }
 
-        // ===== V37.9.0 UPLOAD-FIRST PUBLIC FUNNEL =====
+        // ===== V38.1.0 VIDEO-READY GOLFER UPLOAD FUNNEL =====
         let pendingLandingFile = null;
         let landingSignupShownTracked = false;
 
-        function startLandingUpload() {
-            trackGAEvent('upload_clicked', { funnel_version: 'v37_9_0' });
+        function startLandingUpload(source = 'unknown') {
+            trackGAEvent('upload_clicked', { funnel_version: 'v38_1_0', source: source });
             const input = document.getElementById('landingVideoInput');
             if (input) input.click();
         }
@@ -3647,7 +3641,7 @@
             pendingLandingFile = file;
 
             trackGAEvent('video_selected', {
-                funnel_version: 'v37_9_0',
+                funnel_version: 'v38_1_0',
                 size_bucket: file.size < 20 * 1024 * 1024 ? 'under_20mb'
                     : file.size < 50 * 1024 * 1024 ? '20_50mb'
                     : '50_100mb'
@@ -3661,7 +3655,7 @@
             setTimeout(() => {
                 if (!landingSignupShownTracked) {
                     trackGAEvent('signup_shown', {
-                        funnel_version: 'v37_9_0',
+                        funnel_version: 'v38_1_0',
                         after_video_selected: true
                     });
                     landingSignupShownTracked = true;
@@ -3750,10 +3744,11 @@
                 document.getElementById('loginSection').style.display = 'block';
                 document.getElementById('appSection').style.display = 'none';
 
-                if (!sessionStorage.getItem('v3790LandingViewTracked')) {
-                    trackGAEvent('landing_view', { funnel_version: 'v37_9_0' });
-                    sessionStorage.setItem('v3790LandingViewTracked', '1');
+                if (!sessionStorage.getItem('v3810LandingViewTracked')) {
+                    trackGAEvent('landing_view', { funnel_version: 'v38_1_0' });
+                    sessionStorage.setItem('v3810LandingViewTracked', '1');
                 }
+                sessionStorage.setItem('xaiAcquisitionFunnel', 'v38_1_0');
             }
         }
 
@@ -3828,7 +3823,7 @@
                 return;
             }
 
-            trackGAEvent('signup_started', { method: 'email', funnel_version: 'v37_9_0', video_preselected: !!pendingLandingFile });
+            trackGAEvent('signup_started', { method: 'email', funnel_version: 'v38_1_0', video_preselected: !!pendingLandingFile });
             
             showStatus('Creating account...', 'success');
             
@@ -3842,7 +3837,7 @@
                 const data = await response.json();
                 
                 if (data.success) {
-                    trackGAEvent('signup_completed', { method: 'email', funnel_version: 'v37_9_0', video_preselected: !!pendingLandingFile });
+                    trackGAEvent('signup_completed', { method: 'email', funnel_version: 'v38_1_0', video_preselected: !!pendingLandingFile });
                     authToken = data.token;
                     localStorage.setItem('authToken', authToken);
                     localStorage.setItem('userId', data.user_id);
@@ -3857,7 +3852,7 @@
 
                     const carriedVideo = transferPendingLandingFileToApp();
                     if (carriedVideo) {
-                        trackGAEvent('video_carried_to_app', { funnel_version: 'v37_9_0' });
+                        trackGAEvent('video_carried_to_app', { funnel_version: 'v38_1_0' });
                     } else {
                         showStatus('✅ Account created successfully — you are now signed in.', 'success');
                     }
@@ -3900,7 +3895,7 @@
                         const carriedVideo = transferPendingLandingFileToApp();
                         if (carriedVideo) {
                             trackGAEvent('video_carried_to_app', {
-                                funnel_version: 'v37_9_0',
+                                funnel_version: 'v38_1_0',
                                 route: 'login'
                             });
                         }
@@ -4221,7 +4216,8 @@
             trackGAEvent('analysis_started', {
                 benchmark: pro,
                 handedness: handedness,
-                plan: currentPlanType
+                plan: currentPlanType,
+                funnel_version: sessionStorage.getItem('xaiAcquisitionFunnel') || 'unknown'
             });
 
             const formData = new FormData();
@@ -4297,7 +4293,8 @@
                     trackGAEvent('analysis_completed', {
                         benchmark: pro,
                         handedness: handedness,
-                        plan: currentPlanType
+                        plan: currentPlanType,
+                        funnel_version: sessionStorage.getItem('xaiAcquisitionFunnel') || 'unknown'
                     });
                     displayResults(data);
                     showStatus('Analysis complete!', 'success');
