@@ -35,7 +35,7 @@
         }
       }
     </script>
-    <!-- VERSION: 38.1.0 - VIDEO-READY GOLFER UPLOAD TEST -->
+    <!-- VERSION: 39.0.0 - MISS-LED + COMPOSITE TOUR REFERENCE -->
     <link rel="manifest" href="manifest.json">
     <link rel="apple-touch-icon" href="icon.png">
     <style>
@@ -1597,6 +1597,45 @@
             font-weight: 700;
         }
 
+        .landing-miss-grid {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 8px;
+            margin: 16px 0;
+        }
+
+        .landing-miss-option {
+            min-height: 46px;
+            padding: 10px 12px;
+            border: 1px solid #d7e4dc;
+            border-radius: 11px;
+            background: #f7faf8;
+            color: var(--forest-900);
+            font: inherit;
+            font-size: 14px;
+            font-weight: 750;
+            cursor: pointer;
+            transition: .15s ease;
+        }
+
+        .landing-miss-option:hover,
+        .landing-miss-option.selected {
+            border-color: var(--forest-600);
+            background: #e9f4ed;
+            box-shadow: 0 0 0 3px rgba(29,121,83,.10);
+        }
+
+        .landing-example-mini {
+            margin-top: 15px;
+            padding: 14px;
+            border-left: 4px solid var(--forest-600);
+            border-radius: 10px;
+            background: #eef5f1;
+            color: #365046;
+            font-size: 12px;
+            line-height: 1.55;
+        }
+
         .landing-demo-note {
             margin-top: 10px;
             color: #7b8d84;
@@ -2114,69 +2153,62 @@
                             <a href="#howItWorks">How it works</a>
                             <a href="#features">Features</a>
                             <button type="button" onclick="showLandingAuth('login')">Log in</button>
-                            <button type="button" class="primary" onclick="startLandingUpload('topbar')">Choose video</button>
+                            <button type="button" class="primary" onclick="focusMissChoices()">Free analysis</button>
                         </nav>
                     </div>
 
                     <div class="landing-copy">
-                        <div class="landing-eyebrow">For golfers who already film their swing</div>
-                        <h1>Already have a swing video on your phone?</h1>
+                        <div class="landing-eyebrow">Miss-led swing analysis</div>
+                        <h1>Do you slice the golf ball?</h1>
                         <p>
-                            Choose one down-the-line swing. X-AI Golf finds your biggest reliable movement difference and
-                            gives you one personalised drill to practise first.
+                            Tell us your usual miss and choose a swing video already on your phone. X-AI Golf compounds
+                            validated professional benchmarks into reliable Tour reference ranges, finds your biggest
+                            measured difference and gives you one drill to practise first.
                         </p>
                         <div class="landing-proof">
+                            <span>🏌️ Your reported miss</span>
                             <span>🎯 Your #1 priority</span>
                             <span>💡 One practical drill</span>
-                            <span>🏌️ Measured against a pro</span>
+                            <span>📊 Composite Tour reference</span>
                         </div>
-                        <button type="button" class="landing-hero-cta" onclick="startLandingUpload('hero')">
-                            Choose a Video From My Phone
+                        <button type="button" class="landing-hero-cta" onclick="selectTypicalMiss('slice', null, true, 'hero_slice')">
+                            I Slice — Choose My Swing Video
                         </button>
                         <p style="margin-top:12px;color:rgba(255,255,255,.9);font-size:14px;font-weight:700;">
                             First complete analysis free · No credit card required<br>
-                            <span style="font-weight:500;opacity:.82;">Your video is processed for your analysis and removed after processing. Your results are saved to your account.</span>
+                            <span style="font-weight:500;opacity:.82;">Different miss? Choose it beside the example result. Video removed after processing.</span>
                         </p>
                     </div>
-                    <!-- V38.0.0: actual outcome and upload action are visible in the first viewport -->
+                    <!-- V39.0.0: start with the golfer's experienced problem -->
                     <div class="landing-demo-panel" id="landingDemoPanel">
-                        <div class="landing-demo-kicker">One video in · one clear priority out</div>
-                        <h2>Your #1 priority</h2>
+                        <div class="landing-demo-kicker">Start with what you see on the course</div>
+                        <h2>What is your most common miss?</h2>
                         <p class="landing-demo-intro">
-                            You receive one clear starting point—not a wall of unexplained numbers.
+                            Choose one. Your video analysis will explain how the largest reliable measured difference may
+                            relate to it—without pretending the video proves ball-flight causation.
                         </p>
-
-                        <div class="landing-demo-focus">
-                            <small>Example result</small>
-                            <h3>Reduce excess lateral movement</h3>
-                            <div class="landing-demo-values">
-                                <div class="landing-demo-value">
-                                    Your swing
-                                    <strong>12.8 cm</strong>
-                                </div>
-                                <div class="landing-demo-value">
-                                    Pro benchmark
-                                    <strong>4.0 cm</strong>
-                                </div>
-                            </div>
-                            <p class="landing-demo-coach">
-                                <strong>Why it matters:</strong> excess lateral movement can make low-point and strike
-                                control less repeatable. Start with centred rotation before working on smaller differences.
-                            </p>
+                        <div class="landing-miss-grid" id="landingMissGrid">
+                            <button type="button" class="landing-miss-option" data-miss="slice" onclick="selectTypicalMiss('slice', this, true, 'miss_card')">Slice</button>
+                            <button type="button" class="landing-miss-option" data-miss="hook" onclick="selectTypicalMiss('hook', this, true, 'miss_card')">Hook</button>
+                            <button type="button" class="landing-miss-option" data-miss="push" onclick="selectTypicalMiss('push', this, true, 'miss_card')">Push</button>
+                            <button type="button" class="landing-miss-option" data-miss="pull" onclick="selectTypicalMiss('pull', this, true, 'miss_card')">Pull</button>
+                            <button type="button" class="landing-miss-option" data-miss="fat" onclick="selectTypicalMiss('fat', this, true, 'miss_card')">Fat contact</button>
+                            <button type="button" class="landing-miss-option" data-miss="thin" onclick="selectTypicalMiss('thin', this, true, 'miss_card')">Thin contact</button>
+                            <button type="button" class="landing-miss-option" data-miss="inconsistent_contact" onclick="selectTypicalMiss('inconsistent_contact', this, true, 'miss_card')">Inconsistent</button>
+                            <button type="button" class="landing-miss-option" data-miss="not_sure" onclick="selectTypicalMiss('not_sure', this, true, 'miss_card')">Not sure</button>
                         </div>
-
-                        <div class="landing-demo-list">
-                            <div>💡 Drill: Head-against-wall rotation drill</div>
-                            <div>🧠 Swing thought: Turn around a steady centre</div>
+                        <div class="landing-example-mini">
+                            <strong>Example for a reported slice:</strong> “Your shoulder rotation at impact sits outside
+                            the composite Tour reference band. This may make path-and-face control more difficult.”<br>
+                            <strong>Practice:</strong> half-swing impact rotation drill.<br>
+                            <em>The analysis measures movement—not ball curvature or clubface angle.</em>
                         </div>
-
-                        <button type="button" class="landing-auth-action" onclick="startLandingUpload('result_card')">
-                            Choose a Video From My Phone
-                        </button>
                         <div class="landing-demo-note">
-                            Choose from your camera roll first · Create an account only after selection · No credit card
+                            Choosing a miss immediately opens your video picker · No credit card
                         </div>
                     </div>
+
+                    <input type="file" id="landingVideoInput" accept="video/*" style="display:none;">
 
                     <div class="landing-upload-panel" id="landingUploadPanel" style="display:none;">
                         <div class="landing-upload-kicker">Use a video you already have</div>
@@ -2192,8 +2224,6 @@
                             <span>MP4, MOV or AVI · Max 100MB · Landscape recommended</span>
                             <span>Your video is not sent for analysis until after you create or log in to your account.</span>
                         </div>
-
-                        <input type="file" id="landingVideoInput" accept="video/*" style="display:none;">
 
                         <div class="landing-upload-status" id="landingUploadStatus"></div>
 
@@ -2238,13 +2268,13 @@
                         </article>
                         <article class="landing-feature">
                             <div class="landing-feature-icon">🏆</div>
-                            <h3>Professional comparison</h3>
-                            <p>Select from the available professional benchmarks and see your measured values alongside the professional's values.</p>
+                            <h3>Composite Tour reference</h3>
+                            <p>Each reliable metric is compared with a robust range compounded from the available validated professional benchmarks.</p>
                         </article>
                         <article class="landing-feature">
                             <div class="landing-feature-icon">↔️</div>
                             <h3>Handedness-aware analysis</h3>
-                            <p>Left- and right-handed swings are normalized internally, so you can compare with any professional regardless of handedness.</p>
+                            <p>Left- and right-handed measurements are normalized internally before entering the same golfer-role Tour comparison.</p>
                         </article>
                         <article class="landing-feature">
                             <div class="landing-feature-icon">🎥</div>
@@ -2276,7 +2306,7 @@
                         </article>
                         <article class="landing-step">
                             <h3>Select your comparison</h3>
-                            <p>Create your free account, choose a professional benchmark and confirm your swing hand.</p>
+                            <p>Create your free account and confirm your swing hand. The composite Tour reference is selected automatically.</p>
                         </article>
                         <article class="landing-step">
                             <h3>Practise one priority</h3>
@@ -2289,7 +2319,7 @@
                             <h2>Already have a swing video?</h2>
                             <p>Choose it from your phone and get one measured priority and one drill.</p>
                         </div>
-                        <button type="button" onclick="startLandingUpload('bottom_cta')">Choose a video from my phone</button>
+                        <button type="button" onclick="focusMissChoices()">Choose my miss and video</button>
                     </div>
                 </section>
 
@@ -2319,8 +2349,8 @@
                                 ✅ Account created — you're signed in
                             </div>
                             <div style="font-size:13px; line-height:1.55; color:#456257;">
-                                Your first complete swing analysis is free. Choose any professional,
-                                upload a well-framed swing video and start your analysis.
+                                Your first complete swing analysis is free. Confirm your usual miss and swing hand,
+                                then analyse the well-framed video you selected.
                             </div>
                         </div>
                         <button type="button" onclick="dismissRegistrationSuccess()" aria-label="Dismiss"
@@ -2339,7 +2369,7 @@
                     </div>
                     <div class="stage-details" id="stageDetails">
                         <span id="analysesDisplay">🎯 <strong>1</strong> analysis remaining</span>
-                        <span id="prosDisplay">🏆 <strong>All 20 Pros</strong></span>
+                        <span id="prosDisplay">🏆 <strong>Composite Tour reference</strong></span>
                         <span id="expiryDisplay" style="display:none;">⏱️ <strong>30</strong> days remaining</span>
                         <span id="autoRenewDisplay" style="display:none; font-size:12px;"></span>
                     </div>
@@ -2364,21 +2394,28 @@
             
             <!-- Sections Container -->
             <div id="section-home" class="section-content">
-                <!-- Step 1: Select Pro -->
+                <!-- Step 1: Confirm reported miss; composite reference is automatic -->
                 <div class="card">
-                    <h2><span class="step-icon">1</span> Select a Professional</h2>
-                    <p style="font-size:14px; color:#4a6a4a; margin-bottom:12px;">Choose a pro to compare your swing against.</p>
-                    <select id="proSelect">
-                        <option value="">Loading pros...</option>
+                    <h2><span class="step-icon">1</span> Your Usual Miss</h2>
+                    <p style="font-size:14px; color:#4a6a4a; margin-bottom:12px;">Choose the result you most often see. This is reported by you; it is not inferred from ball flight.</p>
+                    <select id="typicalMissSelect" aria-label="Your most common miss">
+                        <option value="">Select your usual miss</option>
+                        <option value="slice">Slice</option>
+                        <option value="hook">Hook</option>
+                        <option value="push">Push</option>
+                        <option value="pull">Pull</option>
+                        <option value="fat">Fat contact</option>
+                        <option value="thin">Thin contact</option>
+                        <option value="inconsistent_contact">Inconsistent contact</option>
+                        <option value="not_sure">Not sure</option>
                     </select>
-                    <div style="font-size:12px; color:#7a9a7a; margin-top:8px;" id="proLimitInfo">
-                        <span id="availableProCountDisplay">2</span> professionals available on your plan
-                    </div>
-
+                    <select id="proSelect" style="display:none;" aria-hidden="true">
+                        <option value="tour_composite" selected>Composite Tour Reference</option>
+                    </select>
                     <div class="handedness-compatibility-note">
-                        <strong>Compare with any pro, regardless of handedness.</strong><br>
-                        Our swing analysis automatically normalizes left- and right-handed swings,
-                        so left-handed golfers can compare with right-handed professionals — and vice versa.
+                        <strong>Composite Tour reference is automatic.</strong><br>
+                        Each metric is compared with a robust range built only from reliable fields in the available
+                        professional benchmarks. Provisional and suppressed measurements are excluded.
                     </div>
                 </div>
                 
@@ -2482,7 +2519,7 @@
             <div id="section-progress" class="section-content" style="display: none;">
                 <div class="card">
                     <h2>📈 Your Swing Progress</h2>
-                    <p style="color:#52665d; margin-bottom:16px;">Track your scores and measured swing changes over time. For the cleanest comparison, use the same professional benchmark and camera setup.</p>
+                    <p style="color:#52665d; margin-bottom:16px;">Track your scores and measured swing changes over time. For the cleanest comparison, use the same camera setup and swing hand.</p>
                     <div id="progressSummary"><p style="color:#7a9a7a;">Open this section to load your analysis history.</p></div>
                 </div>
 
@@ -2557,7 +2594,7 @@
                     <ul style="margin-left: 20px; line-height: 1.8;">
                         <li><strong>Overall Score:</strong> 0-100 rating of your swing</li>
                         <li><strong>Key Metrics:</strong> Spine angle, hip rotation, X-factor, and more</li>
-                        <li><strong>Pro Comparison:</strong> See how you compare to Rory McIlroy, Tiger Woods, and others</li>
+                        <li><strong>Tour Reference:</strong> See how each reliable measurement compares with the composite professional range</li>
                         <li><strong>#1 Priority:</strong> One clear measured difference to work on first</li>
                         <li><strong>Progress Tracking:</strong> Review saved scores and metric changes over time</li>
                         <li><strong>Before & After:</strong> Compare two completed analyses metric by metric</li>
@@ -2570,9 +2607,9 @@
                     
                     <h3 style="margin-top: 20px;">🔄 Free vs Premium</h3>
                     <ul style="margin-left: 20px; line-height: 1.8;">
-                        <li><strong>Free Account:</strong> <strong>1 complete free analysis</strong> with all available metrics and any professional benchmark</li>
-                        <li><strong>Premium Monthly (£9.99/month):</strong> Unlimited analyses*, all 20 professional benchmarks, all available swing metrics, recommendations and comparison feedback</li>
-                        <li><strong>Premium Annual (£79.99/year):</strong> Unlimited analyses*, all 20 professional benchmarks, all available swing metrics, recommendations and comparison feedback</li>
+                        <li><strong>Free Account:</strong> <strong>1 complete free analysis</strong> using the composite Tour reference and all reliable available metrics</li>
+                        <li><strong>Premium Monthly (£9.99/month):</strong> Unlimited analyses*, composite Tour reference, all reliable available swing metrics, recommendations and progress feedback</li>
+                        <li><strong>Premium Annual (£79.99/year):</strong> Unlimited analyses*, composite Tour reference, all reliable available swing metrics, recommendations and progress feedback</li>
                         <li style="font-size:12px; color:#6a7d73;"><em>*Unlimited analyses are subject to reasonable fair use.</em></li>
                     </ul>
                 </div>
@@ -2590,11 +2627,11 @@
                         <span>3 · Impact</span><span>4 · Full swing</span>
                     </div>
                 </div>
-                <div class="metrics-note"><strong>About visual references:</strong> The analyzer compares your numerical measurements with the selected professional's benchmark. A future API update can add verified professional frame images here; generic or unlicensed player images are intentionally not presented as measured reference frames.</div>
+                <div class="metrics-note"><strong>About the reference:</strong> The analyzer compares each numerical measurement with a composite range calculated from trustworthy fields in the available professional benchmarks. Provisional, suppressed and insufficient-sample metrics do not enter the composite.</div>
                 <div class="metrics-grid">
                     <details class="metric-guide-card" open>
                         <summary><span class="metric-guide-icon">↔️</span><span class="metric-guide-title"><strong>X-Factor</strong><small>Top · Degrees</small></span></summary>
-                        <div class="metric-guide-body"><p><strong>What it measures:</strong> The separation between shoulder rotation and hip rotation at the top of the backswing.</p><p><strong>Why it matters:</strong> It describes how the upper and lower body coil relative to one another. More is not automatically better; mobility, control and the selected professional's pattern matter.</p><div class="metric-reading"><div><strong>Your result</strong>Your measured separation.</div><div><strong>Pro result</strong>The selected pro's benchmark.</div></div></div>
+                        <div class="metric-guide-body"><p><strong>What it measures:</strong> The separation between shoulder rotation and hip rotation at the top of the backswing.</p><p><strong>Why it matters:</strong> It describes how the upper and lower body coil relative to one another. More is not automatically better; mobility, control and the observed professional range matter.</p><div class="metric-reading"><div><strong>Your result</strong>Your measured separation.</div><div><strong>Tour reference</strong>The composite professional range.</div></div></div>
                     </details>
                     <details class="metric-guide-card">
                         <summary><span class="metric-guide-icon">🏌️</span><span class="metric-guide-title"><strong>Club Angle at Top</strong><small>Top · Degrees</small></span></summary>
@@ -2836,7 +2873,7 @@
                 metricsCount: 14,
                 price: '£9.99',
                 period: '/month',
-                description: 'All pros, all available metrics and recommendations'
+                description: 'Composite Tour reference, all available metrics and recommendations'
             },
             'premium_annual': {
                 label: 'Premium Annual',
@@ -3225,7 +3262,7 @@
                 <div style="padding:14px 16px;border-radius:12px;background:#f4f8f6;border:1px solid #dce5e0;">
                     <strong>Score: ${Number.isFinite(scoreBefore) ? scoreBefore.toFixed(1) : 'N/A'} → ${Number.isFinite(scoreAfter) ? scoreAfter.toFixed(1) : 'N/A'}</strong>
                     ${scoreChange !== null ? `<span class="${scoreChange >= 0 ? 'change-good' : 'change-neutral'}" style="margin-left:10px;">${scoreChange >= 0 ? '+' : ''}${scoreChange.toFixed(1)} points</span>` : ''}
-                    ${!comparable ? '<div style="margin-top:8px;color:#8a6a1f;font-size:12px;">⚠️ These analyses used a different professional benchmark or swing hand. Metric values are shown, but improvement labels are withheld because the comparison is not like-for-like.</div>' : '<div style="margin-top:8px;color:#5f7569;font-size:12px;">Improvement is judged by movement toward the benchmark, not simply whether the raw number increased or decreased.</div>'}
+                    ${!comparable ? '<div style="margin-top:8px;color:#8a6a1f;font-size:12px;">⚠️ These analyses used a different reference version or swing hand. Metric values are shown, but improvement labels are withheld because the comparison is not like-for-like.</div>' : '<div style="margin-top:8px;color:#5f7569;font-size:12px;">Improvement is judged by movement toward the composite Tour range, not simply whether the raw number increased or decreased.</div>'}
                 </div>
                 <table class="comparison-table">
                     <thead><tr><th>Metric</th><th>Before</th><th>After</th><th>Progress</th></tr></thead>
@@ -3274,7 +3311,7 @@
             
             const features = [
                 { key: 'analyses', label: 'Analyses' },
-                { key: 'pros', label: 'Professional Comparisons' },
+                { key: 'pros', label: 'Tour Reference' },
                 { key: 'metrics', label: 'Metrics Available' },
                 { key: 'price', label: 'Price' },
                 { key: 'period', label: 'Billing' },
@@ -3302,7 +3339,7 @@
                         displayValue = '♾️ Unlimited';
                     }
                     if (feature.key === 'pros' && value === 'All 20+') {
-                        displayValue = 'All 20+ Pros';
+                        displayValue = 'Composite Tour range';
                     }
                     
                     const bgColor = isCurrent ? 'background:#e8f5e9;' : '';
@@ -3347,11 +3384,7 @@
             
             // Update pros display
             const prosDisplay = document.getElementById('prosDisplay');
-            let proDisplayText = plan.pros;
-            if (proDisplayText === 'All 20+') {
-                proDisplayText = `All ${allPros.length}+ Pros`;
-            }
-            prosDisplay.innerHTML = `🏆 <strong>${proDisplayText}</strong>`;
+            prosDisplay.innerHTML = `🏆 <strong>Composite Tour reference</strong>`;
             
             // Update expiry display
             const expiryDisplay = document.getElementById('expiryDisplay');
@@ -3424,7 +3457,7 @@
             // Update available pros count
             const proCountDisplay = document.getElementById('availableProCountDisplay');
             const proLimit = plan.pros === 'All 20+' ? allPros.length : plan.pros;
-            proCountDisplay.textContent = proLimit;
+            if (proCountDisplay) proCountDisplay.textContent = proLimit;
             
             // Update analysis limit warning
             const warning = document.getElementById('analysisLimitWarning');
@@ -3577,9 +3610,9 @@
             }
         }
 
-        // ===== LEGACY V37.9 PANEL HELPERS (not used by the V38 direct flow) =====
+        // ===== LEGACY V37.9 PANEL HELPERS (not used by the V39 miss-led flow) =====
         function showLandingValueDemo() {
-            trackGAEvent('value_demo_viewed', { funnel_version: 'v38_1_0', source: 'legacy_helper' });
+            trackGAEvent('value_demo_viewed', { funnel_version: 'v39_0_0', source: 'legacy_helper' });
             const demoPanel = document.getElementById('landingDemoPanel');
             const uploadPanel = document.getElementById('landingUploadPanel');
             const authPanel = document.getElementById('landingAuthPanel');
@@ -3592,7 +3625,7 @@
         }
 
         function beginLandingUploadFromDemo() {
-            trackGAEvent('value_cta_clicked', { funnel_version: 'v38_1_0', source: 'legacy_helper' });
+            trackGAEvent('value_cta_clicked', { funnel_version: 'v39_0_0', source: 'legacy_helper' });
             const demoPanel = document.getElementById('landingDemoPanel');
             const uploadPanel = document.getElementById('landingUploadPanel');
             const authPanel = document.getElementById('landingAuthPanel');
@@ -3604,12 +3637,52 @@
             }
         }
 
-        // ===== V38.1.0 VIDEO-READY GOLFER UPLOAD FUNNEL =====
+        // ===== V39.0.0 MISS-LED + COMPOSITE TOUR REFERENCE FUNNEL =====
         let pendingLandingFile = null;
+        let pendingTypicalMiss = sessionStorage.getItem('xaiTypicalMiss') || null;
         let landingSignupShownTracked = false;
 
+        const ALLOWED_TYPICAL_MISSES = [
+            'slice', 'hook', 'push', 'pull', 'fat', 'thin',
+            'inconsistent_contact', 'not_sure'
+        ];
+
+        function focusMissChoices() {
+            const panel = document.getElementById('landingDemoPanel');
+            if (panel) panel.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+
+        function selectTypicalMiss(miss, button = null, openPicker = false, source = 'miss_choice') {
+            if (!ALLOWED_TYPICAL_MISSES.includes(miss)) return;
+            pendingTypicalMiss = miss;
+            sessionStorage.setItem('xaiTypicalMiss', miss);
+
+            document.querySelectorAll('.landing-miss-option').forEach(option => {
+                option.classList.toggle('selected', option.dataset.miss === miss);
+            });
+
+            const appSelect = document.getElementById('typicalMissSelect');
+            if (appSelect) appSelect.value = miss;
+
+            trackGAEvent('miss_selected', {
+                funnel_version: 'v39_0_0',
+                typical_miss: miss,
+                source: source
+            });
+
+            if (openPicker) startLandingUpload(source);
+        }
+
         function startLandingUpload(source = 'unknown') {
-            trackGAEvent('upload_clicked', { funnel_version: 'v38_1_0', source: source });
+            if (!pendingTypicalMiss) {
+                focusMissChoices();
+                return;
+            }
+            trackGAEvent('upload_clicked', {
+                funnel_version: 'v39_0_0',
+                source: source,
+                typical_miss: pendingTypicalMiss
+            });
             const input = document.getElementById('landingVideoInput');
             if (input) input.click();
         }
@@ -3641,7 +3714,8 @@
             pendingLandingFile = file;
 
             trackGAEvent('video_selected', {
-                funnel_version: 'v38_1_0',
+                funnel_version: 'v39_0_0',
+                typical_miss: pendingTypicalMiss,
                 size_bucket: file.size < 20 * 1024 * 1024 ? 'under_20mb'
                     : file.size < 50 * 1024 * 1024 ? '20_50mb'
                     : '50_100mb'
@@ -3655,7 +3729,8 @@
             setTimeout(() => {
                 if (!landingSignupShownTracked) {
                     trackGAEvent('signup_shown', {
-                        funnel_version: 'v38_1_0',
+                        funnel_version: 'v39_0_0',
+                        typical_miss: pendingTypicalMiss,
                         after_video_selected: true
                     });
                     landingSignupShownTracked = true;
@@ -3669,6 +3744,11 @@
 
             // selectedFile is the existing authenticated-analysis file variable.
             selectedFile = pendingLandingFile;
+
+            const missSelect = document.getElementById('typicalMissSelect');
+            if (missSelect && pendingTypicalMiss) {
+                missSelect.value = pendingTypicalMiss;
+            }
 
             const preview = document.getElementById('videoPreview');
             if (preview) {
@@ -3744,11 +3824,11 @@
                 document.getElementById('loginSection').style.display = 'block';
                 document.getElementById('appSection').style.display = 'none';
 
-                if (!sessionStorage.getItem('v3810LandingViewTracked')) {
-                    trackGAEvent('landing_view', { funnel_version: 'v38_1_0' });
-                    sessionStorage.setItem('v3810LandingViewTracked', '1');
+                if (!sessionStorage.getItem('v3900LandingViewTracked')) {
+                    trackGAEvent('landing_view', { funnel_version: 'v39_0_0' });
+                    sessionStorage.setItem('v3900LandingViewTracked', '1');
                 }
-                sessionStorage.setItem('xaiAcquisitionFunnel', 'v38_1_0');
+                sessionStorage.setItem('xaiAcquisitionFunnel', 'v39_0_0');
             }
         }
 
@@ -3823,7 +3903,7 @@
                 return;
             }
 
-            trackGAEvent('signup_started', { method: 'email', funnel_version: 'v38_1_0', video_preselected: !!pendingLandingFile });
+            trackGAEvent('signup_started', { method: 'email', funnel_version: 'v39_0_0', video_preselected: !!pendingLandingFile, typical_miss: pendingTypicalMiss || 'not_sure' });
             
             showStatus('Creating account...', 'success');
             
@@ -3837,7 +3917,7 @@
                 const data = await response.json();
                 
                 if (data.success) {
-                    trackGAEvent('signup_completed', { method: 'email', funnel_version: 'v38_1_0', video_preselected: !!pendingLandingFile });
+                    trackGAEvent('signup_completed', { method: 'email', funnel_version: 'v39_0_0', video_preselected: !!pendingLandingFile, typical_miss: pendingTypicalMiss || 'not_sure' });
                     authToken = data.token;
                     localStorage.setItem('authToken', authToken);
                     localStorage.setItem('userId', data.user_id);
@@ -3852,7 +3932,7 @@
 
                     const carriedVideo = transferPendingLandingFileToApp();
                     if (carriedVideo) {
-                        trackGAEvent('video_carried_to_app', { funnel_version: 'v38_1_0' });
+                        trackGAEvent('video_carried_to_app', { funnel_version: 'v39_0_0', typical_miss: pendingTypicalMiss || 'not_sure' });
                     } else {
                         showStatus('✅ Account created successfully — you are now signed in.', 'success');
                     }
@@ -3895,7 +3975,8 @@
                         const carriedVideo = transferPendingLandingFileToApp();
                         if (carriedVideo) {
                             trackGAEvent('video_carried_to_app', {
-                                funnel_version: 'v38_1_0',
+                                funnel_version: 'v39_0_0',
+                                typical_miss: pendingTypicalMiss || 'not_sure',
                                 route: 'login'
                             });
                         }
@@ -4200,11 +4281,12 @@
                 return;
             }
     
-            const pro = document.getElementById('proSelect').value;
+            const pro = 'tour_composite';
             const handedness = document.getElementById('handednessSelect').value;
+            const typicalMiss = document.getElementById('typicalMissSelect').value;
 
-            if (!pro) {
-                showStatus('Please select a professional first', 'error');
+            if (!ALLOWED_TYPICAL_MISSES.includes(typicalMiss)) {
+                showStatus('Please select your usual miss first', 'error');
                 return;
             }
 
@@ -4217,6 +4299,7 @@
                 benchmark: pro,
                 handedness: handedness,
                 plan: currentPlanType,
+                typical_miss: typicalMiss,
                 funnel_version: sessionStorage.getItem('xaiAcquisitionFunnel') || 'unknown'
             });
 
@@ -4224,6 +4307,7 @@
             formData.append('video', selectedFile);
             formData.append('pro', pro);
             formData.append('handedness', handedness);
+            formData.append('typical_miss', typicalMiss);
     
             document.getElementById('loader').style.display = 'block';
             document.getElementById('results').style.display = 'none';
@@ -4294,6 +4378,7 @@
                         benchmark: pro,
                         handedness: handedness,
                         plan: currentPlanType,
+                        typical_miss: typicalMiss,
                         funnel_version: sessionStorage.getItem('xaiAcquisitionFunnel') || 'unknown'
                     });
                     displayResults(data);
@@ -4387,7 +4472,9 @@
                         <p class="priority-lead">${escapeHtml(p.what_to_work_on || 'This is the most useful measured difference to address first, then re-analyze.')}</p>
                         <div class="priority-focus-values">
                             <span>You: <strong>${formatMetricValue(key, p.your_value)}</strong></span>
-                            <span>Benchmark: <strong>${formatMetricValue(key, p.pro_value)}</strong></span>
+                            ${band
+                                ? `<span>Tour range: <strong>${escapeHtml(band)}</strong></span>`
+                                : `<span>Benchmark: <strong>${formatMetricValue(key, p.pro_value)}</strong></span>`}
                             ${Number.isFinite(Number(p.metric_similarity_score)) ? `<span>Similarity: <strong>${Number(p.metric_similarity_score).toFixed(0)}%</strong></span>` : ''}
                         </div>
                         <div class="priority-detail-grid">
@@ -4413,6 +4500,17 @@
                     </div>
                 `;
             }
+
+            const missContext = data.miss_context || {};
+            const missContextHtml = missContext.reported_miss_label ? `
+                <div class="card" style="border-left:5px solid #1d7953;background:#f8fbf9;">
+                    <div style="font-size:11px;font-weight:850;letter-spacing:.1em;text-transform:uppercase;color:#1d7953;">Your reported miss</div>
+                    <h2 style="margin:5px 0 10px;">${escapeHtml(missContext.reported_miss_label)}</h2>
+                    <h3 style="margin:0 0 7px;color:#173c2d;font-size:17px;">${escapeHtml(missContext.headline || 'How your measured priority may relate')}</h3>
+                    <p style="margin:0;color:#53685e;line-height:1.6;">${escapeHtml(missContext.explanation || '')}</p>
+                    ${missContext.measurement_limit ? `<p style="margin:12px 0 0;padding-top:10px;border-top:1px solid #dbe7e0;color:#6b7d74;font-size:12px;"><strong>Measurement limit:</strong> ${escapeHtml(missContext.measurement_limit)}</p>` : ''}
+                </div>
+            ` : '';
 
             const coachingSummary = data.coaching_summary || '';
             const coachingSummaryHtml = coachingSummary ? `
@@ -4535,7 +4633,11 @@
                                 <div class="metric-description">${escapeHtml(description)}</div>
                                 <div class="metric-values">
                                     <span class="your-value">You: ${formatMetricValue(key, value.your_value)}</span>
-                                    <span class="pro-value">Benchmark: ${formatMetricValue(key, value.pro_value)}</span>
+                                    <span class="pro-value">${
+                                        Number.isFinite(Number(value.reference_low)) && Number.isFinite(Number(value.reference_high))
+                                            ? `Tour range: ${formatMetricValue(key, value.reference_low)} – ${formatMetricValue(key, value.reference_high)}`
+                                            : `Benchmark: ${formatMetricValue(key, value.pro_value)}`
+                                    }</span>
                                 </div>
                                 <div class="metric-status-row">
                                     ${value.within_tolerance !== undefined && value.within_tolerance !== null ? `<span class="metric-chip ${within ? 'good' : 'watch'}">${within ? 'Within comparison tolerance' : 'Worth reviewing'}</span>` : ''}
@@ -4626,6 +4728,7 @@
             resultsDiv.innerHTML = `
                 ${scoreHtml}
                 ${timingWarningHtml}
+                ${missContextHtml}
                 ${priorityHtml}
                 ${coachingSummaryHtml}
                 ${focusPlanHtml}
