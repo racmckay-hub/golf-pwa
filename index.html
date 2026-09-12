@@ -4475,10 +4475,10 @@
                         <h3>${escapeHtml(p.metric_name || metricLabel(key))}</h3>
                         <p class="priority-lead">${escapeHtml(p.what_to_work_on || 'This is the most useful measured difference to address first, then re-analyze.')}</p>
                         <div class="priority-focus-values">
-                            <span>You: <strong>${formatMetricValue(key, p.your_value)}</strong></span>
+                            <span>You: <strong>${formatMetricValue(key, p.your_value)}</strong></span><span aria-hidden="true">•</span>
                             ${band
-                                ? `<span>Tour range: <strong>${escapeHtml(band)}</strong></span>`
-                                : `<span>Benchmark: <strong>${formatMetricValue(key, p.pro_value)}</strong></span>`}
+                                ? `<span>Tour range: <strong>${escapeHtml(band)}</strong></span><span aria-hidden="true">•</span>`
+                                : `<span>Benchmark: <strong>${formatMetricValue(key, p.pro_value)}</strong></span><span aria-hidden="true">•</span>`}
                             ${Number.isFinite(Number(p.metric_similarity_score)) ? `<span>Similarity: <strong>${Number(p.metric_similarity_score).toFixed(0)}%</strong></span>` : ''}
                         </div>
                         <div class="priority-detail-grid">
@@ -4508,8 +4508,8 @@
                     <div class="priority-focus-card enhanced">
                         <div class="priority-kicker">✅ No priority correction identified</div>
                         <h3>Consistency &amp; Repeatability</h3>
-                        <p class="priority-lead">The reliable scored metrics were within the composite Tour comparison thresholds. There is no single measured movement that needs correcting first.</p>
-                        <div class="benchmark-note">Focus on repeating the same movement and use future analyses to track consistency. Professional values are comparison references, not numbers to force.</div>
+                        <p class="priority-lead">No reliable measured difference was strong enough to justify a corrective swing change. There is no single measured movement that needs correcting first.</p>
+                        <div class="benchmark-note">Record 3–5 comparable swings and look for repeatable patterns. Professional values are comparison references, not numbers to force.</div>
                     </div>
                 `;
             }
@@ -4653,7 +4653,7 @@
                                     }</span>
                                 </div>
                                 <div class="metric-status-row">
-                                    ${value.within_tolerance !== undefined && value.within_tolerance !== null ? `<span class="metric-chip ${within ? 'good' : 'watch'}">${within ? 'Within comparison tolerance' : 'Worth reviewing'}</span>` : ''}
+                                    ${value.within_tolerance !== undefined && value.within_tolerance !== null ? `<span class="metric-chip ${within ? 'good' : 'watch'}">${within ? 'Within comparison tolerance' : (normalized < 2 ? 'Monitor across several swings' : 'Worth reviewing')}</span>` : ''}
                                     ${Number.isFinite(similarity) ? `<span class="metric-chip neutral">Similarity ${similarity.toFixed(0)}%</span>` : ''}
                                     ${Number.isFinite(normalized) ? `<span class="metric-chip neutral">Gap ${normalized.toFixed(1)}× tolerance</span>` : ''}
                                 </div>
