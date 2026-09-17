@@ -4451,6 +4451,16 @@
                 if (key === 'tempo_ratio') return `${n.toFixed(2)}:1`;
                 return `${n.toFixed(decimals)}${metricUnit(key)}`;
             };
+            // Number(null) === 0 and Number.isFinite(0) === true, so a plain
+            // Number.isFinite(Number(x)) check treats a genuinely absent value
+            // (null/undefined, e.g. reference_low/reference_high on a named-pro
+            // comparison, which has no aggregate range) as a real zero bound.
+            // This explicitly rejects null/undefined/empty-string before the
+            // numeric check.
+            const isValidNumber = (value) => {
+                if (value === null || value === undefined || value === '') return false;
+                return Number.isFinite(Number(value));
+            };
 
             const score = data.movement_similarity ?? data.score ?? data.overall_score;
             const hasSimilarity = Number.isFinite(Number(score));
@@ -4491,9 +4501,15 @@
                 const p = data.priority_focus;
                 const key = p.metric_key || p.metric || '';
                 const statusText = 'Your #1 priority';
-                const band = p.target_band && Number.isFinite(Number(p.target_band.low)) && Number.isFinite(Number(p.target_band.high))
+                const isComposite = p.reference_type === 'composite_tour_range';
+                const band = p.target_band && isValidNumber(p.target_band.low) && isValidNumber(p.target_band.high)
                     ? `${formatMetricValue(key, p.target_band.low)} \u2013 ${formatMetricValue(key, p.target_band.high)}`
                     : '';
+                // "Tour range" implies an aggregate measured across many pros.
+                // For a named-pro comparison, the band shown is one golfer's own
+                // measured value plus a fixed scoring tolerance, not an
+                // empirical range, and must not be labeled the same way.
+                const bandLabel = isComposite ? 'Tour range' : 'Comparison band (\u00B1 tolerance)';
                 priorityHtml = `
                     <div class="priority-focus-card enhanced">
                         <div class="priority-kicker">\uD83C\uDFAF ${escapeHtml(statusText)}</div>
@@ -4502,9 +4518,9 @@
                         <div class="priority-focus-values">
                             <span>You: <strong>${formatMetricValue(key, p.your_value)}</strong></span><span aria-hidden="true">&nbsp;\u2022&nbsp;</span>
                             ${band
-                                ? `<span>Tour range: <strong>${escapeHtml(band)}</strong></span><span aria-hidden="true">&nbsp;\u2022&nbsp;</span>`
+                                ? `<span>${escapeHtml(bandLabel)}: <strong>${escapeHtml(band)}</strong></span><span aria-hidden="true">&nbsp;\u2022&nbsp;</span>`
                                 : `<span>Benchmark: <strong>${formatMetricValue(key, p.pro_value)}</strong></span><span aria-hidden="true">&nbsp;\u2022&nbsp;</span>`}
-                            ${Number.isFinite(Number(p.metric_similarity_score)) ? `<span>Similarity: <strong>${Number(p.metric_similarity_score).toFixed(0)}%</strong></span>` : ''}
+                            ${isValidNumber(p.metric_similarity_score) ? `<span>Similarity: <strong>${Number(p.metric_similarity_score).toFixed(0)}%</strong></span>` : ''}
                         </div>
                         <div class="priority-detail-grid">
                             ${p.diagnosis ? `<div class="priority-detail"><strong>What we found</strong><span>${escapeHtml(p.diagnosis)}</span></div>` : ''}
@@ -4513,7 +4529,7 @@
                             ${p.swing_thought ? `<div class="priority-detail"><strong>Swing thought</strong><span>${escapeHtml(p.swing_thought)}</span></div>` : ''}
                             ${p.watch_out_for ? `<div class="priority-detail"><strong>Do not sacrifice</strong><span>${escapeHtml(p.watch_out_for)}</span></div>` : ''}
                             ${Array.isArray(p.interaction_notes) && p.interaction_notes.length ? `<div class="priority-detail"><strong>Connected metric</strong><span>${escapeHtml(p.interaction_notes[0])}</span></div>` : ''}
-                            ${band ? `<div class="priority-detail"><strong>Comparison band</strong><span>${escapeHtml(band)}</span></div>` : ''}
+                            ${band ? `<div class="priority-detail"><strong>${escapeHtml(bandLabel)}</strong><span>${escapeHtml(band)}</span></div>` : ''}
                             ${p.success_check ? `<div class="priority-detail"><strong>Success check</strong><span>${escapeHtml(p.success_check)}</span></div>` : ''}
                         </div>
                         <div class="benchmark-note">${escapeHtml(p.coaching_note || 'Use the professional value as a comparison reference, not a number to force.')}</div>
@@ -4672,7 +4688,7 @@
                                 <div class="metric-values">
                                     <span class="your-value">You: ${formatMetricValue(key, value.your_value)}</span><span aria-hidden="true">&nbsp;\u2022&nbsp;</span>
                                     <span class="pro-value">${
-                                        Number.isFinite(Number(value.reference_low)) && Number.isFinite(Number(value.reference_high))
+                                        (value.reference_type === 'composite_tour_range' && isValidNumber(value.reference_low) && isValidNumber(value.reference_high))
                                             ? `Tour range: ${formatMetricValue(key, value.reference_low)} \u2013 ${formatMetricValue(key, value.reference_high)}`
                                             : `Benchmark: ${formatMetricValue(key, value.pro_value)}`
                                     }</span>
