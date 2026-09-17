@@ -2394,7 +2394,7 @@
             
             <!-- Sections Container -->
             <div id="section-home" class="section-content">
-                <!-- Step 1: Confirm reported miss; composite reference is automatic -->
+                <!-- Step 1: Confirm reported miss -->
                 <div class="card">
                     <h2><span class="step-icon">1</span> Your Usual Miss</h2>
                     <p style="font-size:14px; color:#4a6a4a; margin-bottom:12px;">Choose the result you most often see. This is reported by you; it is not inferred from ball flight.</p>
@@ -2409,19 +2409,29 @@
                         <option value="inconsistent_contact">Inconsistent contact</option>
                         <option value="not_sure">Not sure</option>
                     </select>
-                    <select id="proSelect" style="display:none;" aria-hidden="true">
-                        <option value="tour_composite" selected>Composite Tour Reference</option>
+                </div>
+
+                <!-- Step 1b: Select a professional to compare against -->
+                <div class="card">
+                    <h2><span class="step-icon">2</span> Compare Your Swing To</h2>
+                    <p style="font-size:14px; color:#4a6a4a; margin-bottom:12px;">
+                        Pick a professional golfer. Your metrics are compared against that golfer's own measured
+                        swing, not an aggregate.
+                    </p>
+                    <select id="proSelect" aria-label="Compare your swing to">
+                        <option value="">Loading professionals&hellip;</option>
                     </select>
                     <div class="handedness-compatibility-note">
-                        <strong>Composite Tour reference is automatic.</strong><br>
-                        Each metric is compared with a robust range built only from reliable fields in the available
-                        professional benchmarks. Provisional and suppressed measurements are excluded.
+                        <strong>Individual pro comparison.</strong><br>
+                        Each numbered metric you see is compared directly against that professional's own recorded
+                        swing. A "Composite Tour Reference (context only)" option is also available if you'd like a
+                        broader range for context &mdash; it isn't recommended as your primary comparison.
                     </div>
                 </div>
-                
+
                 <!-- Step 2: Select Swing Hand -->
                 <div class="card">
-                    <h2><span class="step-icon">2</span> Your Swing Hand</h2>
+                    <h2><span class="step-icon">3</span> Your Swing Hand</h2>
                     <p style="font-size:14px; color:#4a6a4a; margin-bottom:12px;">
                         Select the side you normally play golf from. This is your handedness,
                         not the professional golfer's handedness.
@@ -2437,7 +2447,7 @@
 
                 <!-- Step 3: Upload Video -->
                 <div class="card">
-                    <h2><span class="step-icon">3</span> Upload Your Swing</h2>
+                    <h2><span class="step-icon">4</span> Upload Your Swing</h2>
                     
                     <!-- ===== ENHANCED VIDEO REQUIREMENTS BOX ===== -->
                     <div class="video-requirements">
@@ -4281,12 +4291,17 @@
                 return;
             }
     
-            const pro = 'tour_composite';
+            const pro = document.getElementById('proSelect').value;
             const handedness = document.getElementById('handednessSelect').value;
             const typicalMiss = document.getElementById('typicalMissSelect').value;
 
             if (!ALLOWED_TYPICAL_MISSES.includes(typicalMiss)) {
                 showStatus('Please select your usual miss first', 'error');
+                return;
+            }
+
+            if (!pro) {
+                showStatus('Please select a professional to compare your swing to', 'error');
                 return;
             }
 
@@ -4449,6 +4464,16 @@
                     ${hasConfidence ? `<div class="grade" style="margin-top:8px;">Analysis confidence: ${escapeHtml(confidence)}/100</div>` : ''}
                 </div>
             `;
+
+            let fallbackProHtml = '';
+            if (data.fallback_pro_used && data.fallback_pro_warning) {
+                fallbackProHtml = `
+                    <div class="card" style="background:#fff8e6;border-left:5px solid #e6a100;">
+                        <h2 style="margin-bottom:8px;">\u26A0\uFE0F Comparison substituted</h2>
+                        <p style="margin:0;color:#5f5538;line-height:1.55;">${escapeHtml(data.fallback_pro_warning)}</p>
+                    </div>
+                `;
+            }
 
             let timingWarningHtml = '';
             if (data.video_timing_warning && data.video_timing_warning.show) {
@@ -4741,6 +4766,7 @@
             }
 
             resultsDiv.innerHTML = `
+                ${fallbackProHtml}
                 ${scoreHtml}
                 ${timingWarningHtml}
                 ${missContextHtml}
