@@ -1276,7 +1276,7 @@
         }
         .metric-guide-card summary::-webkit-details-marker { display: none; }
         .metric-guide-card summary::after { content: "+"; color: var(--forest-700); font-size: 22px; font-weight: 500; }
-        .metric-guide-card[open] summary::after { content: "&#8722;"; }
+        .metric-guide-card[open] summary::after { content: "\2212"; }
         .metric-guide-card[open] summary { border-bottom: 1px solid var(--line); background: #f8faf9; }
         .metric-guide-icon {
             width: 44px;
@@ -2841,6 +2841,17 @@
         let currentDaysRemaining = 0;
         let currentSubscriptionCancelled = false;
         let currentSubscriptionExpiryDate = null;
+
+        // Shared HTML-escaping helper. Defined once, globally, so every
+        // render function (progress tracking, results display, phase
+        // feedback, skeleton comparison, etc.) can call it without each
+        // needing its own local copy.
+        const escapeHtml = (value) => String(value ?? '')
+            .replace(/&/g, '&amp;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;')
+            .replace(/"/g, '&quot;')
+            .replace(/'/g, '&#039;');
 
         // V27 handedness support: remember the user's own swing hand on this device.
         function loadSavedHandedness() {
@@ -4449,13 +4460,6 @@
             data.plan_type = currentPlanType;
             const plan = PLAN_DEFINITIONS[currentPlanType] || PLAN_DEFINITIONS['demo'];
 
-            const escapeHtml = (value) => String(value ?? '')
-                .replace(/&/g, '&amp;')
-                .replace(/</g, '&lt;')
-                .replace(/>/g, '&gt;')
-                .replace(/"/g, '&quot;')
-                .replace(/'/g, '&#039;');
-
             const metricLabel = (key) => String(key || '').replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
             const metricUnit = (key) => {
                 if (key === 'tempo_ratio') return ':1';
@@ -4849,12 +4853,6 @@
         function initPhaseFeedback(data) {
             const container = document.getElementById('phaseFeedbackContainer');
             if (!container) return;
-            const escapeHtml = (value) => String(value ?? '')
-                .replace(/&/g, '&amp;')
-                .replace(/</g, '&lt;')
-                .replace(/>/g, '&gt;')
-                .replace(/"/g, '&quot;')
-                .replace(/'/g, '&#039;');
             const analysisId = data.analysis_id;
             const phases = data.phases || {};
             const phaseList = [
@@ -5098,13 +5096,6 @@
         async function initSkeletonComparison(data) {
             const container = document.getElementById('skeletonCompareContainer');
             if (!container) return;
-
-            const escapeHtml = (value) => String(value ?? '')
-                .replace(/&/g, '&amp;')
-                .replace(/</g, '&lt;')
-                .replace(/>/g, '&gt;')
-                .replace(/"/g, '&quot;')
-                .replace(/'/g, '&#039;');
 
             const userSkeleton = data.skeleton;
             const hasUserTrack = userSkeleton && Array.isArray(userSkeleton.track) && userSkeleton.track.length > 0;
