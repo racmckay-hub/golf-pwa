@@ -2135,6 +2135,22 @@
         .progress-trend-row{display:grid;grid-template-columns:minmax(0,1.4fr) repeat(3,minmax(75px,.7fr));gap:8px;align-items:center;padding:10px 12px;border:1px solid #e0e8e3;border-radius:10px;background:#fff;font-size:12px}
         .progress-trend-good{color:#19733f;font-weight:800}.progress-trend-bad{color:#a33d34;font-weight:800}.progress-trend-neutral{color:#6d7d75;font-weight:700}
         @media(max-width:680px){.progress-metric-strip{grid-template-columns:1fr}.progress-trend-row{grid-template-columns:1fr 1fr}}
+
+        /* ===== SKELETON SWING COMPARISON ===== */
+        .skeleton-compare-card { padding: 24px; }
+        .skeleton-compare-intro { margin: -4px 0 16px; color: #52665d; font-size: 13px; line-height: 1.55; }
+        .skeleton-canvases { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 14px; }
+        .skeleton-pane { position: relative; border: 1px solid var(--line, #dce5e0); border-radius: 14px; overflow: hidden; background: #0f2418; }
+        .skeleton-pane canvas { display: block; width: 100%; height: auto; aspect-ratio: 4 / 3; }
+        .skeleton-pane-label { position: absolute; top: 10px; left: 10px; padding: 4px 10px; border-radius: 999px; background: rgba(255,255,255,.92); color: #123d2d; font-size: 11px; font-weight: 800; letter-spacing: .04em; text-transform: uppercase; }
+        .skeleton-pane.unavailable { display: flex; align-items: center; justify-content: center; aspect-ratio: 4/3; color: rgba(255,255,255,.7); font-size: 13px; text-align: center; padding: 20px; }
+        .skeleton-controls { display: flex; align-items: center; gap: 10px; margin-bottom: 12px; }
+        .skeleton-play-btn { flex: 0 0 auto; width: 42px; height: 42px; border-radius: 50%; border: 1px solid var(--forest-700, #176143); background: var(--forest-800, #123d2d); color: #fff; font-size: 16px; cursor: pointer; display: flex; align-items: center; justify-content: center; }
+        .skeleton-scrubber { flex: 1 1 auto; accent-color: var(--forest-600, #1d7953); }
+        .skeleton-phase-tabs { display: flex; gap: 6px; flex-wrap: wrap; }
+        .skeleton-phase-tab { flex: 1 1 auto; min-width: 70px; padding: 8px 10px; border: 1px solid #d7e4dc; border-radius: 9px; background: #f4f8f6; color: #365046; font-size: 12px; font-weight: 700; cursor: pointer; text-align: center; }
+        .skeleton-phase-tab.active { background: var(--forest-800, #123d2d); border-color: var(--forest-800, #123d2d); color: #fff; }
+        .skeleton-compare-note { margin-top: 12px; color: #7b8d84; font-size: 11.5px; line-height: 1.5; }
     </style>
 </head>
 <body>
@@ -4784,6 +4800,7 @@
             resultsDiv.innerHTML = `
                 ${fallbackProHtml}
                 ${scoreHtml}
+                <div id="skeletonCompareContainer"></div>
                 ${timingWarningHtml}
                 ${missContextHtml}
                 ${priorityHtml}
@@ -4807,6 +4824,293 @@
             } else {
                 showStatus('Analysis complete!', 'success');
             }
+
+            // Skeleton comparison needs actual DOM nodes (canvases) to exist
+            // before it can get a 2D rendering context, so it's initialized
+            // after the innerHTML assignment above, not as part of the
+            // template string itself.
+            initSkeletonComparison(data);
+        }
+
+        // ============================================
+        // SKELETON SWING COMPARISON
+        // ============================================
+        // Renders two stick-figure animations side by side: the user's own
+        // swing (from their uploaded video's pose data) and the selected
+        // professional's swing (from a skeleton track saved at benchmark
+        // generation time). Neither side ever displays or transmits the
+        // professional's actual source video -- only derived pose-landmark
+        // positions -- so this never involves redistributing copyrighted
+        // broadcast footage.
+        //
+        // The two swings are synced by SWING PHASE, not by raw time or frame
+        // number, since the two videos can have completely different frame
+        // counts, frame rates, and durations. A single 0-1 "progress" value
+        // is mapped independently onto each side's own address/top/impact/
+        // finish frames, so "50% through the downswing" always lines up for
+        // both athletes even though their absolute frame numbers differ.
+
+        let skeletonPlayerState = null;
+
+        function buildPhaseSegments(phases) {
+            // Three segments spanning the whole swing: address->top,
+            // top->impact, impact->finish. Each segment is given an equal
+            // share of the overall 0-1 progress range: this is a
+            // phase-relative comparison tool, not a claim about actual
+            // relative timing between the two swings.
+            const address = Number(phases && phases.address);
+            const top = Number(phases && phases.top);
+            const impact = Number(phases && phases.impact);
+            const finish = Number(phases && phases.finish);
+            if (![address, top, impact, finish].every(Number.isFinite)) return null;
+            return [
+                { from: address, to: top, startP: 0, endP: 1 / 3 },
+                { from: top, to: impact, startP: 1 / 3, endP: 2 / 3 },
+                { from: impact, to: finish, startP: 2 / 3, endP: 1 },
+            ];
+        }
+
+        function frameForProgress(segments, progress) {
+            if (!segments) return null;
+            const p = Math.min(Math.max(progress, 0), 1);
+            const seg = segments.find(s => p >= s.startP && p <= s.endP) || segments[segments.length - 1];
+            const span = seg.endP - seg.startP;
+            const localP = span > 0 ? (p - seg.startP) / span : 0;
+            return seg.from + (seg.to - seg.from) * localP;
+        }
+
+        function interpolateSkeletonAtFrame(track, targetFrame) {
+            if (!Array.isArray(track) || track.length === 0) return null;
+            if (targetFrame <= track[0].frame) return track[0].points;
+            if (targetFrame >= track[track.length - 1].frame) return track[track.length - 1].points;
+
+            // track is ordered by frame number; find the bracketing pair.
+            let lo = track[0], hi = track[track.length - 1];
+            for (let i = 0; i < track.length - 1; i++) {
+                if (track[i].frame <= targetFrame && track[i + 1].frame >= targetFrame) {
+                    lo = track[i];
+                    hi = track[i + 1];
+                    break;
+                }
+            }
+            const span = hi.frame - lo.frame;
+            const localP = span > 0 ? (targetFrame - lo.frame) / span : 0;
+
+            const merged = {};
+            const names = new Set([...Object.keys(lo.points || {}), ...Object.keys(hi.points || {})]);
+            names.forEach(name => {
+                const a = lo.points ? lo.points[name] : null;
+                const b = hi.points ? hi.points[name] : null;
+                if (a && b) {
+                    merged[name] = [a[0] + (b[0] - a[0]) * localP, a[1] + (b[1] - a[1]) * localP];
+                } else if (a) {
+                    merged[name] = a;
+                } else if (b) {
+                    merged[name] = b;
+                }
+                // If neither side has this point, it's simply omitted --
+                // the renderer skips any bone with a missing endpoint rather
+                // than drawing a fabricated position.
+            });
+            return merged;
+        }
+
+        function drawSkeletonFrame(ctx, canvas, points, bones, color) {
+            const w = canvas.width;
+            const h = canvas.height;
+            ctx.clearRect(0, 0, w, h);
+            ctx.fillStyle = '#0f2418';
+            ctx.fillRect(0, 0, w, h);
+            if (!points) return;
+
+            ctx.strokeStyle = color;
+            ctx.lineWidth = Math.max(2, w * 0.012);
+            ctx.lineCap = 'round';
+            (bones || []).forEach(([a, b]) => {
+                const pa = points[a];
+                const pb = points[b];
+                if (!pa || !pb) return;
+                ctx.beginPath();
+                ctx.moveTo(pa[0] * w, pa[1] * h);
+                ctx.lineTo(pb[0] * w, pb[1] * h);
+                ctx.stroke();
+            });
+
+            ctx.fillStyle = color;
+            Object.values(points).forEach(([x, y]) => {
+                ctx.beginPath();
+                ctx.arc(x * w, y * h, Math.max(3, w * 0.014), 0, Math.PI * 2);
+                ctx.fill();
+            });
+        }
+
+        function renderSkeletonComparison() {
+            const s = skeletonPlayerState;
+            if (!s) return;
+
+            if (s.userSegments) {
+                const frame = frameForProgress(s.userSegments, s.progress);
+                const points = interpolateSkeletonAtFrame(s.userTrack, frame);
+                drawSkeletonFrame(s.userCtx, s.userCanvas, points, s.userBones, '#b9e769');
+            }
+            if (s.proSegments) {
+                const frame = frameForProgress(s.proSegments, s.progress);
+                const points = interpolateSkeletonAtFrame(s.proTrack, frame);
+                drawSkeletonFrame(s.proCtx, s.proCanvas, points, s.proBones, '#e6c45e');
+            }
+
+            const scrubber = document.getElementById('skeletonScrubber');
+            if (scrubber) scrubber.value = String(Math.round(s.progress * 1000));
+
+            const tabs = document.querySelectorAll('.skeleton-phase-tab');
+            tabs.forEach(tab => {
+                const at = Number(tab.dataset.progress);
+                tab.classList.toggle('active', Math.abs(at - s.progress) < 0.02);
+            });
+        }
+
+        function stepSkeletonPlayback(timestamp) {
+            const s = skeletonPlayerState;
+            if (!s || !s.playing) return;
+            if (s.lastTimestamp == null) s.lastTimestamp = timestamp;
+            const dt = (timestamp - s.lastTimestamp) / 1000;
+            s.lastTimestamp = timestamp;
+
+            const cycleSeconds = 4; // full address-to-finish sweep per loop
+            s.progress += dt / cycleSeconds;
+            if (s.progress > 1) s.progress -= 1;
+
+            renderSkeletonComparison();
+            s.rafId = requestAnimationFrame(stepSkeletonPlayback);
+        }
+
+        function toggleSkeletonPlayback() {
+            const s = skeletonPlayerState;
+            if (!s) return;
+            s.playing = !s.playing;
+            const btn = document.getElementById('skeletonPlayBtn');
+            if (btn) btn.textContent = s.playing ? '\u23F8' : '\u25B6';
+            if (s.playing) {
+                s.lastTimestamp = null;
+                s.rafId = requestAnimationFrame(stepSkeletonPlayback);
+            } else if (s.rafId) {
+                cancelAnimationFrame(s.rafId);
+            }
+        }
+
+        function setSkeletonProgress(value) {
+            const s = skeletonPlayerState;
+            if (!s) return;
+            s.playing = false;
+            const btn = document.getElementById('skeletonPlayBtn');
+            if (btn) btn.textContent = '\u25B6';
+            if (s.rafId) cancelAnimationFrame(s.rafId);
+            s.progress = Math.min(Math.max(value, 0), 1);
+            renderSkeletonComparison();
+        }
+
+        async function initSkeletonComparison(data) {
+            const container = document.getElementById('skeletonCompareContainer');
+            if (!container) return;
+
+            const escapeHtml = (value) => String(value ?? '')
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;')
+                .replace(/'/g, '&#039;');
+
+            const userSkeleton = data.skeleton;
+            const hasUserTrack = userSkeleton && Array.isArray(userSkeleton.track) && userSkeleton.track.length > 0;
+            const userSegments = hasUserTrack ? buildPhaseSegments(data.phases) : null;
+
+            if (!hasUserTrack || !userSegments) {
+                // Not an error -- just nothing to show. Keep the container
+                // empty rather than rendering a confusing partial feature.
+                return;
+            }
+
+            let proData = null;
+            const proId = data.requested_pro;
+            const token = localStorage.getItem('authToken');
+            if (proId && token) {
+                try {
+                    const response = await fetch(`${API_URL}/api/pro-skeleton/${encodeURIComponent(proId)}`, {
+                        headers: { 'Authorization': `Bearer ${token}` }
+                    });
+                    if (response.ok) {
+                        const payload = await response.json();
+                        if (payload && payload.overlay_available) {
+                            proData = payload;
+                        }
+                    }
+                } catch (error) {
+                    console.warn('Pro skeleton fetch failed:', error);
+                }
+            }
+
+            const proSegments = proData ? buildPhaseSegments(proData.phase_frames) : null;
+            const proName = (proId || '').replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
+
+            container.innerHTML = `
+                <div class="card skeleton-compare-card">
+                    <h2>\uD83E\uDD3A Swing Comparison</h2>
+                    <p class="skeleton-compare-intro">
+                        Body-position playback, synced by swing phase rather than raw time, so address, top,
+                        impact and finish line up for both swings even though the two clips run at different
+                        speeds and lengths.
+                    </p>
+                    <div class="skeleton-canvases">
+                        <div class="skeleton-pane">
+                            <span class="skeleton-pane-label">You</span>
+                            <canvas id="skeletonUserCanvas" width="480" height="360"></canvas>
+                        </div>
+                        <div class="skeleton-pane ${proSegments ? '' : 'unavailable'}">
+                            ${proSegments
+                                ? `<span class="skeleton-pane-label">${escapeHtml(proName)}</span><canvas id="skeletonProCanvas" width="480" height="360"></canvas>`
+                                : `Comparison animation isn't available for ${escapeHtml(proName || 'this professional')} yet.`
+                            }
+                        </div>
+                    </div>
+                    <div class="skeleton-controls">
+                        <button type="button" class="skeleton-play-btn" id="skeletonPlayBtn" onclick="toggleSkeletonPlayback()">\u25B6</button>
+                        <input type="range" id="skeletonScrubber" class="skeleton-scrubber" min="0" max="1000" value="0"
+                               oninput="setSkeletonProgress(Number(this.value) / 1000)">
+                    </div>
+                    <div class="skeleton-phase-tabs">
+                        <button type="button" class="skeleton-phase-tab" data-progress="0" onclick="setSkeletonProgress(0)">Address</button>
+                        <button type="button" class="skeleton-phase-tab" data-progress="${(1/3).toFixed(4)}" onclick="setSkeletonProgress(${(1/3).toFixed(4)})">Top</button>
+                        <button type="button" class="skeleton-phase-tab" data-progress="${(2/3).toFixed(4)}" onclick="setSkeletonProgress(${(2/3).toFixed(4)})">Impact</button>
+                        <button type="button" class="skeleton-phase-tab" data-progress="1" onclick="setSkeletonProgress(1)">Finish</button>
+                    </div>
+                    <div class="skeleton-compare-note">
+                        Positions are derived from pose estimation, not exact video playback -- useful for comparing
+                        body shape and sequencing, not for judging fine details like grip or clubface.
+                    </div>
+                </div>
+            `;
+
+            const userCanvas = document.getElementById('skeletonUserCanvas');
+            const proCanvas = document.getElementById('skeletonProCanvas');
+
+            skeletonPlayerState = {
+                userTrack: userSkeleton.track,
+                userBones: userSkeleton.bones,
+                userSegments,
+                userCanvas,
+                userCtx: userCanvas ? userCanvas.getContext('2d') : null,
+                proTrack: proData ? proData.skeleton : null,
+                proBones: proData ? proData.bones : null,
+                proSegments,
+                proCanvas,
+                proCtx: proCanvas ? proCanvas.getContext('2d') : null,
+                progress: 0,
+                playing: false,
+                lastTimestamp: null,
+                rafId: null,
+            };
+
+            renderSkeletonComparison();
         }
 
         // ============================================
