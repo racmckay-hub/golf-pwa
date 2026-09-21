@@ -4862,6 +4862,7 @@
             ].filter(p => phases[p.key] !== undefined && phases[p.key] !== null);
 
             if (!analysisId || phaseList.length === 0) return;
+            const token = localStorage.getItem('authToken');
 
             container.innerHTML = `
                 <div class="card" id="phaseFeedbackCard">
@@ -5167,6 +5168,14 @@
                     <div class="skeleton-compare-note">
                         Positions are derived from pose estimation, not exact video playback -- useful for comparing
                         body shape and sequencing, not for judging fine details like grip or clubface.
+                    </div>
+                    <div class="skeleton-compare-note" style="margin-top:6px;opacity:.65;font-size:11px;">
+                        Detected frames -- You: address=${escapeHtml(data.phases && data.phases.address)},
+                        top=${escapeHtml(data.phases && data.phases.top)},
+                        impact=${escapeHtml(data.phases && data.phases.impact)},
+                        finish=${escapeHtml(data.phases && data.phases.finish)}
+                        (${userSkeleton.track.length} tracked frames, first=${userSkeleton.track[0]?.frame}, last=${userSkeleton.track[userSkeleton.track.length - 1]?.frame})
+                        ${proData ? ` • ${escapeHtml(proName)}: address=${escapeHtml(proData.phase_frames && proData.phase_frames.address)}, top=${escapeHtml(proData.phase_frames && proData.phase_frames.top)}, impact=${escapeHtml(proData.phase_frames && proData.phase_frames.impact)}, finish=${escapeHtml(proData.phase_frames && proData.phase_frames.finish)}` : ''}
                     </div>
                 </div>
             `;
