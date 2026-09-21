@@ -4444,6 +4444,7 @@
             console.log('\uD83D\uDCCA Displaying results:', data);
             const resultsDiv = document.getElementById('results');
             resultsDiv.innerHTML = '';
+            lastAnalysisResult = data;
 
             data.plan_type = currentPlanType;
             const plan = PLAN_DEFINITIONS[currentPlanType] || PLAN_DEFINITIONS['demo'];
@@ -4491,7 +4492,9 @@
                     <div class="grade">Movement similarity${hasSimilarity ? ` \u2022 Grade: ${escapeHtml(grade)}` : ''}</div>
                     ${hasConfidence ? `<div class="grade" style="margin-top:8px;">Analysis confidence: ${escapeHtml(confidence)}/100</div>` : ''}
                     ${Number.isFinite(benchmarkVideoCount) && benchmarkVideoCount > 1 ? `<div class="grade" style="margin-top:8px;font-size:13px;opacity:.85;">Benchmark averaged across ${benchmarkVideoCount} measured swings of ${escapeHtml(benchmarkRef.name || 'this professional')}</div>` : ''}
+                    ${hasSimilarity ? `<button type="button" onclick="shareResultCard()" style="margin-top:14px;background:rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.28);color:#fff;padding:10px 18px;border-radius:10px;font-size:14px;font-weight:700;cursor:pointer;">📤 Share your result</button>` : ''}
                 </div>
+                <div id="shareCardStatus" style="display:none;text-align:center;margin:-10px 0 16px;font-size:13px;color:#63756d;"></div>
             `;
 
             let fallbackProHtml = '';
@@ -4933,6 +4936,7 @@
         // both athletes even though their absolute frame numbers differ.
 
         let skeletonPlayerState = null;
+        let lastAnalysisResult = null; // used by the share-card feature
 
         function buildPhaseSegments(phases) {
             // Three segments spanning the whole swing: address->top,
@@ -5201,6 +5205,175 @@
             };
 
             renderSkeletonComparison();
+        }
+
+        // ============================================
+        // SHARE CARD (V39.3)
+        // ============================================
+        // Renders a downloadable/shareable image summarizing one result.
+        // Entirely client-side: no new data leaves the browser beyond what
+        // the user explicitly downloads or shares themselves, and nothing
+        // here is stored server-side or visible to any other user.
+
+        function drawShareSkeletonPanel(ctx, x, y, w, h, track, bones, color, impactFrameOverride) {
+            ctx.save();
+            ctx.fillStyle = 'rgba(255,255,255,.06)';
+            const radius = 22;
+            ctx.beginPath();
+            ctx.moveTo(x + radius, y);
+            ctx.arcTo(x + w, y, x + w, y + h, radius);
+            ctx.arcTo(x + w, y + h, x, y + h, radius);
+            ctx.arcTo(x, y + h, x, y, radius);
+            ctx.arcTo(x, y, x + w, y, radius);
+            ctx.closePath();
+            ctx.fill();
+
+            if (Array.isArray(track) && track.length > 0) {
+                // Prefer the actual detected impact frame; fall back to ~2/3
+                // of the way through the tracked range (address/top/impact/
+                // finish are roughly equal thirds elsewhere in this app) if
+                // it wasn't provided.
+                const impactFrame = Number.isFinite(impactFrameOverride)
+                    ? impactFrameOverride
+                    : track[Math.floor(track.length * (2 / 3))].frame;
+                const points = interpolateSkeletonAtFrame(track, impactFrame);
+                if (points) {
+                    const pad = 0.12;
+                    ctx.strokeStyle = color;
+                    ctx.lineWidth = Math.max(3, w * 0.014);
+                    ctx.lineCap = 'round';
+                    (bones || []).forEach(([a, b]) => {
+                        const pa = points[a];
+                        const pb = points[b];
+                        if (!pa || !pb) return;
+                        ctx.beginPath();
+                        ctx.moveTo(x + (pad + pa[0] * (1 - 2 * pad)) * w, y + (pad + pa[1] * (1 - 2 * pad)) * h);
+                        ctx.lineTo(x + (pad + pb[0] * (1 - 2 * pad)) * w, y + (pad + pb[1] * (1 - 2 * pad)) * h);
+                        ctx.stroke();
+                    });
+                    ctx.fillStyle = color;
+                    Object.values(points).forEach(([px, py]) => {
+                        ctx.beginPath();
+                        ctx.arc(x + (pad + px * (1 - 2 * pad)) * w, y + (pad + py * (1 - 2 * pad)) * h, Math.max(4, w * 0.016), 0, Math.PI * 2);
+                        ctx.fill();
+                    });
+                }
+            }
+            ctx.restore();
+        }
+
+        function buildShareCardCanvas(data) {
+            const canvas = document.createElement('canvas');
+            canvas.width = 1080;
+            canvas.height = 1350;
+            const ctx = canvas.getContext('2d');
+
+            const grad = ctx.createLinearGradient(0, 0, 0, canvas.height);
+            grad.addColorStop(0, '#0a241a');
+            grad.addColorStop(1, '#061a13');
+            ctx.fillStyle = grad;
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            ctx.textAlign = 'center';
+            ctx.fillStyle = '#b9e769';
+            ctx.font = '700 32px -apple-system, Helvetica, Arial, sans-serif';
+            ctx.fillText('X-AI GOLF', canvas.width / 2, 110);
+            ctx.fillStyle = 'rgba(255,255,255,.55)';
+            ctx.font = '700 20px -apple-system, Helvetica, Arial, sans-serif';
+            ctx.fillText('AI SWING ANALYSIS', canvas.width / 2, 145);
+
+            const score = data.movement_similarity ?? data.score ?? data.overall_assessment_score;
+            const hasScore = Number.isFinite(Number(score));
+            ctx.fillStyle = '#ffffff';
+            ctx.font = '800 190px -apple-system, Helvetica, Arial, sans-serif';
+            ctx.fillText(hasScore ? `${Math.round(Number(score))}` : '--', canvas.width / 2, 400);
+            ctx.font = '700 34px -apple-system, Helvetica, Arial, sans-serif';
+            ctx.fillStyle = 'rgba(255,255,255,.75)';
+            ctx.fillText('/100 MOVEMENT SIMILARITY', canvas.width / 2, 445);
+
+            if (data.grade) {
+                ctx.font = '700 42px -apple-system, Helvetica, Arial, sans-serif';
+                ctx.fillStyle = '#d7b85b';
+                ctx.fillText(`Grade: ${data.grade}`, canvas.width / 2, 505);
+            }
+
+            const userSkeleton = data.skeleton;
+            const hasTrack = userSkeleton && Array.isArray(userSkeleton.track) && userSkeleton.track.length > 0;
+            if (hasTrack) {
+                const impactFrame = Number(data.phases && data.phases.impact);
+                drawShareSkeletonPanel(
+                    ctx, 140, 570, 800, 480,
+                    userSkeleton.track, userSkeleton.bones, '#b9e769',
+                    Number.isFinite(impactFrame) ? impactFrame : undefined
+                );
+            }
+
+            let y = hasTrack ? 1115 : 620;
+            const benchmarkRef = data.benchmark_reference || {};
+            const proLabel = benchmarkRef.name || (data.requested_pro || '').replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
+            if (proLabel) {
+                ctx.font = '600 30px -apple-system, Helvetica, Arial, sans-serif';
+                ctx.fillStyle = 'rgba(255,255,255,.85)';
+                ctx.fillText(`Compared to ${proLabel}`, canvas.width / 2, y);
+                y += 44;
+            }
+
+            const focus = data.priority_focus;
+            const focusLabel = focus ? (focus.metric_name || focus.focus_area) : null;
+            ctx.font = '500 24px -apple-system, Helvetica, Arial, sans-serif';
+            ctx.fillStyle = 'rgba(255,255,255,.55)';
+            ctx.fillText(
+                focusLabel ? `Working on: ${focusLabel}` : 'Consistency & repeatability',
+                canvas.width / 2, y
+            );
+
+            ctx.font = '500 20px -apple-system, Helvetica, Arial, sans-serif';
+            ctx.fillStyle = 'rgba(255,255,255,.35)';
+            ctx.fillText('Movement analysis only — not ball flight or clubface data', canvas.width / 2, canvas.height - 50);
+
+            return canvas;
+        }
+
+        async function shareResultCard() {
+            const statusEl = document.getElementById('shareCardStatus');
+            const showStatusMsg = (msg) => {
+                if (!statusEl) return;
+                statusEl.style.display = 'block';
+                statusEl.textContent = msg;
+            };
+            if (!lastAnalysisResult) {
+                showStatusMsg('Nothing to share yet.');
+                return;
+            }
+            try {
+                const canvas = buildShareCardCanvas(lastAnalysisResult);
+                const blob = await new Promise(resolve => canvas.toBlob(resolve, 'image/png'));
+                if (!blob) throw new Error('Could not render image');
+                const file = new File([blob], 'xai-golf-result.png', { type: 'image/png' });
+
+                if (navigator.canShare && navigator.canShare({ files: [file] })) {
+                    await navigator.share({
+                        files: [file],
+                        title: 'My X-AI Golf swing analysis',
+                    });
+                    showStatusMsg('');
+                    statusEl.style.display = 'none';
+                } else {
+                    const url = URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = 'xai-golf-result.png';
+                    document.body.appendChild(a);
+                    a.click();
+                    document.body.removeChild(a);
+                    URL.revokeObjectURL(url);
+                    showStatusMsg('Image downloaded — share it wherever you like!');
+                }
+            } catch (error) {
+                if (error && error.name === 'AbortError') return; // user cancelled the native share sheet
+                console.warn('Share card failed:', error);
+                showStatusMsg("Couldn't generate the share image right now.");
+            }
         }
 
         // ============================================
