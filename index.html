@@ -4582,6 +4582,20 @@
                 </div>
             ` : '';
 
+            const swingPathInsight = data.swing_path_insight || {};
+            const swingPathHtml = swingPathInsight.headline ? `
+                <div class="card" style="border-left:5px solid #d4af37;background:#fdfaf3;">
+                    <div style="font-size:11px;font-weight:850;letter-spacing:.1em;text-transform:uppercase;color:#a5822f;">Swing-path proxy</div>
+                    <h3 style="margin:5px 0 7px;color:#173c2d;font-size:17px;">${escapeHtml(swingPathInsight.headline)}</h3>
+                    <p style="margin:0;color:#53685e;line-height:1.6;">${escapeHtml(swingPathInsight.message || '')}</p>
+                    <p style="margin:12px 0 0;padding-top:10px;border-top:1px solid #ece0c4;color:#8a7645;font-size:12px;">
+                        ${swingPathInsight.available
+                            ? 'This does not measure clubface angle, true path direction or ball flight — treat it as a rough approximation only.'
+                            : 'Shown here instead of a guess, because there wasn’t enough reliable club-detection data near impact.'}
+                    </p>
+                </div>
+            ` : '';
+
             const coachingSummary = data.coaching_summary || '';
             const coachingSummaryHtml = coachingSummary ? `
                 <div class="card coaching-summary-card">
@@ -4663,8 +4677,7 @@
                 'posture_score': 'Combined setup score based on posture-related measurements.',
                 'lateral_movement': 'Side-to-side movement of the estimated body center.',
                 'lead_elbow_angle': 'Lead elbow joint angle at the top of the backswing.',
-                'trail_elbow_angle': 'Trail elbow joint angle around impact.',
-                'swing_path': 'Club path: on plane, laid off, or over the top.'
+                'trail_elbow_angle': 'Trail elbow joint angle around impact.'
             };
 
             const availableMetricKeys = plan.metrics.map(m => m.toLowerCase().replace(/ /g, '_').replace(/[^a-z_]/g, ''));
@@ -4682,40 +4695,27 @@
                     if (typeof value !== 'object' || value === null) continue;
 
                     const description = metricDescriptions[key] || '';
-                    if (key === 'swing_path') {
-                        const status = value.over_the_top ? '\u26A0\uFE0F Over the top' : '\u2705 On plane';
-                        const pathDeviation = Number(value.path_deviation || 0);
-                        const severity = value.severity || 'none';
-                        metricsHtml += `
-                            <div class="metric">
-                                <div class="metric-name">${escapeHtml(metricLabel(key).toUpperCase())}</div>
-                                <div class="metric-description">${escapeHtml(description)}</div>
-                                <div class="metric-values"><span class="your-value">${escapeHtml(status)}</span><span class="pro-value">Deviation: ${pathDeviation.toFixed(1)}\u00B0</span></div>
-                                ${severity === 'high' ? '<div style="color:#c62828;font-size:12px;margin-top:5px;">\u26A0\uFE0F Your swing is significantly over the top</div>' : ''}
-                            </div>`;
-                    } else {
-                        const within = value.within_tolerance === true;
-                        const similarity = Number(value.metric_similarity_score);
-                        const normalized = Number(value.normalized_deviation);
-                        metricsHtml += `
-                            <div class="metric">
-                                <div class="metric-name">${escapeHtml(metricLabel(key).toUpperCase())}</div>
-                                <div class="metric-description">${escapeHtml(description)}</div>
-                                <div class="metric-values">
-                                    <span class="your-value">You: ${formatMetricValue(key, value.your_value)}</span><span aria-hidden="true">&nbsp;\u2022&nbsp;</span>
-                                    <span class="pro-value">${
-                                        (value.reference_type === 'composite_tour_range' && isValidNumber(value.reference_low) && isValidNumber(value.reference_high))
-                                            ? `Tour range: ${formatMetricValue(key, value.reference_low)} \u2013 ${formatMetricValue(key, value.reference_high)}`
-                                            : `Benchmark: ${formatMetricValue(key, value.pro_value)}`
-                                    }</span>
-                                </div>
-                                <div class="metric-status-row">
-                                    ${value.within_tolerance !== undefined && value.within_tolerance !== null ? `<span class="metric-chip ${within ? 'good' : 'watch'}">${within ? 'Within comparison tolerance' : (normalized < 2 ? 'Monitor across several swings' : 'Worth reviewing')}</span><span aria-hidden="true">&nbsp;\u2022&nbsp;</span>` : ''}
-                                    ${Number.isFinite(similarity) ? `<span class="metric-chip neutral">Similarity ${similarity.toFixed(0)}%</span><span aria-hidden="true">&nbsp;\u2022&nbsp;</span>` : ''}
-                                    ${Number.isFinite(normalized) ? `<span class="metric-chip neutral">Gap ${normalized.toFixed(1)}\u00D7 tolerance</span>` : ''}
-                                </div>
-                            </div>`;
-                    }
+                    const within = value.within_tolerance === true;
+                    const similarity = Number(value.metric_similarity_score);
+                    const normalized = Number(value.normalized_deviation);
+                    metricsHtml += `
+                        <div class="metric">
+                            <div class="metric-name">${escapeHtml(metricLabel(key).toUpperCase())}</div>
+                            <div class="metric-description">${escapeHtml(description)}</div>
+                            <div class="metric-values">
+                                <span class="your-value">You: ${formatMetricValue(key, value.your_value)}</span><span aria-hidden="true">&nbsp;\u2022&nbsp;</span>
+                                <span class="pro-value">${
+                                    (value.reference_type === 'composite_tour_range' && isValidNumber(value.reference_low) && isValidNumber(value.reference_high))
+                                        ? `Tour range: ${formatMetricValue(key, value.reference_low)} \u2013 ${formatMetricValue(key, value.reference_high)}`
+                                        : `Benchmark: ${formatMetricValue(key, value.pro_value)}`
+                                }</span>
+                            </div>
+                            <div class="metric-status-row">
+                                ${value.within_tolerance !== undefined && value.within_tolerance !== null ? `<span class="metric-chip ${within ? 'good' : 'watch'}">${within ? 'Within comparison tolerance' : (normalized < 2 ? 'Monitor across several swings' : 'Worth reviewing')}</span><span aria-hidden="true">&nbsp;\u2022&nbsp;</span>` : ''}
+                                ${Number.isFinite(similarity) ? `<span class="metric-chip neutral">Similarity ${similarity.toFixed(0)}%</span><span aria-hidden="true">&nbsp;\u2022&nbsp;</span>` : ''}
+                                ${Number.isFinite(normalized) ? `<span class="metric-chip neutral">Gap ${normalized.toFixed(1)}\u00D7 tolerance</span>` : ''}
+                            </div>
+                        </div>`;
                 }
 
                 if (lockedCount > 0 && currentPlanType === 'starter') {
@@ -4803,6 +4803,7 @@
                 <div id="skeletonCompareContainer"></div>
                 ${timingWarningHtml}
                 ${missContextHtml}
+                ${swingPathHtml}
                 ${priorityHtml}
                 ${coachingSummaryHtml}
                 ${focusPlanHtml}
