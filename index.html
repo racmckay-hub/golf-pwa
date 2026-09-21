@@ -4483,11 +4483,14 @@
             const confidence = Number(data.analysis_confidence);
             const hasConfidence = Number.isFinite(confidence);
             const grade = data.grade || 'Not graded';
+            const benchmarkRef = data.benchmark_reference || {};
+            const benchmarkVideoCount = Number(benchmarkRef.video_count);
             const scoreHtml = `
                 <div class="score">
                     <div class="score-number">${hasSimilarity ? `${escapeHtml(score)}/100` : 'Not scored'}</div>
                     <div class="grade">Movement similarity${hasSimilarity ? ` \u2022 Grade: ${escapeHtml(grade)}` : ''}</div>
                     ${hasConfidence ? `<div class="grade" style="margin-top:8px;">Analysis confidence: ${escapeHtml(confidence)}/100</div>` : ''}
+                    ${Number.isFinite(benchmarkVideoCount) && benchmarkVideoCount > 1 ? `<div class="grade" style="margin-top:8px;font-size:13px;opacity:.85;">Benchmark averaged across ${benchmarkVideoCount} measured swings of ${escapeHtml(benchmarkRef.name || 'this professional')}</div>` : ''}
                 </div>
             `;
 
@@ -4801,6 +4804,7 @@
                 ${fallbackProHtml}
                 ${scoreHtml}
                 <div id="skeletonCompareContainer"></div>
+                <div id="phaseFeedbackContainer"></div>
                 ${timingWarningHtml}
                 ${missContextHtml}
                 ${swingPathHtml}
@@ -4831,6 +4835,82 @@
             // after the innerHTML assignment above, not as part of the
             // template string itself.
             initSkeletonComparison(data);
+            initPhaseFeedback(data);
+        }
+
+        // V39.3: lightweight phase-detection feedback. Lets a real user tap
+        // whether the detected address/top/impact/finish positions looked
+        // right, which quietly builds a hold-out validation dataset from
+        // real usage instead of requiring hand-collected test videos. No
+        // video or frames are sent here -- only which phase, and yes/no.
+        function initPhaseFeedback(data) {
+            const container = document.getElementById('phaseFeedbackContainer');
+            if (!container) return;
+            const escapeHtml = (value) => String(value ?? '')
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;')
+                .replace(/'/g, '&#039;');
+            const analysisId = data.analysis_id;
+            const phases = data.phases || {};
+            const phaseList = [
+                { key: 'address', label: 'Address' },
+                { key: 'top', label: 'Top of backswing' },
+                { key: 'impact', label: 'Impact' },
+                { key: 'finish', label: 'Finish' },
+            ].filter(p => phases[p.key] !== undefined && phases[p.key] !== null);
+
+            if (!analysisId || phaseList.length === 0) return;
+
+            container.innerHTML = `
+                <div class="card" id="phaseFeedbackCard">
+                    <div style="font-size:11px;font-weight:850;letter-spacing:.1em;text-transform:uppercase;color:#63756d;">Help improve swing detection</div>
+                    <h3 style="margin:5px 0 10px;color:#173c2d;font-size:16px;">Do these swing positions look right?</h3>
+                    <p style="margin:0 0 12px;color:#63756d;font-size:13px;">Compare each position against your video above and let us know. This never sends your video -- just a yes/no.</p>
+                    <div id="phaseFeedbackRows"></div>
+                </div>
+            `;
+
+            const rows = document.getElementById('phaseFeedbackRows');
+            phaseList.forEach(p => {
+                const row = document.createElement('div');
+                row.style.cssText = 'display:flex;align-items:center;justify-content:space-between;gap:10px;padding:9px 0;border-top:1px solid #eef2ef;';
+                row.innerHTML = `
+                    <span style="font-size:14px;color:#1a3c2a;font-weight:600;">${escapeHtml(p.label)}</span>
+                    <span class="phase-feedback-actions" data-phase="${p.key}">
+                        <button type="button" class="phase-feedback-btn" data-correct="true" style="border:1px solid #d0ddd0;background:#f4f8f4;border-radius:8px;padding:6px 12px;margin-right:6px;cursor:pointer;font-size:13px;">👍 Looks right</button>
+                        <button type="button" class="phase-feedback-btn" data-correct="false" style="border:1px solid #d0ddd0;background:#f4f8f4;border-radius:8px;padding:6px 12px;cursor:pointer;font-size:13px;">👎 Looks off</button>
+                    </span>
+                `;
+                rows.appendChild(row);
+            });
+
+            rows.querySelectorAll('.phase-feedback-btn').forEach(btn => {
+                btn.addEventListener('click', async () => {
+                    const actionsEl = btn.closest('.phase-feedback-actions');
+                    const phase = actionsEl.getAttribute('data-phase');
+                    const correct = btn.getAttribute('data-correct') === 'true';
+                    actionsEl.querySelectorAll('button').forEach(b => b.disabled = true);
+                    try {
+                        const resp = await fetch(`${API_URL}/api/phase-feedback`, {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'Authorization': `Bearer ${token}`,
+                            },
+                            body: JSON.stringify({ analysis_id: analysisId, phase, correct }),
+                        });
+                        if (resp.ok) {
+                            actionsEl.innerHTML = '<span style="font-size:13px;color:#1a6e4a;">Thanks for the feedback!</span>';
+                        } else {
+                            actionsEl.innerHTML = '<span style="font-size:12px;color:#8c2e2e;">Couldn’t save feedback right now.</span>';
+                        }
+                    } catch (e) {
+                        actionsEl.innerHTML = '<span style="font-size:12px;color:#8c2e2e;">Couldn’t save feedback right now.</span>';
+                    }
+                });
+            });
         }
 
         // ============================================
