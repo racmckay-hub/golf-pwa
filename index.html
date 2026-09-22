@@ -5299,13 +5299,33 @@
             const w = canvas.width;
             const h = canvas.height;
             ctx.clearRect(0, 0, w, h);
-            ctx.fillStyle = '#0f2418';
+
+            // Soft radial backdrop instead of a flat fill, for a bit of depth,
+            // plus a faint floor line so the figure reads as standing in space
+            // rather than floating on a plain block of color.
+            const bg = ctx.createRadialGradient(w / 2, h * 0.42, h * 0.15, w / 2, h * 0.55, h * 0.9);
+            bg.addColorStop(0, '#16311f');
+            bg.addColorStop(1, '#081712');
+            ctx.fillStyle = bg;
             ctx.fillRect(0, 0, w, h);
+
+            ctx.strokeStyle = 'rgba(255,255,255,.08)';
+            ctx.lineWidth = 1;
+            ctx.beginPath();
+            ctx.moveTo(0, h * 0.92);
+            ctx.lineTo(w, h * 0.92);
+            ctx.stroke();
+
             if (!points) return;
 
+            // Bones: same lines as before, with a soft glow in the swing's
+            // color so it reads more like a motion-capture overlay.
+            ctx.save();
             ctx.strokeStyle = color;
             ctx.lineWidth = Math.max(2, w * 0.012);
             ctx.lineCap = 'round';
+            ctx.shadowColor = color;
+            ctx.shadowBlur = w * 0.02;
             (bones || []).forEach(([a, b]) => {
                 const pa = points[a];
                 const pb = points[b];
@@ -5315,13 +5335,26 @@
                 ctx.lineTo(pb[0] * w, pb[1] * h);
                 ctx.stroke();
             });
+            ctx.restore();
 
-            ctx.fillStyle = color;
+            // Joints: a glowing colored marker with a small bright core,
+            // rather than a single flat dot.
+            ctx.save();
             Object.values(points).forEach(([x, y]) => {
+                const r = Math.max(3, w * 0.014);
+                ctx.shadowColor = color;
+                ctx.shadowBlur = w * 0.025;
+                ctx.fillStyle = color;
                 ctx.beginPath();
-                ctx.arc(x * w, y * h, Math.max(3, w * 0.014), 0, Math.PI * 2);
+                ctx.arc(x * w, y * h, r, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.shadowBlur = 0;
+                ctx.fillStyle = 'rgba(255,255,255,.9)';
+                ctx.beginPath();
+                ctx.arc(x * w, y * h, r * 0.4, 0, Math.PI * 2);
                 ctx.fill();
             });
+            ctx.restore();
         }
 
         function renderSkeletonComparison() {
