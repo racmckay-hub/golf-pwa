@@ -1278,6 +1278,33 @@
         .metric-guide-card summary::after { content: "+"; color: var(--forest-700); font-size: 22px; font-weight: 500; }
         .metric-guide-card[open] summary::after { content: "\2212"; }
         .metric-guide-card[open] summary { border-bottom: 1px solid var(--line); background: #f8faf9; }
+
+        .results-more-card {
+            border: 1px solid var(--line, #dce5e0);
+            border-radius: 20px;
+            background: #fff;
+            box-shadow: 0 8px 30px rgba(0,0,0,0.08);
+            margin-bottom: 20px;
+            overflow: hidden;
+        }
+        .results-more-card summary {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            padding: 18px 22px;
+            cursor: pointer;
+            list-style: none;
+            font-weight: 800;
+            color: #1a3c2a;
+            font-size: 15px;
+        }
+        .results-more-card summary::-webkit-details-marker { display: none; }
+        .results-more-card summary::after { content: "+"; color: var(--forest-700, #176143); font-size: 22px; font-weight: 500; flex: 0 0 auto; }
+        .results-more-card[open] summary::after { content: "\2212"; }
+        .results-more-card[open] summary { border-bottom: 1px solid var(--line, #dce5e0); background: #f8faf9; }
+        .results-more-card-body { padding: 20px 22px 4px; }
+        .results-more-card-body > .card { box-shadow: none; border: 1px solid var(--line, #eef1ef); }
         .metric-guide-icon {
             width: 44px;
             height: 44px;
@@ -1634,6 +1661,30 @@
             color: #365046;
             font-size: 12px;
             line-height: 1.55;
+        }
+
+        .landing-sample-result {
+            margin-top: 15px;
+        }
+
+        .landing-sample-badge {
+            display: inline-flex;
+            margin-bottom: 10px;
+            padding: 5px 10px;
+            border-radius: 999px;
+            background: #f3ead1;
+            color: #7b6420;
+            font-size: 10.5px;
+            font-weight: 800;
+            letter-spacing: .09em;
+            text-transform: uppercase;
+        }
+
+        .landing-sample-footnote {
+            margin-top: 10px;
+            color: #7b8d84;
+            font-size: 11px;
+            line-height: 1.45;
         }
 
         .landing-demo-note {
@@ -2213,11 +2264,23 @@
                             <button type="button" class="landing-miss-option" data-miss="inconsistent_contact" onclick="selectTypicalMiss('inconsistent_contact', this, true, 'miss_card')">Inconsistent</button>
                             <button type="button" class="landing-miss-option" data-miss="not_sure" onclick="selectTypicalMiss('not_sure', this, true, 'miss_card')">Not sure</button>
                         </div>
-                        <div class="landing-example-mini">
-                            <strong>Example for a reported slice:</strong> &#8220;Your shoulder rotation at impact sits outside
-                            the composite Tour reference band. This may make path-and-face control more difficult.&#8221;<br>
-                            <strong>Practice:</strong> half-swing impact rotation drill.<br>
-                            <em>The analysis measures movement&#8212;not ball curvature or clubface angle.</em>
+                        <div class="landing-sample-result" id="landingSampleResult">
+                            <div class="landing-sample-badge">Sample result &middot; for illustration</div>
+                            <div class="score" style="padding:16px 18px;border-radius:14px;margin-bottom:14px;">
+                                <div class="score-number" style="font-size:34px;" id="landingSampleScore">68/100</div>
+                                <div class="grade">Movement similarity &middot; Grade: C+</div>
+                            </div>
+                            <div class="priority-focus-card enhanced" style="padding:16px 18px;margin-bottom:0;">
+                                <div class="priority-kicker">&#127919; Your #1 priority</div>
+                                <h3 id="landingSampleTitle">Shoulder rotation at impact</h3>
+                                <p class="priority-lead" id="landingSampleLead">Your shoulder rotation at impact sits outside the composite Tour reference band. This may make path-and-face control more difficult.</p>
+                                <div class="priority-detail-grid">
+                                    <div class="priority-detail"><strong>Try this</strong><span id="landingSampleDrill">Half-swing impact rotation drill.</span></div>
+                                </div>
+                            </div>
+                            <div class="landing-sample-footnote">
+                                Illustrative example, not your data &#183; The analysis measures movement&#8212;not ball curvature or clubface angle.
+                            </div>
                         </div>
                         <div class="landing-demo-note">
                             Choosing a miss immediately opens your video picker &#183; No credit card
@@ -3838,13 +3901,48 @@
 
         // ===== V39.0.0 MISS-LED + COMPOSITE TOUR REFERENCE FUNNEL =====
         let pendingLandingFile = null;
-        let pendingTypicalMiss = sessionStorage.getItem('xaiTypicalMiss') || null;
+        let pendingTypicalMiss = null;
+        try {
+            pendingTypicalMiss = sessionStorage.getItem('xaiTypicalMiss') || null;
+        } catch (e) {
+            // Some mobile in-app browsers (e.g. Facebook/Instagram) restrict storage access.
+            // Don't let that stop the rest of the script from loading.
+        }
         let landingSignupShownTracked = false;
 
         const ALLOWED_TYPICAL_MISSES = [
             'slice', 'hook', 'push', 'pull', 'fat', 'thin',
             'inconsistent_contact', 'not_sure'
         ];
+
+        // Illustrative, non-personalized sample results shown on the landing page
+        // before any video is uploaded, so visitors see what the real output looks
+        // like before being asked for anything. Not derived from any real analysis.
+        const LANDING_SAMPLE_RESULTS = {
+            slice: { score: '68/100', grade: 'C+', title: 'Shoulder rotation at impact', lead: 'Your shoulder rotation at impact sits outside the composite Tour reference band. This may make path-and-face control more difficult.', drill: 'Half-swing impact rotation drill.' },
+            hook: { score: '71/100', grade: 'B-', title: 'Wrist release timing', lead: 'Your wrist release through impact happens earlier than the composite Tour reference. This may close the clubface faster than intended.', drill: 'Delayed-release step drill.' },
+            push: { score: '74/100', grade: 'B', title: 'Hip slide at transition', lead: 'Your hips slide laterally more than the composite Tour reference during transition. This can push the swing path out to the right.', drill: 'Step-through transition drill.' },
+            pull: { score: '70/100', grade: 'B-', title: 'Shoulder alignment at address', lead: 'Your shoulder alignment at address sits further left than the composite Tour reference. This can pull the swing path across the ball.', drill: 'Alignment-stick setup drill.' },
+            fat: { score: '66/100', grade: 'C', title: 'Weight transfer to lead side', lead: 'Your weight transfer to the lead side at impact is lower than the composite Tour reference. This can leave the low point behind the ball.', drill: 'Step-forward impact drill.' },
+            thin: { score: '69/100', grade: 'C+', title: 'Spine angle through impact', lead: 'Your spine angle rises more through impact than the composite Tour reference. This can raise the swing’s low point.', drill: 'Chair-drill posture hold.' },
+            inconsistent_contact: { score: '65/100', grade: 'C', title: 'Swing tempo consistency', lead: 'Your swing tempo ratio varies more between swings than the composite Tour reference. This can move your strike point around.', drill: 'Metronome tempo drill.' },
+            not_sure: { score: '72/100', grade: 'B-', title: 'Your #1 measured priority', lead: 'We’ll compare your full swing to the composite Tour reference and highlight the single largest reliable difference to work on first.', drill: 'Personalized after your video is analyzed.' }
+        };
+
+        function updateLandingSampleResult(miss) {
+            const sample = LANDING_SAMPLE_RESULTS[miss];
+            if (!sample) return;
+            const scoreEl = document.getElementById('landingSampleScore');
+            const titleEl = document.getElementById('landingSampleTitle');
+            const leadEl = document.getElementById('landingSampleLead');
+            const drillEl = document.getElementById('landingSampleDrill');
+            if (scoreEl) scoreEl.textContent = sample.score;
+            const gradeEl = scoreEl ? scoreEl.nextElementSibling : null;
+            if (gradeEl) gradeEl.textContent = `Movement similarity • Grade: ${sample.grade}`;
+            if (titleEl) titleEl.textContent = sample.title;
+            if (leadEl) leadEl.textContent = sample.lead;
+            if (drillEl) drillEl.textContent = sample.drill;
+        }
 
         function focusMissChoices() {
             const panel = document.getElementById('landingDemoPanel');
@@ -3854,11 +3952,13 @@
         function selectTypicalMiss(miss, button = null, openPicker = false, source = 'miss_choice') {
             if (!ALLOWED_TYPICAL_MISSES.includes(miss)) return;
             pendingTypicalMiss = miss;
-            sessionStorage.setItem('xaiTypicalMiss', miss);
+            try { sessionStorage.setItem('xaiTypicalMiss', miss); } catch (e) {}
 
             document.querySelectorAll('.landing-miss-option').forEach(option => {
                 option.classList.toggle('selected', option.dataset.miss === miss);
             });
+
+            updateLandingSampleResult(miss);
 
             const appSelect = document.getElementById('typicalMissSelect');
             if (appSelect) appSelect.value = miss;
@@ -4987,6 +5087,16 @@
                 motivationalHtml = `<div class="card"><h2>\u2728 Next Step</h2><p>${escapeHtml(data.motivational_message)}</p></div>`;
             }
 
+            // V39.1: The results used to repeat the same top priority (finding,
+            // drill, thought) across 6-7 separate sections (priority card,
+            // coaching summary, focus plan #1, measured recommendations #1,
+            // practice plan, drills, swing thoughts, quick cues), which made
+            // the results page exhausting to read right after signup. The
+            // practical, once-through essentials stay visible by default;
+            // the full data-dense breakdown (all metrics, the full focus
+            // plan, restated recommendations/drills/thoughts) is still all
+            // there, just tucked behind one "See full breakdown" toggle for
+            // anyone who wants to go deeper.
             resultsDiv.innerHTML = `
                 ${fallbackProHtml}
                 ${scoreHtml}
@@ -4995,19 +5105,24 @@
                 <div id="phaseFeedbackContainer"></div>
                 ${timingWarningHtml}
                 ${missContextHtml}
-                ${swingPathHtml}
                 ${priorityHtml}
-                ${coachingSummaryHtml}
-                ${focusPlanHtml}
-                ${assessmentHtml}
-                ${metricsHtml}
-                ${recommendationsHtml}
                 ${practicePlanHtml}
-                ${drillsHtml}
-                ${thoughtsHtml}
-                ${quickFixesHtml}
                 ${trackingHtml}
                 ${motivationalHtml}
+                <details class="results-more-card">
+                    <summary>See full breakdown &amp; all measurements</summary>
+                    <div class="results-more-card-body">
+                        ${assessmentHtml}
+                        ${swingPathHtml}
+                        ${coachingSummaryHtml}
+                        ${focusPlanHtml}
+                        ${metricsHtml}
+                        ${recommendationsHtml}
+                        ${drillsHtml}
+                        ${thoughtsHtml}
+                        ${quickFixesHtml}
+                    </div>
+                </details>
                 ${planInfoHtml}
             `;
 
