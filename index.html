@@ -2550,7 +2550,8 @@
                         <span class="icon-large">&#127909;</span>
                         <div style="font-weight:500; margin-bottom:4px;">Tap to select or drag your video here</div>
                         <div style="font-size:13px; color:#7a9a7a;">MP4, MOV, or AVI &#8226; Max 100MB &#8226; Landscape &#8226; Original playback speed &#8226; Slow-motion supported</div>
-                        <input type="file" id="videoInput" accept="video/*" style="display: none;">
+                        <div style="font-size:12px; color:#4b7a5a; margin-top:6px; font-weight:600;">Optional: select up to 3 swings from the same camera position for a steadier, averaged result</div>
+                        <input type="file" id="videoInput" accept="video/*" multiple style="display: none;">
                     </div>
                     <div id="videoPreview" class="video-preview"></div>
 
@@ -4041,21 +4042,18 @@
         function transferPendingLandingFileToApp() {
             if (!pendingLandingFile) return false;
 
-            // selectedFile is the existing authenticated-analysis file variable.
+            // selectedFile/selectedFiles are the existing authenticated-analysis
+            // file variables. This starts them off with just the one swing
+            // brought over from the landing page; the person can add up to 2
+            // more from within the app itself via renderVideoPreview()'s
+            // "add another swing" button.
+            selectedFiles = [pendingLandingFile];
             selectedFile = pendingLandingFile;
+            renderVideoPreview();
 
             const missSelect = document.getElementById('typicalMissSelect');
             if (missSelect && pendingTypicalMiss) {
                 missSelect.value = pendingTypicalMiss;
-            }
-
-            const preview = document.getElementById('videoPreview');
-            if (preview) {
-                preview.innerHTML = `
-                    <video controls>
-                        <source src="${URL.createObjectURL(selectedFile)}" type="${selectedFile.type}">
-                    </video>
-                `;
             }
 
             showStatus('\u2713 Your selected swing is ready. Choose your comparison and swing hand, then analyze.', 'success');
@@ -4375,6 +4373,10 @@
         const uploadArea = document.getElementById('uploadArea');
         const videoInput = document.getElementById('videoInput');
         let selectedFile = null;
+        // V39.3: up to 3 swings can be selected for averaging. selectedFile
+        // (singular) is kept in sync as selectedFiles[0] so the landing-page
+        // handoff and any other existing single-file reference still works.
+        let selectedFiles = [];
 
         const handednessSelect = document.getElementById('handednessSelect');
         if (handednessSelect) {
@@ -4398,28 +4400,70 @@
         uploadArea.addEventListener('drop', (e) => {
             e.preventDefault();
             uploadArea.classList.remove('drag-over');
-            const file = e.dataTransfer.files[0];
-            if (file && file.type.startsWith('video/')) {
-                handleFile(file);
+            const files = Array.from(e.dataTransfer.files || []).filter(f => f.type.startsWith('video/'));
+            if (files.length > 0) {
+                handleFiles(files);
             }
         });
-        
+
         videoInput.addEventListener('change', (e) => {
-            if (e.target.files[0]) {
-                handleFile(e.target.files[0]);
+            if (e.target.files && e.target.files.length > 0) {
+                handleFiles(Array.from(e.target.files));
             }
         });
-        
-        function handleFile(file) {
+
+        // V39.3: adds newly picked video(s) to whatever's already selected
+        // (up to 3 total), rather than replacing it -- so the "add another
+        // swing" button can be wired to the same file input.
+        function handleFiles(files) {
             clearVideoQualityWarning();
-            selectedFile = file;
+            const incoming = files.filter(f => f.type.startsWith('video/'));
+            if (incoming.length === 0) return;
+            selectedFiles = [...selectedFiles, ...incoming].slice(0, 3);
+            selectedFile = selectedFiles[0] || null;
+            renderVideoPreview();
+        }
+
+        // Backward-compatible single-file entry point (used by the landing
+        // page handoff, which only ever has one file at that point).
+        function handleFile(file) {
+            handleFiles([file]);
+        }
+
+        function removeSelectedSwing(index) {
+            selectedFiles.splice(index, 1);
+            selectedFile = selectedFiles[0] || null;
+            renderVideoPreview();
+        }
+
+        function renderVideoPreview() {
             const preview = document.getElementById('videoPreview');
-            preview.innerHTML = `
-                <video controls>
-                    <source src="${URL.createObjectURL(file)}" type="${file.type}">
-                </video>
-            `;
-            showStatus(`Selected: ${file.name}`, 'success');
+            if (!preview) return;
+            if (selectedFiles.length === 0) {
+                preview.innerHTML = '';
+                return;
+            }
+            preview.innerHTML = selectedFiles.map((file, i) => `
+                <div style="margin-bottom:12px;">
+                    <video controls style="max-width:100%;border-radius:10px;display:block;">
+                        <source src="${URL.createObjectURL(file)}" type="${file.type}">
+                    </video>
+                    <div style="font-size:12px;color:#52665d;margin-top:4px;">
+                        Swing ${i + 1}: ${escapeHtml(file.name)}
+                        <button type="button" onclick="removeSelectedSwing(${i})" style="margin-left:8px;background:none;border:none;color:#c62828;cursor:pointer;font-size:12px;text-decoration:underline;">Remove</button>
+                    </div>
+                </div>
+            `).join('') + (selectedFiles.length < 3 ? `
+                <button type="button" onclick="document.getElementById('videoInput').click()" style="background:#eef5f1;border:1px solid #cfe0d7;border-radius:8px;padding:8px 14px;font-size:13px;font-weight:700;color:#1a3c2a;cursor:pointer;">
+                    + Add another swing (optional, up to 3)
+                </button>
+            ` : '');
+
+            if (selectedFiles.length > 1) {
+                showStatus(`${selectedFiles.length} swings selected — your result will be averaged across them for a steadier read`, 'success');
+            } else {
+                showStatus(`Selected: ${selectedFiles[0].name}`, 'success');
+            }
         }
         
         // ***** LOAD PROS - FILTERED BY PLAN *****
@@ -4558,7 +4602,7 @@
         // ***** ANALYZE FUNCTION *****
         
         async function analyze() {
-            if (!selectedFile) {
+            if (selectedFiles.length === 0 && !selectedFile) {
                 showStatus('Please select a video first', 'error');
                 return;
             }
@@ -4614,7 +4658,8 @@
             });
 
             const formData = new FormData();
-            formData.append('video', selectedFile);
+            const swingsToSend = selectedFiles.length > 0 ? selectedFiles : [selectedFile];
+            swingsToSend.forEach(file => formData.append('video', file));
             formData.append('pro', pro);
             formData.append('handedness', handedness);
             formData.append('typical_miss', typicalMiss);
@@ -4764,6 +4809,7 @@
                     <div class="grade">Movement similarity${hasSimilarity ? ` \u2022 Grade: ${escapeHtml(grade)}` : ''}</div>
                     ${hasConfidence ? `<div class="grade" style="margin-top:8px;">Analysis confidence: ${escapeHtml(confidence)}/100</div>` : ''}
                     ${Number.isFinite(benchmarkVideoCount) && benchmarkVideoCount > 1 ? `<div class="grade" style="margin-top:8px;font-size:13px;opacity:.85;">Benchmark averaged across ${benchmarkVideoCount} measured swings of ${escapeHtml(benchmarkRef.name || 'this professional')}</div>` : ''}
+                    ${Number.isFinite(data.swing_count) && data.swing_count > 1 ? `<div class="grade" style="margin-top:8px;font-size:13px;opacity:.85;">Your result is averaged across ${data.swing_count} of your swings for a steadier read</div>` : ''}
                     ${hasSimilarity ? `<button type="button" onclick="shareResultCard()" style="margin-top:14px;background:rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.28);color:#fff;padding:10px 18px;border-radius:10px;font-size:14px;font-weight:700;cursor:pointer;">📤 Share your result</button>` : ''}
                 </div>
                 <div id="shareCardStatus" style="display:none;text-align:center;margin:-10px 0 16px;font-size:13px;color:#63756d;"></div>
@@ -4816,6 +4862,17 @@
                 // measured value plus a fixed scoring tolerance, not an
                 // empirical range, and must not be labeled the same way.
                 const bandLabel = isComposite ? 'Tour range' : 'Comparison band (\u00B1 tolerance)';
+                // V39.3: when this analysis was averaged across multiple
+                // swings, show how much this specific metric moved between
+                // them, so the priority isn't presented with more confidence
+                // than the underlying measurement actually has.
+                const priorityConsistency = (data.swing_consistency && data.swing_consistency[key]) || null;
+                const consistencyBadgeMap = {
+                    steady: '<span style="padding:4px 9px;border-radius:7px;background:#e7f4ec;color:#1a7a4c;font-weight:700;">Steady across your swings</span>',
+                    some_variation: '<span style="padding:4px 9px;border-radius:7px;background:#fff3d6;color:#8a6d1f;font-weight:700;">Some variation between swings</span>',
+                    varied: '<span style="padding:4px 9px;border-radius:7px;background:#fdecec;color:#9a3030;font-weight:700;">Varied a lot \u2014 treat as a rough read</span>',
+                };
+                const priorityConsistencyBadge = priorityConsistency ? (consistencyBadgeMap[priorityConsistency.label] || '') : '';
                 priorityHtml = `
                     <div class="priority-focus-card enhanced">
                         <div class="priority-kicker">\uD83C\uDFAF ${escapeHtml(statusText)}</div>
@@ -4827,6 +4884,7 @@
                                 ? `<span>${escapeHtml(bandLabel)}: <strong>${escapeHtml(band)}</strong></span><span aria-hidden="true">&nbsp;\u2022&nbsp;</span>`
                                 : `<span>Benchmark: <strong>${formatMetricValue(key, p.pro_value)}</strong></span><span aria-hidden="true">&nbsp;\u2022&nbsp;</span>`}
                             ${isValidNumber(p.metric_similarity_score) ? `<span>Similarity: <strong>${Number(p.metric_similarity_score).toFixed(0)}%</strong></span>` : ''}
+                            ${priorityConsistencyBadge ? `<span aria-hidden="true">&nbsp;\u2022&nbsp;</span>${priorityConsistencyBadge}` : ''}
                         </div>
                         <div class="priority-detail-grid">
                             ${p.diagnosis ? `<div class="priority-detail"><strong>What we found</strong><span>${escapeHtml(p.diagnosis)}</span></div>` : ''}
