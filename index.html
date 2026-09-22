@@ -2187,8 +2187,8 @@
                             <span>&#128161; One practical drill</span>
                             <span>&#128202; Composite Tour reference</span>
                         </div>
-                        <button type="button" class="landing-hero-cta" onclick="selectTypicalMiss('slice', null, true, 'hero_slice')">
-                            I Slice &#8212; Choose My Swing Video
+                        <button type="button" class="landing-hero-cta" onclick="selectTypicalMiss('slice', null, false, 'hero_slice'); focusMissChoices();">
+                            I Slice &#8212; See My Example
                         </button>
                         <p style="margin-top:12px;color:rgba(255,255,255,.9);font-size:14px;font-weight:700;">
                             First complete analysis free &#183; No credit card required<br>
@@ -4023,11 +4023,17 @@
                 document.getElementById('loginSection').style.display = 'block';
                 document.getElementById('appSection').style.display = 'none';
 
-                if (!sessionStorage.getItem('v3900LandingViewTracked')) {
-                    trackGAEvent('landing_view', { funnel_version: 'v39_0_0' });
-                    sessionStorage.setItem('v3900LandingViewTracked', '1');
+                try {
+                    if (!sessionStorage.getItem('v3900LandingViewTracked')) {
+                        trackGAEvent('landing_view', { funnel_version: 'v39_0_0' });
+                        sessionStorage.setItem('v3900LandingViewTracked', '1');
+                    }
+                    sessionStorage.setItem('xaiAcquisitionFunnel', 'v39_0_0');
+                } catch (e) {
+                    // Some mobile in-app browsers (e.g. Facebook/Instagram) restrict storage access.
+                    // Don't let that stop the rest of page initialization.
+                    try { trackGAEvent('landing_view', { funnel_version: 'v39_0_0' }); } catch (e2) {}
                 }
-                sessionStorage.setItem('xaiAcquisitionFunnel', 'v39_0_0');
             }
         }
 
