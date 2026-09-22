@@ -4501,6 +4501,18 @@
                 <div id="shareCardStatus" style="display:none;text-align:center;margin:-10px 0 16px;font-size:13px;color:#63756d;"></div>
             `;
 
+            let swingTwinHtml = '';
+            if (data.swing_twin && data.swing_twin.pro_name && Number.isFinite(Number(data.swing_twin.similarity_score))) {
+                const twin = data.swing_twin;
+                swingTwinHtml = `
+                    <div class="card" style="background:#f0f7f2;border-left:5px solid #1a7a4c;">
+                        <h2 style="margin-bottom:8px;">🪞 Your swing twin</h2>
+                        <p style="margin:0;color:#173c2d;font-size:15px;line-height:1.5;">Out of every professional measured, your swing scores closest overall to <strong>${escapeHtml(twin.pro_name)}</strong> — ${escapeHtml(twin.similarity_score)}/100 movement similarity.</p>
+                        <p style="margin:10px 0 0;color:#5f6f68;font-size:12px;">Based on measured body positions only, independent of whichever professional you chose to compare against above.</p>
+                    </div>
+                `;
+            }
+
             let fallbackProHtml = '';
             if (data.fallback_pro_used && data.fallback_pro_warning) {
                 fallbackProHtml = `
@@ -4810,6 +4822,7 @@
             resultsDiv.innerHTML = `
                 ${fallbackProHtml}
                 ${scoreHtml}
+                ${swingTwinHtml}
                 <div id="skeletonCompareContainer"></div>
                 <div id="phaseFeedbackContainer"></div>
                 ${timingWarningHtml}
