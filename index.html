@@ -2404,6 +2404,7 @@
                 <a href="#" class="nav-btn" id="nav-instructions" onclick="showSection('instructions')">&#128214; Instructions</a>
                 <a href="#" class="nav-btn" id="nav-metrics" onclick="showSection('metrics')">&#128208; Metrics Guide</a>
                 <a href="#" class="nav-btn" id="nav-progress" onclick="showSection('progress')">&#128200; Progress</a>
+                <a href="#" class="nav-btn" id="nav-leaderboard" onclick="showSection('leaderboard')">&#127942; Leaderboard</a>
                 <a href="#" class="nav-btn" id="nav-contact" onclick="showSection('contact')">&#128231; Contact</a>
                 <a href="#" class="nav-btn" id="nav-plans" onclick="showSection('plans')">&#128202; Plans</a>
             </div>
@@ -2568,6 +2569,22 @@
                 <div class="card">
                     <h2>&#128450;&#65039; Recent Analyses</h2>
                     <div id="progressHistory"><p style="color:#7a9a7a;">No history loaded yet.</p></div>
+                </div>
+            </div>
+
+            <!-- LEADERBOARD SECTION -->
+            <div id="section-leaderboard" class="section-content" style="display: none;">
+                <div class="card">
+                    <h2>&#127942; Leaderboard</h2>
+                    <p style="color:#52665d; margin-bottom:16px;">Ranked by each golfer's best-ever movement similarity score. Opt-in only -- you're never listed unless you choose to be, and you can leave any time.</p>
+                    <p style="color:#8a9a92; font-size:12px; margin-bottom:16px;">Note: everyone compares against whichever professional they choose, so scores aren't a perfectly apples-to-apples ranking -- each entry below shows which pro that best score was measured against.</p>
+                    <div id="leaderboardOptInBox"></div>
+                </div>
+
+                <div class="card">
+                    <h2>&#128202; Top 50</h2>
+                    <div id="leaderboardTable"><p style="color:#7a9a7a;">Loading leaderboard...</p></div>
+                    <div id="leaderboardYourRank" style="margin-top:12px;"></div>
                 </div>
             </div>
 
@@ -3099,6 +3116,146 @@
             }
         }
 
+        async function loadLeaderboard() {
+            const token = localStorage.getItem('authToken');
+            const optInBox = document.getElementById('leaderboardOptInBox');
+            const table = document.getElementById('leaderboardTable');
+            const yourRank = document.getElementById('leaderboardYourRank');
+            if (!token) {
+                if (optInBox) optInBox.innerHTML = '<p>Please log in to view the leaderboard.</p>';
+                return;
+            }
+
+            if (table) table.innerHTML = '<p style="color:#7a9a7a;">Loading leaderboard…</p>';
+            try {
+                const response = await fetch(`${API_URL}/api/leaderboard`, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                const data = await response.json();
+                if (!response.ok) throw new Error(data.error || 'Unable to load leaderboard');
+
+                renderLeaderboardOptInBox(data);
+                renderLeaderboardTable(data);
+            } catch (error) {
+                console.error('Leaderboard load error:', error);
+                if (optInBox) optInBox.innerHTML = '';
+                if (table) table.innerHTML = `<p style="color:#8c2e2e;">${escapeHtml(error.message)}</p>`;
+                if (yourRank) yourRank.innerHTML = '';
+            }
+        }
+
+        function renderLeaderboardOptInBox(data) {
+            const box = document.getElementById('leaderboardOptInBox');
+            if (!box) return;
+
+            if (data.opted_in) {
+                box.innerHTML = `
+                    <div style="background:#f0f7f2;border-left:5px solid #1a7a4c;padding:14px 16px;border-radius:10px;">
+                        <p style="margin:0 0 10px;color:#173c2d;">You're on the leaderboard as <strong>${escapeHtml(data.display_name || 'Golfer')}</strong>.</p>
+                        <button type="button" class="btn btn-logout" style="width:auto;padding:8px 16px;font-size:13px;" onclick="leaveLeaderboard()">Leave leaderboard</button>
+                    </div>
+                `;
+            } else {
+                box.innerHTML = `
+                    <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:flex-end;">
+                        <div style="flex:1;min-width:180px;">
+                            <label for="leaderboardNameInput" style="font-size:12px;font-weight:700;color:#52665d;">DISPLAY NAME</label>
+                            <input type="text" id="leaderboardNameInput" maxlength="24" placeholder="e.g. FairwayFinder" style="width:100%;padding:10px 12px;border:1px solid var(--line);border-radius:8px;font-size:14px;">
+                        </div>
+                        <button type="button" class="btn btn-primary" style="width:auto;padding:10px 20px;" onclick="joinLeaderboard()">Join leaderboard</button>
+                    </div>
+                    <div id="leaderboardOptInStatus" style="margin-top:8px;font-size:13px;"></div>
+                `;
+            }
+        }
+
+        function renderLeaderboardTable(data) {
+            const table = document.getElementById('leaderboardTable');
+            const yourRank = document.getElementById('leaderboardYourRank');
+            if (!table) return;
+
+            const rows = Array.isArray(data.leaderboard) ? data.leaderboard : [];
+            if (!rows.length) {
+                table.innerHTML = '<p style="color:#7a9a7a;">No one has joined the leaderboard yet -- be the first!</p>';
+            } else {
+                table.innerHTML = `
+                    <table style="width:100%;border-collapse:collapse;">
+                        <thead>
+                            <tr style="text-align:left;border-bottom:1px solid var(--line);">
+                                <th style="padding:8px 6px;font-size:12px;color:#7a9a7a;">RANK</th>
+                                <th style="padding:8px 6px;font-size:12px;color:#7a9a7a;">GOLFER</th>
+                                <th style="padding:8px 6px;font-size:12px;color:#7a9a7a;">BEST SCORE</th>
+                                <th style="padding:8px 6px;font-size:12px;color:#7a9a7a;">COMPARED TO</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${rows.map(row => `
+                                <tr style="border-bottom:1px solid #f0f2f1;${row.is_you ? 'background:#f0f7f2;' : ''}">
+                                    <td style="padding:9px 6px;font-weight:700;color:#173c2d;">#${escapeHtml(row.rank)}</td>
+                                    <td style="padding:9px 6px;">${escapeHtml(row.display_name)}${row.is_you ? ' <span style="color:#1a7a4c;font-size:12px;">(you)</span>' : ''}</td>
+                                    <td style="padding:9px 6px;font-weight:700;">${escapeHtml(row.best_score)}/100</td>
+                                    <td style="padding:9px 6px;color:#7a9a7a;font-size:13px;">${escapeHtml(row.compared_to || '—')}</td>
+                                </tr>
+                            `).join('')}
+                        </tbody>
+                    </table>
+                `;
+            }
+
+            if (yourRank) {
+                const rows2 = Array.isArray(data.leaderboard) ? data.leaderboard : [];
+                const inTop50 = rows2.some(row => row.is_you);
+                if (data.your_entry && !inTop50) {
+                    yourRank.innerHTML = `<p style="color:#52665d;font-size:13px;">Your rank: <strong>#${escapeHtml(data.your_entry.rank)}</strong> at ${escapeHtml(data.your_entry.best_score)}/100 -- outside the top 50 shown above.</p>`;
+                } else {
+                    yourRank.innerHTML = '';
+                }
+            }
+        }
+
+        async function joinLeaderboard() {
+            const token = localStorage.getItem('authToken');
+            const input = document.getElementById('leaderboardNameInput');
+            const status = document.getElementById('leaderboardOptInStatus');
+            const displayName = input ? input.value.trim() : '';
+
+            if (!displayName) {
+                if (status) status.innerHTML = '<span style="color:#8c2e2e;">Enter a display name first.</span>';
+                return;
+            }
+
+            if (status) status.innerHTML = '<span style="color:#7a9a7a;">Joining…</span>';
+            try {
+                const response = await fetch(`${API_URL}/api/leaderboard/opt-in`, {
+                    method: 'POST',
+                    headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ opt_in: true, display_name: displayName })
+                });
+                const data = await response.json();
+                if (!response.ok) throw new Error(data.error || 'Unable to join the leaderboard');
+                await loadLeaderboard();
+            } catch (error) {
+                if (status) status.innerHTML = `<span style="color:#8c2e2e;">${escapeHtml(error.message)}</span>`;
+            }
+        }
+
+        async function leaveLeaderboard() {
+            const token = localStorage.getItem('authToken');
+            try {
+                const response = await fetch(`${API_URL}/api/leaderboard/opt-in`, {
+                    method: 'POST',
+                    headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ opt_in: false })
+                });
+                const data = await response.json();
+                if (!response.ok) throw new Error(data.error || 'Unable to leave the leaderboard');
+                await loadLeaderboard();
+            } catch (error) {
+                console.error('Leave leaderboard error:', error);
+                alert(error.message);
+            }
+        }
+
         function progressMetricText(value) {
             const n = Number(value);
             return Number.isFinite(n) ? `${n.toFixed(1)}\u00B0` : 'N/A';
@@ -3327,6 +3484,9 @@
                 }
                 if (section === 'progress') {
                     loadProgress();
+                }
+                if (section === 'leaderboard') {
+                    loadLeaderboard();
                 }
             }
     
