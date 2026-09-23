@@ -3364,6 +3364,9 @@
                 } else {
                     renderStudentLinkBox(profile);
                     rosterCard.style.display = 'none';
+                    if (profile.linked_coach_name) {
+                        await loadMyFocus();
+                    }
                 }
             } catch (error) {
                 console.error('Load coach section error:', error);
@@ -3402,6 +3405,7 @@
                         <div style="color:#1a3c2a;">Linked to coach: <strong>${escapeHtml(profile.linked_coach_name)}</strong></div>
                         <button type="button" onclick="unlinkFromCoach()" style="margin-top:10px;background:none;border:1px solid #cfd8d1;border-radius:8px;padding:7px 12px;font-size:12px;color:#52665d;cursor:pointer;">Unlink</button>
                     </div>
+                    <div id="myFocusBox" style="margin-bottom:14px;"></div>
                     <div style="border-top:1px solid #eef1ef;margin:14px 0;"></div>
                     <div style="font-weight:700;color:#1a3c2a;margin-bottom:8px;">Are you a coach yourself?</div>
                     <button type="button" onclick="becomeCoach()" style="background:#1a7a4c;color:#fff;border:none;border-radius:8px;padding:9px 16px;font-size:13px;font-weight:700;cursor:pointer;">Set up my coach tools</button>
@@ -3482,6 +3486,33 @@
             }
         }
 
+        async function loadMyFocus() {
+            const token = localStorage.getItem('authToken');
+            const el = document.getElementById('myFocusBox');
+            if (!el) return;
+            try {
+                const response = await fetch(`${API_URL}/api/coach/my-focus`, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                const data = await response.json();
+                if (!response.ok) throw new Error(data.error || '');
+                if (!data.has_focus) {
+                    el.innerHTML = '<p style="color:#7a9a7a;font-size:13px;">Your coach hasn’t left you a focus note yet — it’ll show up here once they do.</p>';
+                    return;
+                }
+                el.innerHTML = `
+                    <div style="background:#fff9ec;border:1px solid #f0dfae;border-radius:10px;padding:12px 14px;">
+                        <div style="font-size:12px;color:#8c6d2e;text-transform:uppercase;letter-spacing:.04em;font-weight:700;">What to work on</div>
+                        <div style="color:#1a3c2a;margin-top:4px;">${escapeHtml(data.note)}</div>
+                        ${data.target_metric ? `<div style="font-size:13px;color:#52665d;margin-top:4px;">Target: ${escapeHtml(data.target_metric)}${data.target_value !== null && data.target_value !== undefined ? ' → ' + data.target_value : ''}</div>` : ''}
+                        <div style="font-size:11px;color:#a8946a;margin-top:6px;">From ${escapeHtml(data.coach_name || 'your coach')} · ${data.set_at ? new Date(data.set_at).toLocaleDateString() : ''}</div>
+                    </div>
+                `;
+            } catch (error) {
+                el.innerHTML = '';
+            }
+        }
+
         async function loadCoachRoster() {
             const token = localStorage.getItem('authToken');
             const table = document.getElementById('coachRosterTable');
@@ -3536,12 +3567,15 @@
             `;
         }
 
+        let currentCoachStudentId = null;
+
         async function viewCoachStudentDetail(studentId) {
             const token = localStorage.getItem('authToken');
             const card = document.getElementById('coachStudentDetailCard');
             const title = document.getElementById('coachStudentDetailTitle');
             const body = document.getElementById('coachStudentDetailBody');
             if (!card || !body) return;
+            currentCoachStudentId = studentId;
             card.style.display = 'block';
             body.innerHTML = '<p style="color:#7a9a7a;">Loading\u2026</p>';
             card.scrollIntoView({ behavior: 'smooth', block: 'center' });
@@ -3552,22 +3586,138 @@
                 const data = await response.json();
                 if (!response.ok) throw new Error(data.error || 'Could not load this student\u2019s history');
                 title.textContent = `${data.student_name}'s history`;
+
+                const focusSectionHtml = renderCoachFocusEditor(studentId, data);
+                const sparklineHtml = buildScoreSparkline(data.history || []);
+
                 if (!data.history || data.history.length === 0) {
-                    body.innerHTML = '<p style="color:#7a9a7a;">No analyses yet.</p>';
+                    body.innerHTML = focusSectionHtml + '<p style="color:#7a9a7a;margin-top:14px;">No analyses yet.</p>';
                     return;
                 }
-                body.innerHTML = data.history.map(h => `
+
+                const historyHtml = data.history.map(h => `
                     <div style="border-top:1px solid #eef1ef;padding:12px 0;">
                         <div style="display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px;">
                             <strong style="color:#1a3c2a;">${h.created_at ? new Date(h.created_at).toLocaleDateString() : ''}</strong>
                             <span>${h.score !== null && h.score !== undefined ? Number(h.score).toFixed(1) + '/100' : 'Not scored'}${h.compared_to ? ' vs ' + escapeHtml(h.compared_to) : ''}</span>
                         </div>
                         ${h.priority_metric ? `<div style="margin-top:6px;font-size:13px;color:#52665d;"><strong>Priority:</strong> ${escapeHtml(h.priority_metric)} \u2014 ${escapeHtml(h.priority_finding || '')}</div>` : ''}
+                        ${h.on_target === true ? `<div style="margin-top:6px;font-size:12px;color:#1a7a4c;font-weight:600;">\u2713 Hit the target you set</div>` : ''}
+                        ${h.on_target === false ? `<div style="margin-top:6px;font-size:12px;color:#8c6d2e;font-weight:600;">Not yet at the target you set</div>` : ''}
                     </div>
                 `).join('');
+
+                body.innerHTML = focusSectionHtml + sparklineHtml + historyHtml;
             } catch (error) {
                 body.innerHTML = `<p style="color:#8c2e2e;">${escapeHtml(error.message)}</p>`;
             }
+        }
+
+        function renderCoachFocusEditor(studentId, data) {
+            const current = data.current_note;
+            const metrics = data.available_focus_metrics || [];
+            const metricOptions = metrics.map(m =>
+                `<option value="${escapeHtml(m)}" ${current && current.target_metric === m ? 'selected' : ''}>${escapeHtml(m)}</option>`
+            ).join('');
+
+            const currentHtml = current ? `
+                <div style="background:#eef5f1;border:1px solid #cfe0d7;border-radius:10px;padding:12px 14px;margin-bottom:12px;">
+                    <div style="font-size:12px;color:#52665d;text-transform:uppercase;letter-spacing:.04em;font-weight:700;">Current focus</div>
+                    <div style="color:#1a3c2a;margin-top:4px;">${escapeHtml(current.note)}</div>
+                    ${current.target_metric ? `<div style="font-size:13px;color:#52665d;margin-top:4px;">Target: ${escapeHtml(current.target_metric)}${current.target_value !== null && current.target_value !== undefined ? ' \u2192 ' + current.target_value : ''}</div>` : ''}
+                    <div style="font-size:11px;color:#94a89c;margin-top:6px;">Set ${current.created_at ? new Date(current.created_at).toLocaleDateString() : ''}</div>
+                </div>
+            ` : `<p style="color:#7a9a7a;margin-bottom:12px;">No focus set yet \u2014 leave one below so their next upload shows whether they hit it.</p>`;
+
+            return `
+                <div style="margin-bottom:16px;">
+                    ${currentHtml}
+                    <div style="border:1px solid #eef1ef;border-radius:10px;padding:12px 14px;">
+                        <div style="font-weight:700;color:#1a3c2a;font-size:13px;margin-bottom:8px;">Set what to work on before their next lesson</div>
+                        <textarea id="coachNoteText_${studentId}" placeholder="e.g. Focus on completing your shoulder turn at the top before starting down" style="width:100%;min-height:60px;padding:8px 10px;border:1px solid #cfd8d1;border-radius:8px;font-size:13px;font-family:inherit;resize:vertical;box-sizing:border-box;"></textarea>
+                        <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:8px;">
+                            <select id="coachNoteMetric_${studentId}" style="flex:1 1 200px;padding:8px 10px;border:1px solid #cfd8d1;border-radius:8px;font-size:13px;">
+                                <option value="">No specific metric</option>
+                                ${metricOptions}
+                            </select>
+                            <input type="number" step="0.1" id="coachNoteTarget_${studentId}" placeholder="Target value (optional)" style="flex:1 1 160px;padding:8px 10px;border:1px solid #cfd8d1;border-radius:8px;font-size:13px;">
+                        </div>
+                        <button type="button" onclick="submitCoachNote('${studentId}')" style="margin-top:10px;background:#1a7a4c;color:#fff;border:none;border-radius:8px;padding:9px 16px;font-size:13px;font-weight:700;cursor:pointer;">Save focus</button>
+                        <div id="coachNoteStatus_${studentId}" style="margin-top:6px;font-size:12px;"></div>
+                    </div>
+                </div>
+            `;
+        }
+
+        async function submitCoachNote(studentId) {
+            const token = localStorage.getItem('authToken');
+            const noteEl = document.getElementById(`coachNoteText_${studentId}`);
+            const metricEl = document.getElementById(`coachNoteMetric_${studentId}`);
+            const targetEl = document.getElementById(`coachNoteTarget_${studentId}`);
+            const statusEl = document.getElementById(`coachNoteStatus_${studentId}`);
+            const note = noteEl ? noteEl.value.trim() : '';
+            const targetMetric = metricEl ? metricEl.value : '';
+            const targetValue = targetEl && targetEl.value !== '' ? parseFloat(targetEl.value) : null;
+
+            if (!note) {
+                if (statusEl) statusEl.innerHTML = '<span style="color:#8c2e2e;">Write a short note first.</span>';
+                return;
+            }
+            if (statusEl) statusEl.innerHTML = '<span style="color:#7a9a7a;">Saving\u2026</span>';
+            try {
+                const response = await fetch(`${API_URL}/api/coach/note`, {
+                    method: 'POST',
+                    headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        student_id: studentId,
+                        note: note,
+                        target_metric: targetMetric || null,
+                        target_value: targetValue,
+                    })
+                });
+                const data = await response.json();
+                if (!response.ok) throw new Error(data.error || 'Could not save this focus note');
+                showStatus('Focus saved for your student', 'success');
+                await viewCoachStudentDetail(studentId);
+            } catch (error) {
+                if (statusEl) statusEl.innerHTML = `<span style="color:#8c2e2e;">${escapeHtml(error.message)}</span>`;
+            }
+        }
+
+        function buildScoreSparkline(history) {
+            const points = history
+                .filter(h => h.score !== null && h.score !== undefined)
+                .slice()
+                .reverse(); // oldest first, left to right
+            if (points.length < 2) return '';
+
+            const width = 280, height = 56, pad = 6;
+            const scores = points.map(p => Number(p.score));
+            const min = Math.min(...scores), max = Math.max(...scores);
+            const range = (max - min) || 1;
+            const step = (width - pad * 2) / (points.length - 1);
+
+            const coords = scores.map((s, i) => {
+                const x = pad + i * step;
+                const y = height - pad - ((s - min) / range) * (height - pad * 2);
+                return [x, y];
+            });
+            const path = coords.map((c, i) => (i === 0 ? 'M' : 'L') + c[0].toFixed(1) + ',' + c[1].toFixed(1)).join(' ');
+            const dots = coords.map(c => `<circle cx="${c[0].toFixed(1)}" cy="${c[1].toFixed(1)}" r="2.5" fill="#1a7a4c" />`).join('');
+
+            return `
+                <div style="margin-bottom:14px;">
+                    <div style="font-size:12px;color:#52665d;text-transform:uppercase;letter-spacing:.04em;font-weight:700;margin-bottom:6px;">Score trend (${points.length} swings)</div>
+                    <svg width="${width}" height="${height}" viewBox="0 0 ${width} ${height}" style="max-width:100%;">
+                        <path d="${path}" fill="none" stroke="#1a7a4c" stroke-width="2" />
+                        ${dots}
+                    </svg>
+                    <div style="display:flex;justify-content:space-between;font-size:11px;color:#94a89c;max-width:${width}px;">
+                        <span>${scores[0].toFixed(0)}/100</span>
+                        <span>${scores[scores.length - 1].toFixed(0)}/100</span>
+                    </div>
+                </div>
+            `;
         }
 
         function progressMetricText(value) {
@@ -4343,26 +4493,48 @@
         }
 
         // Check if user is logged in
+        async function routeToDefaultSection() {
+            // A coach's whole reason for being here is their students, not
+            // their own swing -- so send them straight to the roster instead
+            // of the self-analysis home screen. Everyone else keeps the
+            // normal upload-first home screen.
+            const token = localStorage.getItem('authToken');
+            if (!token) {
+                showSection('home');
+                return;
+            }
+            try {
+                const response = await fetch(`${API_URL}/api/user/profile`, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                const profile = await response.json();
+                showSection(profile && profile.is_coach ? 'coach' : 'home');
+            } catch (error) {
+                showSection('home');
+            }
+        }
+
         function checkAuth() {
             // Handle payment redirect first
             if (handlePaymentRedirect()) {
                 // If it was a payment redirect, still show the app but with the message
                 document.getElementById('loginSection').style.display = 'none';
                 document.getElementById('appSection').style.display = 'block';
-                showSection('home');
+                routeToDefaultSection();
                 // Update subscription status
                 checkShowPricing();
                 loadUserPlan();
                 return;
             }
-            
+
             const token = localStorage.getItem('authToken');
             if (token) {
                 authToken = token;
                 document.getElementById('loginSection').style.display = 'none';
                 document.getElementById('appSection').style.display = 'block';
-                // Ensure home section is shown
-                showSection('home');
+                // Coaches land on their roster, not the self-analysis screen;
+                // everyone else still lands on Home as before.
+                routeToDefaultSection();
                 checkShowPricing();
                 showWelcomeMessage();
                 loadUserPlan();
@@ -5066,6 +5238,27 @@
                 <div id="shareCardStatus" style="display:none;text-align:center;margin:-10px 0 16px;font-size:13px;color:#63756d;"></div>
             `;
 
+            const coachFocus = data.coach_focus || null;
+            let coachFocusHtml = '';
+            if (coachFocus && coachFocus.note) {
+                const hasTarget = coachFocus.target_metric && coachFocus.current_value !== null && coachFocus.current_value !== undefined;
+                const onTarget = coachFocus.on_target;
+                let statusLine = '';
+                if (hasTarget) {
+                    statusLine = onTarget
+                        ? `<div style="margin-top:8px;font-weight:700;color:#1a7a4c;">✓ You hit the target your coach set</div>`
+                        : `<div style="margin-top:8px;font-weight:700;color:#8c6d2e;">Not there yet — keep working on it</div>`;
+                }
+                coachFocusHtml = `
+                    <div style="background:#fff9ec;border:1px solid #f0dfae;border-radius:14px;padding:18px 20px;margin:20px 0;">
+                        <div style="font-size:12px;color:#8c6d2e;text-transform:uppercase;letter-spacing:.04em;font-weight:700;">Your coach's focus${coachFocus.coach_name ? ` — ${escapeHtml(coachFocus.coach_name)}` : ''}</div>
+                        <div style="color:#3a2f14;margin-top:6px;font-size:15px;">${escapeHtml(coachFocus.note)}</div>
+                        ${hasTarget ? `<div style="font-size:13px;color:#6b5a33;margin-top:8px;">${escapeHtml(coachFocus.target_metric)}: this swing measured ${coachFocus.current_value}${coachFocus.target_value !== null && coachFocus.target_value !== undefined ? ` — target was ${coachFocus.target_value}` : ''}</div>` : ''}
+                        ${statusLine}
+                    </div>
+                `;
+            }
+
             let swingTwinHtml = '';
             if (data.swing_twin && data.swing_twin.pro_name && Number.isFinite(Number(data.swing_twin.similarity_score))) {
                 const twin = data.swing_twin;
@@ -5408,6 +5601,7 @@
             // anyone who wants to go deeper.
             resultsDiv.innerHTML = `
                 ${fallbackProHtml}
+                ${coachFocusHtml}
                 ${scoreHtml}
                 ${swingTwinHtml}
                 <div id="skeletonCompareContainer"></div>
