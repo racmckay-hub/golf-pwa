@@ -2255,14 +2255,14 @@
                             relate to it&#8212;without pretending the video proves ball-flight causation.
                         </p>
                         <div class="landing-miss-grid" id="landingMissGrid">
-                            <button type="button" class="landing-miss-option" data-miss="slice" onclick="selectTypicalMiss('slice', this, true, 'miss_card')">Slice</button>
-                            <button type="button" class="landing-miss-option" data-miss="hook" onclick="selectTypicalMiss('hook', this, true, 'miss_card')">Hook</button>
-                            <button type="button" class="landing-miss-option" data-miss="push" onclick="selectTypicalMiss('push', this, true, 'miss_card')">Push</button>
-                            <button type="button" class="landing-miss-option" data-miss="pull" onclick="selectTypicalMiss('pull', this, true, 'miss_card')">Pull</button>
-                            <button type="button" class="landing-miss-option" data-miss="fat" onclick="selectTypicalMiss('fat', this, true, 'miss_card')">Fat contact</button>
-                            <button type="button" class="landing-miss-option" data-miss="thin" onclick="selectTypicalMiss('thin', this, true, 'miss_card')">Thin contact</button>
-                            <button type="button" class="landing-miss-option" data-miss="inconsistent_contact" onclick="selectTypicalMiss('inconsistent_contact', this, true, 'miss_card')">Inconsistent</button>
-                            <button type="button" class="landing-miss-option" data-miss="not_sure" onclick="selectTypicalMiss('not_sure', this, true, 'miss_card')">Not sure</button>
+                            <button type="button" class="landing-miss-option" data-miss="slice" onclick="selectTypicalMiss('slice', this, false, 'miss_card')">Slice</button>
+                            <button type="button" class="landing-miss-option" data-miss="hook" onclick="selectTypicalMiss('hook', this, false, 'miss_card')">Hook</button>
+                            <button type="button" class="landing-miss-option" data-miss="push" onclick="selectTypicalMiss('push', this, false, 'miss_card')">Push</button>
+                            <button type="button" class="landing-miss-option" data-miss="pull" onclick="selectTypicalMiss('pull', this, false, 'miss_card')">Pull</button>
+                            <button type="button" class="landing-miss-option" data-miss="fat" onclick="selectTypicalMiss('fat', this, false, 'miss_card')">Fat contact</button>
+                            <button type="button" class="landing-miss-option" data-miss="thin" onclick="selectTypicalMiss('thin', this, false, 'miss_card')">Thin contact</button>
+                            <button type="button" class="landing-miss-option" data-miss="inconsistent_contact" onclick="selectTypicalMiss('inconsistent_contact', this, false, 'miss_card')">Inconsistent</button>
+                            <button type="button" class="landing-miss-option" data-miss="not_sure" onclick="selectTypicalMiss('not_sure', this, false, 'miss_card')">Not sure</button>
                         </div>
                         <div class="landing-sample-result" id="landingSampleResult">
                             <div class="landing-sample-badge">Sample result &middot; for illustration</div>
@@ -2281,9 +2281,12 @@
                             <div class="landing-sample-footnote">
                                 Illustrative example, not your data &#183; The analysis measures movement&#8212;not ball curvature or clubface angle.
                             </div>
+                            <button type="button" class="landing-hero-cta" style="width:100%;margin-top:16px;" onclick="startLandingUpload('sample_card_cta')">
+                                Analyze My Swing Now
+                            </button>
                         </div>
                         <div class="landing-demo-note">
-                            Choosing a miss immediately opens your video picker &#183; No credit card
+                            See your example above, then upload when you're ready &#183; No credit card required
                         </div>
                     </div>
 
